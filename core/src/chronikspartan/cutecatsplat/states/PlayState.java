@@ -1,7 +1,9 @@
 package chronikspartan.cutecatsplat.states;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -23,6 +25,10 @@ public class PlayState extends State {
     private static final int WALL_SPACING = 40;
     private static final int WALL_COUNT = 4;
 
+    private FileHandle blockedFontFile;
+    private BitmapFont blockedFont;
+
+
     private Cat cat;
     ParallaxBackground parallax_background;
     Vector3 touch;
@@ -37,10 +43,14 @@ public class PlayState extends State {
 
     private Array<Wall> walls;
 
-    protected PlayState(GameStateManager gsm) {
+    protected PlayState(GameStateManager gsm){
         super(gsm);
         cat = new Cat(50, 100);
         touch = new Vector3();
+
+        blockedFontFile = new FileHandle("images/Font/blocked/blocked.ttf");
+        blockedFont = new BitmapFont(blockedFontFile);
+
         cam.setToOrtho(false, CuteCatSplat.WIDTH / 4, CuteCatSplat.HEIGHT / 4);
         bush = new Texture("images/Pixel_Bush.png");
 
@@ -126,6 +136,8 @@ public class PlayState extends State {
             sb.draw(imgTextureBushRegionLeft, leftBushPos1.x, leftBushPos1.y);
             sb.draw(imgTextureBushRegionLeft, leftBushPos2.x, leftBushPos2.y);
         sb.end();
+
+        blockedFont.draw(sb, "test", cam.viewportHeight - 10, cam.viewportWidth / 2);
 
     }
 
