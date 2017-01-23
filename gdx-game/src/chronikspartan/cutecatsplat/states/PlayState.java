@@ -49,7 +49,7 @@ public class PlayState extends State {
         blockedFontFile = new FileHandle("images/Font/blocked/dosapp.fon");
        // blockedFont = new BitmapFont(blockedFontFile);
 
-        cam.setToOrtho(false, CuteCatSplat.WIDTH / 4, CuteCatSplat.HEIGHT / 4);
+        cam.setToOrtho(false, CuteCatSplat.WIDTH / 2.5f, CuteCatSplat.HEIGHT / 2.5f);
         bush = new Texture("images/Pixel_Bush.png");
 
         imgTextureBushRegionRight = new TextureRegion(bush);
@@ -78,8 +78,8 @@ public class PlayState extends State {
 		
         // Set up scrolling parallax background
         parallax_background = new ParallaxBackground(new ParallaxLayer[]{
-                new ParallaxLayer(imgTextureGrassRegion, new Vector2(0, 10), new Vector2(0, 0)),
-        }, Assets.width, Assets.height, new Vector2(0, 20));
+                new ParallaxLayer(imgTextureGrassRegion, new Vector2(0, 20), new Vector2(0, 0)),
+        }, Assets.width, Assets.height, new Vector2(0, 30));
     }
 
     @Override
