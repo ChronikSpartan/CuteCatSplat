@@ -29,13 +29,13 @@ public class Cat{
         texture = new Texture("images/Pixel_Cat_Sprite_Map.png");
         catAnimation = new Animation(new TextureRegion(texture), 2, 0.5f);
 
-        bounds = new Rectangle(x, y, texture.getWidth() / 2.3F, texture.getHeight());
+        bounds = new Rectangle(x + 3, y, (texture.getWidth() / 2)- 6, texture.getHeight());
     }
 
     public void update(float dt){
         catAnimation.update(dt);
         position.add(0, MOVEMENT * dt, 0);
-        bounds.setPosition(position.x, position.y);
+        bounds.setPosition(position.x + 3, position.y);
     }
 
     public void move(int x){

@@ -32,10 +32,8 @@ public class PlayState extends State {
     private Cat cat;
     ParallaxBackground parallax_background;
     Vector3 touch;
-    Texture texture_grass;
-    TextureRegion imgTextureGrassRegion;
-    Texture bush;
-    TextureRegion imgTextureBushRegionLeft, imgTextureBushRegionRight;
+    Texture bush, texture_grass;
+    TextureRegion imgTextureBushRegionLeft, imgTextureBushRegionRight, imgTextureGrassRegion;
 
     Vector2 rightBushPos1, rightBushPos2, leftBushPos1, leftBushPos2;
 
@@ -48,10 +46,10 @@ public class PlayState extends State {
         cat = new Cat(50, 100);
         touch = new Vector3();
 
-        blockedFontFile = new FileHandle("images/Font/blocked/blocked.ttf");
-        blockedFont = new BitmapFont(blockedFontFile);
+        blockedFontFile = new FileHandle("images/Font/blocked/dosapp.fon");
+       // blockedFont = new BitmapFont(blockedFontFile);
 
-        cam.setToOrtho(false, CuteCatSplat.WIDTH / 4, CuteCatSplat.HEIGHT / 4);
+        cam.setToOrtho(false, CuteCatSplat.WIDTH / 2.5f, CuteCatSplat.HEIGHT / 2.5f);
         bush = new Texture("images/Pixel_Bush.png");
 
         imgTextureBushRegionRight = new TextureRegion(bush);
@@ -76,12 +74,12 @@ public class PlayState extends State {
         texture_grass.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         imgTextureGrassRegion = new TextureRegion(texture_grass);
         imgTextureGrassRegion.setRegion(0, 0, texture_grass.getWidth(),
-                texture_grass.getHeight());
-
+										texture_grass.getHeight());
+		
         // Set up scrolling parallax background
         parallax_background = new ParallaxBackground(new ParallaxLayer[]{
-                new ParallaxLayer(imgTextureGrassRegion, new Vector2(0, 10), new Vector2(0, 0)),
-        }, Assets.width, Assets.height, new Vector2(0, 20));
+                new ParallaxLayer(imgTextureGrassRegion, new Vector2(0, 20), new Vector2(0, 0)),
+        }, Assets.width, Assets.height, new Vector2(0, 30));
     }
 
     @Override
@@ -105,7 +103,7 @@ public class PlayState extends State {
                 wall.reposition(wall.getPosLeftWall().y + ((Wall.WALL_WIDTH + WALL_SPACING) * WALL_COUNT));
 
             if(wall.collides(cat.getBounds()))
-                    gsm.set(new PlayState(gsm));
+                    gsm.set(new MenuState(gsm));
 
             if(wall.pointGained(cat.getBounds()))
                 points++;
@@ -114,7 +112,7 @@ public class PlayState extends State {
 
         if(cat.getPosition().x <= bush.getWidth() - 10 ||
                 cat.getPosition().x >= (cam.viewportWidth - bush.getWidth() - 5))
-            gsm.set(new PlayState(gsm));
+            gsm.set(new MenuState(gsm));
 
         cam.update();
 
@@ -137,7 +135,7 @@ public class PlayState extends State {
             sb.draw(imgTextureBushRegionLeft, leftBushPos2.x, leftBushPos2.y);
         sb.end();
 
-        blockedFont.draw(sb, "test", cam.viewportHeight - 10, cam.viewportWidth / 2);
+        //blockedFont.draw(sb, "test", cam.viewportHeight - 10, cam.viewportWidth / 2);
 
     }
 
@@ -147,6 +145,7 @@ public class PlayState extends State {
         for (Wall wall : walls)
             wall.dispose();
         bush.dispose();
+		texture_grass.dispose();
     }
 
     private void updateBush(){
