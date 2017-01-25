@@ -18,7 +18,7 @@ public class Wall {
     public static final int WALL_WIDTH = 52;
 
     private static Texture wall;
-    private TextureRegion leftWall, rightWall;
+    private TextureRegion leftWall, rightWall, tempTexture ;
     private Vector2 posLeftWall, posRightWall;
     private Rectangle boundsLeft, boundsRight, pointGate;
     private Random rand;
@@ -36,7 +36,10 @@ public class Wall {
 
         boundsLeft = new Rectangle(posLeftWall.x, posLeftWall.y, leftWall.getRegionWidth(), leftWall.getRegionHeight());
         boundsRight = new Rectangle(posRightWall.x, posRightWall.y, rightWall.getRegionWidth(), rightWall.getRegionHeight());
-        pointGate = new Rectangle(posLeftWall.x, posLeftWall.y + getLeftWall().getRegionHeight(), leftWall.getRegionWidth() * 3, 1);
+		pointGate = new Rectangle(boundsRight);
+		//pointGate.y = pointGate.y + boundsLeft.height;
+		pointGate.width = pointGate.width + WALL_GAP;
+       // pointGate = new Rectangle(posLeftWall.x, posLeftWall.y + getLeftWall().getRegionHeight(), leftWall.getRegionWidth() * 10, 10);
     }
 
 
@@ -63,7 +66,7 @@ public class Wall {
 
         boundsLeft.setPosition(posLeftWall.x, posLeftWall.y);
         boundsRight.setPosition(posRightWall.x, posRightWall.y);
-        pointGate.setPosition(posLeftWall.x, posRightWall.y + leftWall.getRegionHeight());
+        pointGate.setPosition(boundsLeft.x, boundsLeft.y + boundsLeft.getHeight());
     }
 
     public boolean collides(Rectangle player){
@@ -71,7 +74,9 @@ public class Wall {
     }
 
     public boolean pointGained(Rectangle player){
-        return player.overlaps(pointGate);
+		boolean point = player.overlaps(pointGate);
+		pointGate.setPosition(0,0);
+        return point;
     }
 
     public void dispose(){
