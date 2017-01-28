@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -25,31 +26,29 @@ public class PlayState extends State {
     private static final int WALL_SPACING = 40;
     private static final int WALL_COUNT = 4;
 
-    private FileHandle blockedFontFile;
     private BitmapFont blockedFont;
 
-
     private Cat cat;
+	private Array<Wall> walls;
+	
+	float viewportScaling = 2.5f;
     ParallaxBackground parallax_background;
     Vector3 touch;
     Texture bush, texture_grass;
     TextureRegion imgTextureBushRegionLeft, imgTextureBushRegionRight, imgTextureGrassRegion;
-
     Vector2 rightBushPos1, rightBushPos2, leftBushPos1, leftBushPos2;
 
     public int points = 0;
-
-    private Array<Wall> walls;
-
+	
     protected PlayState(GameStateManager gsm){
         super(gsm);
         cat = new Cat(50, 100);
         touch = new Vector3();
 
-        blockedFontFile = new FileHandle("images/Font/blocked/dosapp.fon");
-       // blockedFont = new BitmapFont(blockedFontFile);
+        blockedFont = new BitmapFont(Gdx.files.internal("images/Font/cutecatfont.fnt"), Gdx.files.internal("images/Font/cutecatfont.png"), false);
+		blockedFont.setUseIntegerPositions(false);
 
-        cam.setToOrtho(false, CuteCatSplat.WIDTH / 2.5f, CuteCatSplat.HEIGHT / 2.5f);
+        cam.setToOrtho(false, CuteCatSplat.WIDTH / viewportScaling, CuteCatSplat.HEIGHT / viewportScaling);
         bush = new Texture("images/Pixel_Bush.png");
 
         imgTextureBushRegionRight = new TextureRegion(bush);
@@ -79,7 +78,7 @@ public class PlayState extends State {
         // Set up scrolling parallax background
         parallax_background = new ParallaxBackground(new ParallaxLayer[]{
                 new ParallaxLayer(imgTextureGrassRegion, new Vector2(0, 20), new Vector2(0, 0)),
-        }, Assets.width, Assets.height, new Vector2(0, 30));
+        }, Assets.width, Assets.height, new Vector2(0, 40));
     }
 
     @Override
@@ -106,7 +105,8 @@ public class PlayState extends State {
                     gsm.set(new MenuState(gsm));
 
             if(wall.pointGained(cat.getBounds()))
-                points++;
+                points ++;
+				
 
         }
 
@@ -122,8 +122,8 @@ public class PlayState extends State {
 
     @Override
     public void render(SpriteBatch sb) {
-        sb.setProjectionMatrix(cam.combined);
-        sb.begin();
+	  	sb.begin();
+			sb.setProjectionMatrix(cam.combined);
             sb.draw(cat.getTexture(), cat.getPosition().x, cat.getPosition().y);
             for(Wall wall : walls) {
                 sb.draw(wall.getLeftWall(), wall.getPosLeftWall().x, wall.getPosLeftWall().y);
@@ -133,10 +133,8 @@ public class PlayState extends State {
             sb.draw(imgTextureBushRegionRight, rightBushPos2.x, rightBushPos2.y);
             sb.draw(imgTextureBushRegionLeft, leftBushPos1.x, leftBushPos1.y);
             sb.draw(imgTextureBushRegionLeft, leftBushPos2.x, leftBushPos2.y);
-        sb.end();
-
-        //blockedFont.draw(sb, "test", cam.viewportHeight - 10, cam.viewportWidth / 2);
-
+		blockedFont.draw(sb, String.valueOf(points), cam.viewportWidth / 2, cat.getPosition().y + 200);
+		sb.end();
     }
 
     @Override

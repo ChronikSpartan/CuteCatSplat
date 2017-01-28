@@ -18,60 +18,70 @@ public class Wall {
     public static final int WALL_WIDTH = 52;
 
     private static Texture wall;
-    private TextureRegion leftWall, rightWall;
-    private Vector2 posLeftWall, posRightWall;
-    private Rectangle boundsLeft, boundsRight, pointGate;
+    private TextureRegion rightWall, leftWall;
+    private Vector2 posRightWall, posLeftWall;
+    private Rectangle boundsRight, boundsLeft, pointGate;
     private Random rand;
+	boolean pointRecorded;
 
     public Wall(float y){
         wall = new Texture("images/Pixel_Wall.png");
-        rightWall = new TextureRegion(wall);
         leftWall = new TextureRegion(wall);
-        leftWall.flip(true, false);
+        rightWall = new TextureRegion(wall);
+        rightWall.flip(true, false);
 
         rand = new Random();
+		pointRecorded = false;
 
-        posLeftWall = new Vector2(rand.nextInt(FLUCTUATION) + WALL_GAP + LEFT_OFFSET, y);
-        posRightWall = new Vector2(posLeftWall.x - WALL_GAP - wall.getWidth(), y);
+        posRightWall = new Vector2(rand.nextInt(FLUCTUATION) + WALL_GAP + LEFT_OFFSET, y);
+        posLeftWall = new Vector2(posRightWall.x - WALL_GAP - wall.getWidth(), y);
 
-        boundsLeft = new Rectangle(posLeftWall.x, posLeftWall.y, leftWall.getRegionWidth(), leftWall.getRegionHeight());
         boundsRight = new Rectangle(posRightWall.x, posRightWall.y, rightWall.getRegionWidth(), rightWall.getRegionHeight());
-        pointGate = new Rectangle(posLeftWall.x, posLeftWall.y + getLeftWall().getRegionHeight(), leftWall.getRegionWidth() * 3, 1);
-    }
-
-
+        boundsLeft = new Rectangle(posLeftWall.x, posLeftWall.y, leftWall.getRegionWidth(), leftWall.getRegionHeight());
+		
+		pointGate = new Rectangle(boundsLeft);
+		pointGate.y = pointGate.y + boundsLeft.height;
+		pointGate.x = pointGate.x + WALL_GAP;
+	}
 
     public TextureRegion getLeftWall() {
-        return leftWall;
-    }
-
-    public TextureRegion getRightWall() {
         return rightWall;
     }
 
-    public Vector2 getPosLeftWall() {
-        return posLeftWall;
+    public TextureRegion getRightWall() {
+        return leftWall;
     }
 
-    public Vector2 getPosRightWall() {
+    public Vector2 getPosLeftWall() {
         return posRightWall;
     }
 
-    public void reposition(float y){
-        posLeftWall.set(rand.nextInt(FLUCTUATION) + WALL_GAP + LEFT_OFFSET, y);
-        posRightWall.set(posLeftWall.x - WALL_GAP - wall.getWidth(), y);
+    public Vector2 getPosRightWall() {
+        return posLeftWall;
+    }
 
-        boundsLeft.setPosition(posLeftWall.x, posLeftWall.y);
+    public void reposition(float y){
+        posRightWall.set(rand.nextInt(FLUCTUATION) + WALL_GAP + LEFT_OFFSET, y);
+        posLeftWall.set(posRightWall.x - WALL_GAP - wall.getWidth(), y);
+
         boundsRight.setPosition(posRightWall.x, posRightWall.y);
-        pointGate.setPosition(posLeftWall.x, posRightWall.y + leftWall.getRegionHeight());
+        boundsLeft.setPosition(posLeftWall.x, posLeftWall.y);
+        pointGate.setPosition(boundsLeft.x + WALL_GAP, boundsLeft.y + boundsLeft.getHeight());
+		
+		pointRecorded = false;
     }
 
     public boolean collides(Rectangle player){
-        return player.overlaps(boundsLeft) || player.overlaps(boundsRight);
+        return player.overlaps(boundsRight) || player.overlaps(boundsLeft);
     }
 
     public boolean pointGained(Rectangle player){
-        return player.overlaps(pointGate);
+		if (player.overlaps(pointGate) && pointRecorded == false){
+			pointRecorded = true;
+			return true;
+		}
+		return false;
+			
     }
 
     public void dispose(){
