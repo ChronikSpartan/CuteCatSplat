@@ -2,6 +2,7 @@ package chronikspartan.cutecatsplat.states;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -63,8 +64,8 @@ public class MenuState extends State {
         playButton = new Button(playBtnStyle);
 		//playButton.setTouchable(Touchable.enabled);
       	playButton.addListener(new InputListener(){
-			public void touchDown(InputEvent event, float x, float y){
-				stateToLoad = PLAYSTATE;
+				public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
+				return true;
 			}
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button){
 				// Set PlayStae to load
@@ -100,9 +101,9 @@ public class MenuState extends State {
     }
     @Override
     public void handleInput() {
-      //  if(Gdx.input.justTouched()) {
-       //     gsm.set(new PlayState(gsm));
-      //  }
+        if(Gdx.input.justTouched()) {
+            gsm.set(new PlayState(gsm));
+        }
 
     }
 
@@ -125,7 +126,7 @@ stage.act();
         stage.draw();
 
     }
-
+	
     @Override
     public void dispose(){
         background.dispose();
