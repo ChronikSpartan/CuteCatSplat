@@ -45,16 +45,22 @@ public class PlayState extends State {
         cat = new Cat(50, 100);
         touch = new Vector3();
 
+		// Load font for usage
         blockedFont = new BitmapFont(Gdx.files.internal("images/Font/cutecatfont.fnt"), Gdx.files.internal("images/Font/cutecatfont.png"), false);
 		blockedFont.setUseIntegerPositions(false);
 
+		// Set camera size
         cam.setToOrtho(false, CuteCatSplat.WIDTH / viewportScaling, CuteCatSplat.HEIGHT / viewportScaling);
-        bush = new Texture("images/Pixel_Bush.png");
+       
+		// Load bush texture
+		bush = new Texture("images/Bush.png");
 
+		// Create texture regions for bushes and flip for both sides
         imgTextureBushRegionRight = new TextureRegion(bush);
         imgTextureBushRegionLeft = new TextureRegion(bush);
         imgTextureBushRegionLeft.flip(true,false);
 
+		// Set bush positions
         rightBushPos1 = new Vector2(cam.viewportWidth - bush.getWidth(),
                 cam.position.y - cam.viewportHeight / 2);
         rightBushPos2 = new Vector2(cam.viewportWidth - bush.getWidth(),
@@ -62,14 +68,14 @@ public class PlayState extends State {
         leftBushPos1 = new Vector2(0, cam.position.y - cam.viewportHeight / 2);
         leftBushPos2 = new Vector2(0, cam.position.y - cam.viewportHeight / 2 + bush.getHeight());
 
+		// Create and load array to hold the walls
         walls = new Array<Wall>();
-
         for(int i = 1; i <= WALL_COUNT; i++)
             walls.add(new Wall(i * (WALL_SPACING + Wall.WALL_WIDTH)));
 
 
         // Create grass background texture region
-        texture_grass = new Texture(Gdx.files.internal("images/Pixel_Block_Solid_Grass_Large.png"));
+        texture_grass = new Texture(Gdx.files.internal("images/Block_Solid_Grass_Large.png"));
         texture_grass.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         imgTextureGrassRegion = new TextureRegion(texture_grass);
         imgTextureGrassRegion.setRegion(0, 0, texture_grass.getWidth(),
@@ -84,8 +90,10 @@ public class PlayState extends State {
     @Override
     protected void handleInput() {
         if(Gdx.input.isTouched()) {
+			// Get x movement of touch and set to touch vector
             touch.set(Gdx.input.getX(), 0, 0);
             cam.unproject(touch);
+			// Move cat to where finger is (minus half cat width to ensure its centered)
             cat.move((int)(touch.x - Assets.spriteCat1.getWidth()/2));
         }
     }
@@ -94,22 +102,27 @@ public class PlayState extends State {
     public void update(float dt) {
         handleInput();
         updateBush();
+		
+		// Update cat and camera position
         cat.update(dt);
         cam.position.y = cat.getPosition().y + 80;
 
         for(Wall wall : walls){
+			// Reposition walls if they move off screen
             if(cam.position.y - (cam.viewportHeight / 2) > wall.getPosLeftWall().y + wall.getLeftWall().getRegionHeight())
                 wall.reposition(wall.getPosLeftWall().y + ((Wall.WALL_WIDTH + WALL_SPACING) * WALL_COUNT));
 
+			// End game of collision occurs
             if(wall.collides(cat.getBounds()))
-                    gsm.set(new MenuState(gsm));
+				cat.splat(dt);
+                //gsm.set(new MenuState(gsm));
 
+			// Add points if fence passed
             if(wall.pointGained(cat.getBounds()))
                 points ++;
-				
-
         }
 
+		// End game if cat hits bushes
         if(cat.getPosition().x <= bush.getWidth() - 10 ||
                 cat.getPosition().x >= (cam.viewportWidth - bush.getWidth() - 5))
             gsm.set(new MenuState(gsm));
@@ -122,6 +135,7 @@ public class PlayState extends State {
 
     @Override
     public void render(SpriteBatch sb) {
+		// Draw everything to sprite batch
 	  	sb.begin();
 			sb.setProjectionMatrix(cam.combined);
             sb.draw(cat.getTexture(), cat.getPosition().x, cat.getPosition().y);
@@ -147,6 +161,7 @@ public class PlayState extends State {
     }
 
     private void updateBush(){
+		// Scroll and reposition bushes
         if((cam.position.y - cam.viewportHeight / 2) > (rightBushPos1.y + bush.getHeight()))
             rightBushPos1.add(0, bush.getHeight() * 2);
 

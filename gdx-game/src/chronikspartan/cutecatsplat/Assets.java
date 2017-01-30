@@ -26,14 +26,14 @@ public class Assets {
     public static void load(){
 
         // Create grass background texture region
-        texture_grass = new Texture(Gdx.files.internal("images/Pixel_Block_Solid_Grass.png"));
+        texture_grass = new Texture(Gdx.files.internal("images/Block_Solid_Grass.png"));
         texture_grass.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         imgTextureGrassRegion = new TextureRegion(texture_grass);
         imgTextureGrassRegion.setRegion(0, 0, texture_grass.getWidth(),
                 texture_grass.getHeight());
 
         // Create basic bush texture
-        texture_bush = new Texture(Gdx.files.internal("images/Pixel_Bush.png"));
+        texture_bush = new Texture(Gdx.files.internal("images/Bush.png"));
         bush_width = texture_bush.getWidth();
 
         // Create bush textures and then flip so that there is a left and right version
@@ -45,8 +45,8 @@ public class Assets {
         imgTextureBushRegion_left.flip(true, false);
 
         // Create Cat Sprites
-        texture_cat_run_1 = new Texture(Gdx.files.internal("images/Pixel_Cat_Run_1.png"));
-        texture_cat_run_2 = new Texture(Gdx.files.internal("images/Pixel_Cat_Run_2.png"));
+        texture_cat_run_1 = new Texture(Gdx.files.internal("images/Cat_Run_1.png"));
+        texture_cat_run_2 = new Texture(Gdx.files.internal("images/Cat_Run_2.png"));
         sprite_back = new Sprite(texture_grass);
         spriteCat1 = new Sprite(texture_cat_run_1);
         spriteCat1.flip(false,true);
