@@ -23,84 +23,61 @@ import com.badlogic.gdx.scenes.scene2d.*;
  * Created by cube on 1/20/2017.
  */
 
-public class MenuState extends State {
-	private static final int PLAYSTATE = 1;
-	private static final int RANKINGSSTATE = 2;
-	
-    private Texture background, logo, play, playDepressed, rankings, rankingsDepressed;
+public class RankingsState extends State {
+	private static final int MENUSTATE = 3;
+
+    private Texture background, rankings, back, backDepressed;
 	private TextureRegion imgTextureBackgroundRegion;
-	private Image logoImage;
-    private Button playButton, rankingsButton;
-    private Button.ButtonStyle playBtnStyle, rankingsBtnStyle;
+	private Image rankingsImage;
+    private Button backButton;
+    private Button.ButtonStyle backBtnStyle;
     private Stage stage;
-	
+
 	private int stateToLoad = 0;
 
-    public MenuState(GameStateManager gsm){
+    public RankingsState(GameStateManager gsm){
         super(gsm);
 		// Set up camera
 		cam.setToOrtho(false, CuteCatSplat.WIDTH/4, CuteCatSplat.HEIGHT/4);
-		
+
         background = new Texture("images/Block_Solid_Grass.png");
 
         // Create grass background texture region
         background.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         imgTextureBackgroundRegion = new TextureRegion(background);
         imgTextureBackgroundRegion.setRegion(0, 0, background.getWidth()*20,
-										background.getHeight()*20);
-		
-        logo = new Texture("images/Buttons_and_Logo/Cute_Cat_Logo.png");
-		logoImage = new Image(logo);
-		
-		// Load Play button images
-        play = new Texture("images/Buttons_and_Logo/Play_1.png");
-        playDepressed = new Texture("images/Buttons_and_Logo/Play_2.png");
+											 background.getHeight()*20);
+
         rankings = new Texture("images/Buttons_and_Logo/Rankings_1.png");
-        rankingsDepressed = new Texture("images/Buttons_and_Logo/Rankings_2.png");
+		rankingsImage = new Image(rankings);
 
-		// Set play button style and add listener
-        playBtnStyle = new Button.ButtonStyle();
-        playBtnStyle.up = new TextureRegionDrawable(new TextureRegion(play));
-        playBtnStyle.down = new TextureRegionDrawable(new TextureRegion(playDepressed));
-        playButton = new Button(playBtnStyle);
-      	playButton.addListener(new InputListener(){
-				public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
-				return true;
-			}
-			public void touchUp(InputEvent event, float x, float y, int pointer, int button){
-				// Set PlayState to load
-				stateToLoad = PLAYSTATE;
-			}
-		});
-			
-
-		// Same for rankings button
-        rankingsBtnStyle = new Button.ButtonStyle();
-        rankingsBtnStyle.up = new TextureRegionDrawable(new TextureRegion(rankings));
-        rankingsBtnStyle.down = new TextureRegionDrawable(new TextureRegion(rankingsDepressed));
-        rankingsButton = new Button(rankingsBtnStyle);
-		rankingsButton.addListener(new InputListener(){
+		// Load Back button images
+        back = new Texture("images/Buttons_and_Logo/Back_1.png");
+        backDepressed = new Texture("images/Buttons_and_Logo/Back_2.png");
+        
+		// Set Back button style and add listener
+        backBtnStyle = new Button.ButtonStyle();
+        backBtnStyle.up = new TextureRegionDrawable(new TextureRegion(back));
+        backBtnStyle.down = new TextureRegionDrawable(new TextureRegion(backDepressed));
+        backButton = new Button(backBtnStyle);
+      	backButton.addListener(new InputListener(){
 				public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
 					return true;
 				}
 				public void touchUp(InputEvent event, float x, float y, int pointer, int button){
-					// Set RankingsStaTe to load
-					stateToLoad = RANKINGSSTATE;
+					// Set MenuState to load
+					stateToLoad = MENUSTATE;
 				}
 			});
 
 		// Create table to hold actors for stage
         Table menuTable = new Table();
-		menuTable.add(logoImage);
+		menuTable.add(rankingsImage);
         menuTable.row();
         menuTable.row();
-        menuTable.add().height(playButton.getHeight());
+        menuTable.add().height(backButton.getHeight());
         menuTable.row();
-        menuTable.add(playButton);
-        menuTable.row();
-        menuTable.add().height(playButton.getHeight()/2);
-        menuTable.row();
-        menuTable.add(rankingsButton);
+        menuTable.add(backButton);
         menuTable.setFillParent(true);
 
 		// Create stage and set for input processor
@@ -108,7 +85,7 @@ public class MenuState extends State {
         Gdx.input.setInputProcessor(stage);
 		stage.addActor(menuTable);
     }
-	
+
     @Override
     public void handleInput() {
     }
@@ -116,12 +93,8 @@ public class MenuState extends State {
     @Override
     public void update(float dt) {
 		// Load PlayState if button selected
-		if(stateToLoad == PLAYSTATE)
-			gsm.set(new PlayState(gsm));
-			
-		// Load MenuState if button selected
-		if(stateToLoad == RANKINGSSTATE)
-			gsm.set(new RankingsState(gsm));
+		if(stateToLoad == MENUSTATE)
+			gsm.set(new MenuState(gsm));
     }
 
     @Override
@@ -135,10 +108,10 @@ public class MenuState extends State {
         stage.draw();
 
     }
-	
+
     @Override
     public void dispose(){
         background.dispose();
-        play.dispose();
+        back.dispose();
     }
 }
