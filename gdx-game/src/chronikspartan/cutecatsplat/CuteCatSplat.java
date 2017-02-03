@@ -7,7 +7,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import chronikspartan.cutecatsplat.states.GameStateManager;
-import chronikspartan.cutecatsplat.states.MenuState;
+import chronikspartan.cutecatsplat.states.SplashState;
+import chronikspartan.cutecatsplat.data.Assets;
 
 public class CuteCatSplat extends ApplicationAdapter{
     public static final int WIDTH = 480;
@@ -15,14 +16,17 @@ public class CuteCatSplat extends ApplicationAdapter{
     public static final String TITLE = "Cute Cat Splat";
 
     private GameStateManager gsm;
+	private Assets assets;
     private SpriteBatch batch;
     Texture img;
 
     @Override
     public void create(){
         batch = new SpriteBatch();
+		assets = new Assets();
+		assets.load();
         gsm = new GameStateManager();
-        gsm.push(new MenuState(gsm));
+        gsm.push(new SplashState(gsm, assets));
         Assets.load();
     }
 

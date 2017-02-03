@@ -6,6 +6,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
 import chronikspartan.cutecatsplat.CuteCatSplat;
+import com.badlogic.gdx.*;
+import com.badlogic.gdx.utils.*;
 
 /**
  * Created by cube on 1/20/2017.
@@ -20,6 +22,9 @@ public class Cat{
     private Animation catAnimation, splatAnimation;
 
     private Texture catTexture, splatTexture;
+	
+	private boolean catDead = false;
+	private int splatFrame = 1;
 
     public Cat(int x, int y){
 
@@ -31,10 +36,9 @@ public class Cat{
         catTexture = new Texture("images/Cat_Sprite_Map.png");
 		splatTexture = new Texture("images/Splat_Sprite_Map.png");
 		
-        catAnimation = new Animation(new TextureRegion(catTexture), 2, 0.5f);
-		splatAnimation = new Animation(new TextureRegion(splatTexture), 4, 0.5f);
-
-		
+        catAnimation = new Animation(new TextureRegion(catTexture), 2, 0.35f);
+		splatAnimation = new Animation(new TextureRegion(splatTexture), 4, 0.2f);
+	
 		// Set cat bounds
         bounds = new Rectangle(x + 3, y, (catTexture.getWidth() / 2)- 6, catTexture.getHeight());
     }
@@ -55,6 +59,7 @@ public class Cat{
 	public void splat(float dt){
 		// Run splat animation
         splatAnimation.update(dt);
+		catDead = true;
 	}
 
     public void dispose(){
@@ -70,7 +75,12 @@ public class Cat{
     }
 
     public TextureRegion getTexture() {
-        return catAnimation.getFrame();
+		if(!catDead)
+        	return catAnimation.getFrame();
+		else
+			if(splatAnimation.getFrameNumber() == 3)
+				splatAnimation.callFinalFrame();
+			return splatAnimation.getFrame();
     }
 
 }
