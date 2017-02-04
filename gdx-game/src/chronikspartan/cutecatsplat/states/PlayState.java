@@ -151,6 +151,7 @@ public class PlayState extends State {
     @Override
     protected void handleInput() {
         if(Gdx.input.isTouched()) {
+			
 			// Get x movement of touch and set to touch vector
             touch.set(Gdx.input.getX(), 0, 0);
             cam.unproject(touch);
@@ -158,6 +159,8 @@ public class PlayState extends State {
 			catTexture = assets.manager.get(Assets.texture_cat);
 			// Move cat to where finger is (minus half cat width to ensure its centered)
             cat.move((int)(touch.x - catTexture.getWidth()/2));
+			
+			//cat.move2();
         }
     }
 

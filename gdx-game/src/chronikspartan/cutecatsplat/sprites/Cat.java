@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector3;
 import chronikspartan.cutecatsplat.CuteCatSplat;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.utils.*;
+import android.view.*;
 
 /**
  * Created by cube on 1/20/2017.
@@ -15,7 +16,9 @@ import com.badlogic.gdx.utils.*;
 
 public class Cat{
     private static final int RUN_SPEED = 15;
-    private static final int MOVEMENT = 100;
+    private static final int FORWARD_MOVEMENT = 100;
+	//private static final int SIDE_MOVEMENT = 50;
+	//private int sideMovement = 1;
     private Vector3 position;
     private Vector3 velocity;
     private Rectangle bounds;
@@ -24,7 +27,6 @@ public class Cat{
     private Texture catTexture, splatTexture;
 	
 	private boolean catDead = false;
-	private int splatFrame = 1;
 
     public Cat(int x, int y){
 
@@ -46,8 +48,16 @@ public class Cat{
     public void update(float dt){
 		// Run cat animation
         catAnimation.update(dt);
-		// Move cat
-        position.add(0, MOVEMENT * dt, 0);
+		
+		// Move1 cat
+        position.add(0, FORWARD_MOVEMENT * dt, 0);
+		
+		/* TOSH
+		// Move2 cat
+		position.add(sideMovement, FORWARD_MOVEMENT * dt, 0);
+		velocity.scl(1/dt);
+		*/
+		
 		// Move bounds with cat.
         bounds.setPosition(position.x + 3, position.y);
     }
@@ -55,6 +65,14 @@ public class Cat{
     public void move(int x){
         position.x = x;
     }
+	
+	/*
+	public void move2()
+	{
+		sideMovement = -sideMovement;
+		velocity.x = sideMovement;
+	}
+	*/
 	
 	public void splat(float dt){
 		// Run splat animation
