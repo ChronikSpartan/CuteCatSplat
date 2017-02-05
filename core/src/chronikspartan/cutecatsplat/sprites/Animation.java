@@ -13,6 +13,7 @@ public class Animation {
     private float currentFrameTime;
     private int frameCount;
     private int frame;
+	private boolean finalFrame = false;
 
     public Animation(TextureRegion region, int frameCount, float cycleTime){
         frames = new Array<TextureRegion>();
@@ -31,12 +32,22 @@ public class Animation {
             currentFrameTime = 0;
         }
 
-        if(frame >= frameCount)
+        if((frame >= frameCount) && !finalFrame)
             frame = 0;
+		else if(finalFrame)
+			frame = frameCount - 1;
     }
 
     public TextureRegion getFrame(){
         return frames.get(frame);
     }
+	
+	public int getFrameNumber(){
+		return frame;
+	}
+	
+	public void callFinalFrame(){
+		finalFrame = true;
+	}
 
 }

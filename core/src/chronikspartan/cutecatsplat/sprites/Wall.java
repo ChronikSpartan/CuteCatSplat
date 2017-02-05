@@ -12,7 +12,7 @@ import java.util.Random;
  */
 
 public class Wall {
-    private static final int FLUCTUATION = 90;
+    private static final int FLUCTUATION = 160;
     private static final int WALL_GAP = 20;
     private static final int LEFT_OFFSET = 5;
     public static final int WALL_WIDTH = 52;
