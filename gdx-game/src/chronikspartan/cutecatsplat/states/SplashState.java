@@ -19,7 +19,7 @@ public class SplashState extends State {
 		splashScreen = new Texture("images/Splash_Screen.png");
 
 		// Set up camera
-		cam.setToOrtho(false, 400, 600);
+		cam.setToOrtho(false, CuteCatSplat.WIDTH, CuteCatSplat.HEIGHT);
 
         
 	}
@@ -38,14 +38,13 @@ public class SplashState extends State {
     @Override
     public void render(SpriteBatch sb) {
 		sb.setProjectionMatrix(cam.combined);
-		if(assets.manager.update() && TimeUtils.millis() - startTime > 1500){
+		if(assets.manager.update() && TimeUtils.millis() - startTime > 4000){
 			stateToLoad = MENUSTATE;
 		}
 		else
 		{
 			sb.begin();
-			sb.draw(splashScreen, 200 - splashScreen.getWidth()/2, 
-				300 - splashScreen.getHeight()/2);
+			sb.draw(splashScreen, CuteCatSplat.WIDTH/2 - 200, CuteCatSplat.HEIGHT/2 - 300);
 			sb.end();
 		}
 

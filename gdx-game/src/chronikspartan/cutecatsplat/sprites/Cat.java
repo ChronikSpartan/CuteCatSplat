@@ -16,7 +16,7 @@ import android.view.*;
 
 public class Cat{
     private static final int RUN_SPEED = 15;
-    private static final int FORWARD_MOVEMENT = 100;
+    private static final int FORWARD_MOVEMENT = 300;
 	//private static final int SIDE_MOVEMENT = 50;
 	//private int sideMovement = 1;
     private Vector3 position;

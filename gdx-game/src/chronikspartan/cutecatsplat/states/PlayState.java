@@ -32,8 +32,8 @@ import chronikspartan.cutecatsplat.data.*;
 
 public class PlayState extends State {
 	// Private constants
-	private static final int START_DISTANCE = 300;
-    private static final int WALL_SPACING = 40;
+	private static final int START_DISTANCE = 1800;
+    private static final int WALL_SPACING = 450;
     private static final int WALL_COUNT = 4;
 	private static final int PLAYSTATE = 1;
 	private static final int MENUSTATE = 3;
@@ -61,14 +61,14 @@ public class PlayState extends State {
 	
     protected PlayState(GameStateManager gsm, Assets assets){
         super(gsm, assets);
-        cat = new Cat(50, 100);
+        cat = new Cat(540, 970);
         touch = new Vector3();
 
 		// Set camera size
-        cam.setToOrtho(false, CuteCatSplat.WIDTH / viewportScaling, CuteCatSplat.HEIGHT / viewportScaling);
+        cam.setToOrtho(false, 1080/*/ viewportScaling*/, 1920 /*/ viewportScaling*/);
 		
 		// Load bush texture
-		bush = new Texture("images/Bush.png");
+		bush = new Texture("images/Bush.png"); 
 
 		// Create texture regions for bushes and flip for both sides
         imgTextureBushRegionRight = new TextureRegion(bush);
@@ -91,7 +91,7 @@ public class PlayState extends State {
 
 
         // Create grass background texture region
-        texture_grass = new Texture(Gdx.files.internal("images/Block_Solid_Grass_Large.png"));
+        texture_grass = new Texture(Gdx.files.internal("images/Grass.png"));
         texture_grass.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         imgTextureGrassRegion = new TextureRegion(texture_grass);
         imgTextureGrassRegion.setRegion(0, 0, texture_grass.getWidth(),
@@ -181,7 +181,7 @@ public class PlayState extends State {
 			// Update cat and camera position
         	cat.update(dt);
 		
-        	cam.position.y = cat.getPosition().y + 80;
+        	cam.position.y = cat.getPosition().y + 600;
 
         	for(Wall wall : walls){
 				// Reposition walls if they move off screen
@@ -231,7 +231,7 @@ public class PlayState extends State {
             sb.draw(imgTextureBushRegionRight, rightBushPos2.x, rightBushPos2.y);
             sb.draw(imgTextureBushRegionLeft, leftBushPos1.x, leftBushPos1.y);
             sb.draw(imgTextureBushRegionLeft, leftBushPos2.x, leftBushPos2.y);
-		Assets.blockedFont.draw(sb, String.valueOf(points), (cam.viewportWidth / 2), cat.getPosition().y + 200);
+		Assets.blockedFont.draw(sb, String.valueOf(points), (cam.viewportWidth / 2), cat.getPosition().y + 1300);
 		sb.end();
 		
 		if(catDead){
