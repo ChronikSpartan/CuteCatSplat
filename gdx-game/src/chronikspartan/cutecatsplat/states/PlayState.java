@@ -17,6 +17,8 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
+import java.util.Random;
+
 import chronikspartan.cutecatsplat.data.Assets;
 import chronikspartan.cutecatsplat.CuteCatSplat;
 import chronikspartan.cutecatsplat.ParallaxBackground;
@@ -48,13 +50,15 @@ public class PlayState extends State {
 	private float viewportScaling = 2.5f;
     private ParallaxBackground parallax_background;
     private Vector3 touch;
-    private Texture bush, texture_grass;
+    private Texture bush, texture_grass, splatScreenTexture, catTexture, restart1, restart2, back1, back2;
     private TextureRegion imgTextureBushRegionLeft, imgTextureBushRegionRight, imgTextureGrassRegion;
     private Vector2 rightBushPos1, rightBushPos2, leftBushPos1, leftBushPos2;
 
 	private CreateButton buttonCreator = new CreateButton();
 	private Button restartButton, returnButton;
     private Stage stage;
+	
+	private Random rand;
 	
 	// Public members
     public int points = 0;
@@ -68,7 +72,28 @@ public class PlayState extends State {
         cam.setToOrtho(false, 1080/*/ viewportScaling*/, 1920 /*/ viewportScaling*/);
 		
 		// Load bush texture
-		bush = new Texture("images/Bush.png"); 
+		bush = new Texture("images/Bush.png");
+		
+		rand = new Random();
+		
+		switch(rand.nextInt(5))
+		{
+			case 0: splatScreenTexture = assets.manager.get(Assets.textureSplatScreen1);
+					break;
+			case 1: splatScreenTexture = assets.manager.get(Assets.textureSplatScreen2);
+					break;
+			case 2: splatScreenTexture = assets.manager.get(Assets.textureSplatScreen3);
+					break;
+			case 3: splatScreenTexture = assets.manager.get(Assets.textureSplatScreen4);
+					break;
+			case 4: splatScreenTexture = assets.manager.get(Assets.textureSplatScreen5);
+					break;
+			default: splatScreenTexture = assets.manager.get(Assets.textureSplatScreen1);
+					break;
+		}
+		
+		// Create splat screen
+	
 
 		// Create texture regions for bushes and flip for both sides
         imgTextureBushRegionRight = new TextureRegion(bush);
@@ -91,7 +116,7 @@ public class PlayState extends State {
 
 
         // Create grass background texture region
-        texture_grass = new Texture(Gdx.files.internal("images/Grass.png"));
+        texture_grass = new Texture(Gdx.files.internal("images/Grass-orig.png"));
         texture_grass.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         imgTextureGrassRegion = new TextureRegion(texture_grass);
         imgTextureGrassRegion.setRegion(0, 0, texture_grass.getWidth(),
@@ -102,9 +127,13 @@ public class PlayState extends State {
                 new ParallaxLayer(imgTextureGrassRegion, new Vector2(0, 20), new Vector2(0, 0)),
         }, Assets.width, Assets.height, new Vector2(0, 40));
 		
+		restart1 = assets.manager.get(Assets.restart1);
+		restart2 = assets.manager.get(Assets.restart2);
+		back1 = assets.manager.get(Assets.back1);
+		back2 = assets.manager.get(Assets.back2);
+		
 		// Create restart button style and add listener
-	    restartButton = buttonCreator.NewButton(new Texture("images/Buttons_and_Logo/Play_1.png"), 
-											 new Texture("images/Buttons_and_Logo/Play_2.png"));
+	    restartButton = buttonCreator.NewButton(restart1, restart2);
       	restartButton.addListener(new InputListener(){
 				public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
 					return true;
@@ -116,8 +145,7 @@ public class PlayState extends State {
 			});
 			
 		// Create play button style and add listener
-	    returnButton = buttonCreator.NewButton(new Texture("images/Buttons_and_Logo/Back_1.png"), 
-											 new Texture("images/Buttons_and_Logo/Back_2.png"));
+	    returnButton = buttonCreator.NewButton(back1, back2);
       	returnButton.addListener(new InputListener(){
 				public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
 					return true;
@@ -135,11 +163,11 @@ public class PlayState extends State {
         menuTable.row();
         menuTable.add().height(restartButton.getHeight());
         menuTable.row();
-        menuTable.add(restartButton);
+        menuTable.add(restartButton).height(restartButton.getHeight()/2).width(restartButton.getWidth()/2);
         menuTable.row();
         menuTable.add().height(restartButton.getHeight()/2);
         menuTable.row();
-        menuTable.add(returnButton);
+        menuTable.add(returnButton).height(returnButton.getHeight()/2).width(returnButton.getWidth()/2);
         menuTable.setFillParent(true);
 
 		// Create stage and set for input processor
@@ -155,8 +183,7 @@ public class PlayState extends State {
 			// Get x movement of touch and set to touch vector
             touch.set(Gdx.input.getX(), 0, 0);
             cam.unproject(touch);
-			Texture catTexture;
-			catTexture = assets.manager.get(Assets.texture_cat);
+			catTexture = assets.manager.get(Assets.textureCat);
 			// Move cat to where finger is (minus half cat width to ensure its centered)
             cat.move((int)(touch.x - catTexture.getWidth()/2));
 			
@@ -200,8 +227,8 @@ public class PlayState extends State {
         	}
 
 			// End game if cat hits bushes
-        	if(cat.getPosition().x <= bush.getWidth() - 10 ||
-                	cat.getPosition().x >= (cam.viewportWidth - bush.getWidth() - 5)){
+        	if(cat.getPosition().x <= bush.getWidth() - 50 ||
+                	cat.getPosition().x >= (cam.viewportWidth - bush.getWidth() - 25)){
             	catDead = true;
 				setScores();
 			}
@@ -220,7 +247,7 @@ public class PlayState extends State {
     @Override
     public void render(SpriteBatch sb) {
 		// Draw everything to sprite batch
-	  	sb.begin();
+		sb.begin();
 			sb.setProjectionMatrix(cam.combined);
             sb.draw(cat.getTexture(), cat.getPosition().x, cat.getPosition().y);
             for(Wall wall : walls) {
@@ -231,13 +258,16 @@ public class PlayState extends State {
             sb.draw(imgTextureBushRegionRight, rightBushPos2.x, rightBushPos2.y);
             sb.draw(imgTextureBushRegionLeft, leftBushPos1.x, leftBushPos1.y);
             sb.draw(imgTextureBushRegionLeft, leftBushPos2.x, leftBushPos2.y);
-		Assets.blockedFont.draw(sb, String.valueOf(points), (cam.viewportWidth / 2), cat.getPosition().y + 1300);
-		sb.end();
-		
+			
+			Assets.blockedFont.draw(sb, String.valueOf(points), (cam.viewportWidth / 2), cat.getPosition().y + 1300);
 		if(catDead){
+			sb.draw(splatScreenTexture, cat.getPosition().x - 500, cat.getPosition().y - 500);
+			sb.end();
 			stage.act();
-        	stage.draw();
+			stage.draw();
 		}
+		else
+			sb.end();
     }
 
     @Override
@@ -246,7 +276,7 @@ public class PlayState extends State {
         for (Wall wall : walls)
             wall.dispose();
         bush.dispose();
-		texture_grass.dispose();
+		assets.dispose();
     }
 
     private void updateBush(){

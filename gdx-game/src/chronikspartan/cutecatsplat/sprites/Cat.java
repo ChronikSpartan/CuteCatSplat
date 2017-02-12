@@ -16,13 +16,15 @@ import android.view.*;
 
 public class Cat{
     private static final int RUN_SPEED = 15;
-    private static final int FORWARD_MOVEMENT = 300;
-	//private static final int SIDE_MOVEMENT = 50;
+    private static final int FORWARD_MOVEMENT = 600;
+	private static final int NUMBER_OF_CAT_SPRITE_IMAGES = 3;
+	private static final int NUMBER_OF_SPLAT_FRAMES = 3;
 	//private int sideMovement = 1;
     private Vector3 position;
     private Vector3 velocity;
     private Rectangle bounds;
     private Animation catAnimation, splatAnimation;
+	private Integer splatFrameCount = 0;
 
     private Texture catTexture, splatTexture;
 	
@@ -35,14 +37,14 @@ public class Cat{
 
         velocity = new Vector3(0, 0, 0);
 		
-        catTexture = new Texture("images/Cat_Sprite_Map.png");
-		splatTexture = new Texture("images/Splat_Sprite_Map.png");
+        catTexture = new Texture("images/Cat_Sprite_Map.jpg");
+		splatTexture = new Texture("images/Splat_Sprite_Map.jpg");
 		
-        catAnimation = new Animation(new TextureRegion(catTexture), 2, 0.35f);
-		splatAnimation = new Animation(new TextureRegion(splatTexture), 4, 0.2f);
+        catAnimation = new Animation(new TextureRegion(catTexture), NUMBER_OF_CAT_SPRITE_IMAGES, 0.4f);
+		splatAnimation = new Animation(new TextureRegion(splatTexture), NUMBER_OF_SPLAT_FRAMES, 0.2f);
 	
 		// Set cat bounds
-        bounds = new Rectangle(x + 3, y, (catTexture.getWidth() / 2)- 6, catTexture.getHeight());
+        bounds = new Rectangle(x + 3, y, (catTexture.getWidth() / NUMBER_OF_CAT_SPRITE_IMAGES)- 6, catTexture.getHeight());
     }
 
     public void update(float dt){
@@ -77,6 +79,11 @@ public class Cat{
 	public void splat(float dt){
 		// Run splat animation
         splatAnimation.update(dt);
+		if(splatFrameCount < NUMBER_OF_SPLAT_FRAMES)
+		{
+			position.y = position.y + 20;
+			splatFrameCount++;
+		}
 		catDead = true;
 	}
 
@@ -96,7 +103,7 @@ public class Cat{
 		if(!catDead)
         	return catAnimation.getFrame();
 		else
-			if(splatAnimation.getFrameNumber() == 3)
+			if(splatAnimation.getFrameNumber() == NUMBER_OF_SPLAT_FRAMES - 1)
 				splatAnimation.callFinalFrame();
 			return splatAnimation.getFrame();
     }

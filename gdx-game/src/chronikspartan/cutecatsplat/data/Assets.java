@@ -15,15 +15,45 @@ public class Assets {
 	public static BitmapFont blockedFont = new BitmapFont(Gdx.files.internal("images/Font/cutecatfont.fnt"), 
 		Gdx.files.internal("images/Font/cutecatfont.png"), false);
 
-	public static AssetDescriptor texture_cat = new AssetDescriptor<Texture>("images/Cat_Run_1.png", Texture.class);
-
+	public static AssetDescriptor textureCat = new AssetDescriptor<Texture>("images/Cat_Run_1.png", Texture.class);
+	public static AssetDescriptor textureSplatScreen1 = new AssetDescriptor<Texture>("images/Splat_Screen_1.jpg", Texture.class);
+	public static AssetDescriptor textureSplatScreen2 = new AssetDescriptor<Texture>("images/Splat_Screen_2.jpg", Texture.class);
+	public static AssetDescriptor textureSplatScreen3 = new AssetDescriptor<Texture>("images/Splat_Screen_3.jpg", Texture.class);
+	public static AssetDescriptor textureSplatScreen4 = new AssetDescriptor<Texture>("images/Splat_Screen_4.jpg", Texture.class);
+	public static AssetDescriptor textureSplatScreen5 = new AssetDescriptor<Texture>("images/Splat_Screen_5.jpg", Texture.class);
+	public static AssetDescriptor play1 = new AssetDescriptor<Texture>("images/Buttons_and_Screens/Play_1.png", Texture.class);
+	public static AssetDescriptor play2 = new AssetDescriptor<Texture>("images/Buttons_and_Screens/Play_2.png", Texture.class);
+	public static AssetDescriptor rankings1 = new AssetDescriptor<Texture>("images/Buttons_and_Screens/Rankings_1.png", Texture.class);
+	public static AssetDescriptor rankings2 = new AssetDescriptor<Texture>("images/Buttons_and_Screens/Rankings_2.png", Texture.class);
+	public static AssetDescriptor back1 = new AssetDescriptor<Texture>("images/Buttons_and_Screens/Back_1.png", Texture.class);
+	public static AssetDescriptor back2 = new AssetDescriptor<Texture>("images/Buttons_and_Screens/Back_2.png", Texture.class);
+	public static AssetDescriptor restart1 = new AssetDescriptor<Texture>("images/Buttons_and_Screens/Restart_1.png", Texture.class);
+	public static AssetDescriptor restart2 = new AssetDescriptor<Texture>("images/Buttons_and_Screens/Restart_2.png", Texture.class);
+	public static AssetDescriptor menuScreen = new AssetDescriptor<Texture>("images/Buttons_and_Screens/Menu_Screen.png", Texture.class);
+	public static AssetDescriptor rankingsScreen = new AssetDescriptor<Texture>("images/Buttons_and_Screens/Rankings_Screen.png", Texture.class);
+	
     public static int width = Gdx.graphics.getWidth();
     public static int height = Gdx.graphics.getHeight();
 	
     public static void load(){
 		//manager.load(prefs);
 		//manager.load(blockedFont);
-		manager.load(texture_cat);
+		manager.load(textureCat);
+		manager.load(play1);
+		manager.load(play2);
+		manager.load(rankings1);
+		manager.load(rankings2);
+		manager.load(back1);
+		manager.load(back2);
+		manager.load(restart1);
+		manager.load(restart2);
+		manager.load(menuScreen);
+		manager.load(rankingsScreen);
+		manager.load(textureSplatScreen1);
+		manager.load(textureSplatScreen2);
+		manager.load(textureSplatScreen3);
+		manager.load(textureSplatScreen4);
+		manager.load(textureSplatScreen5);
 		
 		// Provide default high scores of 0
 		if (!prefs.contains("highScore1"))

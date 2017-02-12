@@ -33,9 +33,7 @@ import com.badlogic.gdx.utils.*;
 public class RankingsState extends State {
 	private static final int MENUSTATE = 3;
 	
-    private Texture background;
-	private TextureRegion imgTextureBackgroundRegion;
-	private Image rankingsImage;
+    private Texture background, back1, back2;
 	private CreateButton buttonCreator = new CreateButton();
     private Button backButton;
     private Stage stage;
@@ -45,21 +43,15 @@ public class RankingsState extends State {
     public RankingsState(GameStateManager gsm, Assets assets){
         super(gsm, assets);
 		// Set up camera
-		cam.setToOrtho(false, CuteCatSplat.WIDTH/4, CuteCatSplat.HEIGHT/4);
+		cam.setToOrtho(false, 1080, 1920);
 
-        background = new Texture("images/Block_Solid_Grass.png");
+        background = assets.manager.get(Assets.rankingsScreen);
 
-        // Create grass background texture region
-        background.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
-        imgTextureBackgroundRegion = new TextureRegion(background);
-        imgTextureBackgroundRegion.setRegion(0, 0, background.getWidth()*20,
-											 background.getHeight()*20);
-
-		rankingsImage = new Image(new Texture("images/Buttons_and_Logo/Rankings_1.png"));
-
+		back1 = assets.manager.get(Assets.back1);
+		back2 = assets.manager.get(Assets.back2);
+		
 		// Create Back button and add listener
-        backButton = buttonCreator.NewButton(new Texture("images/Buttons_and_Logo/Back_1.png"),
-			new Texture("images/Buttons_and_Logo/Back_2.png"));
+        backButton = buttonCreator.NewButton(back1, back2);
       	backButton.addListener(new InputListener(){
 				public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
 					return true;
@@ -80,23 +72,21 @@ public class RankingsState extends State {
 	
 		// Create table to hold actors for stage
         Table menuTable = new Table();
-		menuTable.add(rankingsImage);
-		menuTable.row();
 		menuTable.add().height(backButton.getHeight());
 		menuTable.row();
 		menuTable.add(highScore1);
         menuTable.row();
-        menuTable.add().height(backButton.getHeight());
+        menuTable.add().height(backButton.getHeight()/2);
 		menuTable.row();
 		menuTable.add(highScore2);
         menuTable.row();
-        menuTable.add().height(backButton.getHeight());
+        menuTable.add().height(backButton.getHeight()/2);
 		menuTable.row();
 		menuTable.add(highScore3);
         menuTable.row();
-        menuTable.add().height(backButton.getHeight());
+        menuTable.add().height(backButton.getHeight()/2);
         menuTable.row();
-        menuTable.add(backButton);
+        menuTable.add(backButton).height(backButton.getHeight()/2).width(backButton.getWidth()/2);
         menuTable.setFillParent(true);
 
 		// Create stage and set for input processor
@@ -121,7 +111,7 @@ public class RankingsState extends State {
 		// Set camera for displaying at correct zoom
 		sb.setProjectionMatrix(cam.combined);
         sb.begin();
-        sb.draw(imgTextureBackgroundRegion, 0, 0);
+        sb.draw(background, 0, 0);
         sb.end();
 		stage.act();
         stage.draw();
@@ -130,6 +120,6 @@ public class RankingsState extends State {
 
     @Override
     public void dispose(){
-        background.dispose();
+		assets.dispose();
     }
 }

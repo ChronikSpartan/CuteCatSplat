@@ -30,8 +30,7 @@ public class MenuState extends State {
 	private static final int PLAYSTATE = 1;
 	private static final int RANKINGSSTATE = 2;
 	
-    private Texture background, logo, splashScreen;
-	private TextureRegion imgTextureBackgroundRegion;
+    private Texture background, splashScreen, play1, play2, rankings1, rankings2;
 	private Image logoImage;
     private Button playButton, rankingsButton;
     private Stage stage;
@@ -44,22 +43,16 @@ public class MenuState extends State {
 		splashScreen = new Texture("images/Splash_Screen.png");
 		
 		// Set up camera
-		cam.setToOrtho(false, CuteCatSplat.WIDTH/4, CuteCatSplat.HEIGHT/4);
+		cam.setToOrtho(false, 1080, 1920);
 		
-        background = new Texture("images/Block_Solid_Grass.png");
-
-        // Create grass background texture region
-        background.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
-        imgTextureBackgroundRegion = new TextureRegion(background);
-        imgTextureBackgroundRegion.setRegion(0, 0, background.getWidth()*20,
-										background.getHeight()*20);
+		background = assets.manager.get(Assets.menuScreen);
+		play1 = assets.manager.get(Assets.play1);
+		play2 = assets.manager.get(Assets.play2);
+		rankings1 = assets.manager.get(Assets.rankings1);
+		rankings2 = assets.manager.get(Assets.rankings2);
 		
-        logo = new Texture("images/Buttons_and_Logo/Cute_Cat_Logo.png");
-		logoImage = new Image(logo);
-
 		// Create play button style and add listener
-	    playButton = buttonCreator.NewButton(new Texture("images/Buttons_and_Logo/Play_1.png"), 
-			new Texture("images/Buttons_and_Logo/Play_2.png"));
+	    playButton = buttonCreator.NewButton(play1, play2);
       	playButton.addListener(new InputListener(){
 				public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
 				return true;
@@ -72,8 +65,7 @@ public class MenuState extends State {
 			
 
 		// Same for rankings button
-        rankingsButton = buttonCreator.NewButton(new Texture("images/Buttons_and_Logo/Rankings_1.png"), 
-			new Texture("images/Buttons_and_Logo/Rankings_2.png"));
+        rankingsButton = buttonCreator.NewButton(rankings1, rankings2);
 		rankingsButton.addListener(new InputListener(){
 				public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
 					return true;
@@ -86,16 +78,13 @@ public class MenuState extends State {
 
 		// Create table to hold actors for stage
         Table menuTable = new Table();
-		menuTable.add(logoImage);
+        menuTable.add().height(playButton.getHeight()*1.5f);
         menuTable.row();
-        menuTable.row();
-        menuTable.add().height(playButton.getHeight());
-        menuTable.row();
-        menuTable.add(playButton);
+        menuTable.add(playButton).height(playButton.getHeight()/2).width(playButton.getWidth()/2);
         menuTable.row();
         menuTable.add().height(playButton.getHeight()/2);
         menuTable.row();
-        menuTable.add(rankingsButton);
+        menuTable.add(rankingsButton).height(playButton.getHeight()/2).width(playButton.getWidth()/2);
         menuTable.setFillParent(true);
 
 		// Create stage and set for input processor
@@ -124,7 +113,7 @@ public class MenuState extends State {
 		// Set camera for displaying at correct zoom
 		sb.setProjectionMatrix(cam.combined);
         sb.begin();
-        sb.draw(imgTextureBackgroundRegion, 0, 0);
+        sb.draw(background, 0, 0);
         sb.end();
 		stage.act();
         stage.draw();
@@ -132,6 +121,6 @@ public class MenuState extends State {
 	
     @Override
     public void dispose(){
-        background.dispose();
+        assets.dispose();
     }
 }
