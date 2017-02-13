@@ -9,6 +9,9 @@ import com.badlogic.gdx.*;
 
 public class SplashState extends State {
 	private static final int MENUSTATE = 3;
+	private static final int WIDTH = 480;
+	private static final int HEIGHT = 800;
+	
 	private long startTime = TimeUtils.millis();
 	
 	private Texture splashScreen;
@@ -19,7 +22,7 @@ public class SplashState extends State {
 		splashScreen = new Texture("images/Splash_Screen.png");
 
 		// Set up camera
-		cam.setToOrtho(false, CuteCatSplat.WIDTH, CuteCatSplat.HEIGHT);
+		cam.setToOrtho(false, WIDTH, HEIGHT);
 
         
 	}
@@ -44,7 +47,7 @@ public class SplashState extends State {
 		else
 		{
 			sb.begin();
-			sb.draw(splashScreen, CuteCatSplat.WIDTH/2 - 200, CuteCatSplat.HEIGHT/2 - 300);
+			sb.draw(splashScreen, WIDTH/2 - 200, HEIGHT/2 - 300);
 			sb.end();
 		}
 

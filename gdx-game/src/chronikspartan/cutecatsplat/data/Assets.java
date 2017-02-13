@@ -12,9 +12,7 @@ public class Assets {
 	public static AssetManager manager = new AssetManager();
 	
 	public static Preferences prefs = Gdx.app.getPreferences("CuteCatSplat");
-	public static BitmapFont blockedFont = new BitmapFont(Gdx.files.internal("images/Font/cutecatfont.fnt"), 
-		Gdx.files.internal("images/Font/cutecatfont.png"), false);
-
+	
 	public static AssetDescriptor textureCat = new AssetDescriptor<Texture>("images/Cat_Run_1.png", Texture.class);
 	public static AssetDescriptor textureSplatScreen1 = new AssetDescriptor<Texture>("images/Splat_Screen_1.jpg", Texture.class);
 	public static AssetDescriptor textureSplatScreen2 = new AssetDescriptor<Texture>("images/Splat_Screen_2.jpg", Texture.class);
@@ -32,12 +30,15 @@ public class Assets {
 	public static AssetDescriptor menuScreen = new AssetDescriptor<Texture>("images/Buttons_and_Screens/Menu_Screen.png", Texture.class);
 	public static AssetDescriptor rankingsScreen = new AssetDescriptor<Texture>("images/Buttons_and_Screens/Rankings_Screen.png", Texture.class);
 	
+	public static BitmapFont blockedFont;
+	
     public static int width = Gdx.graphics.getWidth();
     public static int height = Gdx.graphics.getHeight();
 	
     public static void load(){
-		//manager.load(prefs);
-		//manager.load(blockedFont);
+		blockedFont = new BitmapFont(Gdx.files.internal("images/Font/cutecatfont.fnt"), 
+			Gdx.files.internal("images/Font/cutecatfont.png"), false);
+	
 		manager.load(textureCat);
 		manager.load(play1);
 		manager.load(play2);
@@ -65,6 +66,11 @@ public class Assets {
 	 
 		blockedFont.setUseIntegerPositions(false);
     }
+	
+	public static void clear(){
+		manager.clear();
+		blockedFont.dispose();
+	}
 	
 	// Receives an integer and maps it to the String highScore1 in prefs
 	public static void setHighScore1(int val) {
@@ -102,5 +108,6 @@ public class Assets {
 	public void dispose()
 	{
 		manager.dispose();
+		blockedFont.dispose();
 	}
 }

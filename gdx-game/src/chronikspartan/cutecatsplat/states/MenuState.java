@@ -3,6 +3,9 @@ package chronikspartan.cutecatsplat.states;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -43,7 +46,7 @@ public class MenuState extends State {
 		splashScreen = new Texture("images/Splash_Screen.png");
 		
 		// Set up camera
-		cam.setToOrtho(false, 1080, 1920);
+		cam.setToOrtho(false, CuteCatSplat.WIDTH, CuteCatSplat.HEIGHT);
 		
 		background = assets.manager.get(Assets.menuScreen);
 		play1 = assets.manager.get(Assets.play1);
@@ -75,7 +78,20 @@ public class MenuState extends State {
 					stateToLoad = RANKINGSSTATE;
 				}
 			});
+			
+		InputProcessor backProcessor = new InputAdapter() {
+            @Override
+            public boolean keyDown(int keycode) {
 
+                if ((keycode == Keys.ESCAPE) || (keycode == Keys.BACK) )
+				{
+					Assets.clear();
+					Gdx.app.exit();
+				}
+                return false;
+            }
+        };
+		
 		// Create table to hold actors for stage
         Table menuTable = new Table();
         menuTable.add().height(playButton.getHeight()*1.5f);
@@ -88,9 +104,12 @@ public class MenuState extends State {
         menuTable.setFillParent(true);
 
 		// Create stage and set for input processor
-        stage = new Stage(new StretchViewport(CuteCatSplat.WIDTH, CuteCatSplat.HEIGHT));
-        Gdx.input.setInputProcessor(stage);
+        stage = new Stage(new StretchViewport(CuteCatSplat.WIDTH/2.5f, CuteCatSplat.HEIGHT/2.5f));
 		stage.addActor(menuTable);
+		
+		InputMultiplexer multiplexer = new InputMultiplexer(stage, backProcessor);
+        Gdx.input.setInputProcessor(multiplexer);
+		Gdx.input.setCatchBackKey(true);
 	}
 	
     @Override

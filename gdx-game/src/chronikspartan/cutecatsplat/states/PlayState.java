@@ -1,6 +1,11 @@
 package chronikspartan.cutecatsplat.states;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -34,7 +39,8 @@ import chronikspartan.cutecatsplat.data.*;
 
 public class PlayState extends State {
 	// Private constants
-	private static final int START_DISTANCE = 1800;
+	private static final int START_DISTANCE = 1500;
+	private static final int CAT_LOCATION = 400;
     private static final int WALL_SPACING = 450;
     private static final int WALL_COUNT = 4;
 	private static final int PLAYSTATE = 1;
@@ -43,6 +49,7 @@ public class PlayState extends State {
 	// Private members
     private Cat cat;
 	private boolean catDead = false;
+	private boolean gameStarted = false;
 	private Array<Wall> walls;
 	
 	private int stateToLoad = 0;
@@ -69,7 +76,7 @@ public class PlayState extends State {
         touch = new Vector3();
 
 		// Set camera size
-        cam.setToOrtho(false, 1080/*/ viewportScaling*/, 1920 /*/ viewportScaling*/);
+        cam.setToOrtho(false, CuteCatSplat.WIDTH, CuteCatSplat.HEIGHT);
 		
 		// Load bush texture
 		bush = new Texture("images/Bush.png");
@@ -107,13 +114,6 @@ public class PlayState extends State {
                 cam.position.y - cam.viewportHeight / 2 + bush.getHeight());
         leftBushPos1 = new Vector2(0, cam.position.y - cam.viewportHeight / 2);
         leftBushPos2 = new Vector2(0, cam.position.y - cam.viewportHeight / 2 + bush.getHeight());
-
-		// Create and load array to hold the walls
-        walls = new Array<Wall>();
-		walls.add(new Wall(START_DISTANCE));
-        for(int i = 1; i < WALL_COUNT; i++)
-            walls.add(new Wall(i*(WALL_SPACING + Wall.WALL_WIDTH)+START_DISTANCE));
-
 
         // Create grass background texture region
         texture_grass = new Texture(Gdx.files.internal("images/Grass-orig.png"));
@@ -156,6 +156,16 @@ public class PlayState extends State {
 				}
 			});
 			
+		InputProcessor backProcessor = new InputAdapter() {
+            @Override
+            public boolean keyDown(int keycode) {
+
+                if ((keycode == Keys.ESCAPE) || (keycode == Keys.BACK) )
+					stateToLoad = MENUSTATE;
+                return false;
+            }
+        };
+			
 		// Create table to hold actors for stage
         Table menuTable = new Table();
 		menuTable.add().height(restartButton.getHeight());
@@ -171,15 +181,28 @@ public class PlayState extends State {
         menuTable.setFillParent(true);
 
 		// Create stage and set for input processor
-        stage = new Stage(new StretchViewport(CuteCatSplat.WIDTH, CuteCatSplat.HEIGHT));
-        Gdx.input.setInputProcessor(stage);
+        stage = new Stage(new StretchViewport(CuteCatSplat.WIDTH/2.5f, CuteCatSplat.HEIGHT/2.5f));
 		stage.addActor(menuTable);
+		
+		InputMultiplexer multiplexer = new InputMultiplexer(stage, backProcessor);
+        Gdx.input.setInputProcessor(multiplexer);
+		Gdx.input.setCatchBackKey(true);
     }
 
     @Override
     protected void handleInput() {
         if(Gdx.input.isTouched()) {
-			
+			// Start game if paused
+			if(gameStarted == false)
+			{
+				// Create and load array to hold the walls
+				walls = new Array<Wall>();
+				walls.add(new Wall(START_DISTANCE + cat.getPosition().y));
+				for(int i = 1; i < WALL_COUNT; i++)
+					walls.add(new Wall(i*(WALL_SPACING + Wall.WALL_WIDTH) + cat.getPosition().y + START_DISTANCE));
+				
+				gameStarted = true;
+			}
 			// Get x movement of touch and set to touch vector
             touch.set(Gdx.input.getX(), 0, 0);
             cam.unproject(touch);
@@ -200,47 +223,52 @@ public class PlayState extends State {
 		// Load MenuState if button selected
 		if(stateToLoad == MENUSTATE)
 			gsm.set(new MenuState(gsm, assets));
-			
-		if(!catDead){
-			handleInput();
-        	updateBush();
-		
-			// Update cat and camera position
-        	cat.update(dt);
-		
-        	cam.position.y = cat.getPosition().y + 600;
 
-        	for(Wall wall : walls){
-				// Reposition walls if they move off screen
-            	if(cam.position.y - (cam.viewportHeight / 2) > wall.getPosLeftWall().y + wall.getLeftWall().getRegionHeight())
-                	wall.reposition(wall.getPosLeftWall().y + ((Wall.WALL_WIDTH + WALL_SPACING) * WALL_COUNT));
-
-				// End game of collision occurs
-            	if(wall.collides(cat.getBounds())){
-					catDead = true;
-                	setScores();
-				}
-
-				// Add points if fence passed
-            	if(wall.pointGained(cat.getBounds()))
-                	points ++;
-        	}
-
-			// End game if cat hits bushes
-        	if(cat.getPosition().x <= bush.getWidth() - 50 ||
-                	cat.getPosition().x >= (cam.viewportWidth - bush.getWidth() - 25)){
-            	catDead = true;
-				setScores();
-			}
-
-        	cam.update();
-		
-        	// Render parallax background
-        	parallax_background.render(dt);
-		}
-		else{
+		if (catDead)
+		{
 			cat.splat(dt);
 			parallax_background.render(0f);
+		}
+		else 
+		{
+			updateBush();
+			
+			// Update cat and camera position
+			cat.update(dt);
+			cam.position.y = cat.getPosition().y + CAT_LOCATION;
+
+			cam.update();
+
+			// Render parallax background
+			parallax_background.render(dt);
+			
+			handleInput();
+		
+			if(gameStarted)
+			{
+        		for(Wall wall : walls){
+					// Reposition walls if they move off screen
+            		if(cam.position.y - (cam.viewportHeight / 2) > wall.getPosLeftWall().y + wall.getLeftWall().getRegionHeight())
+                		wall.reposition(wall.getPosLeftWall().y + ((Wall.WALL_WIDTH + WALL_SPACING) * WALL_COUNT));
+
+					// End game of collision occurs
+            		if(wall.collides(cat.getBounds())){
+						catDead = true;
+                		setScores();
+					}
+
+					// Add points if fence passed
+            		if(wall.pointGained(cat.getBounds()))
+                		points ++;
+        		}
+
+				// End game if cat hits bushes
+        		if(cat.getPosition().x <= bush.getWidth() - 50 ||
+                		cat.getPosition().x >= (cam.viewportWidth - bush.getWidth() - 25)){
+            		catDead = true;
+					setScores();
+				}
+			}
 		}
     }
 
@@ -250,16 +278,25 @@ public class PlayState extends State {
 		sb.begin();
 			sb.setProjectionMatrix(cam.combined);
             sb.draw(cat.getTexture(), cat.getPosition().x, cat.getPosition().y);
-            for(Wall wall : walls) {
+            if(gameStarted)
+			{
+				for(Wall wall : walls) {
                 sb.draw(wall.getLeftWall(), wall.getPosLeftWall().x, wall.getPosLeftWall().y);
                 sb.draw(wall.getRightWall(), wall.getPosRightWall().x, wall.getPosRightWall().y);
-            }
+            	}
+			}
             sb.draw(imgTextureBushRegionRight, rightBushPos1.x, rightBushPos1.y);
             sb.draw(imgTextureBushRegionRight, rightBushPos2.x, rightBushPos2.y);
             sb.draw(imgTextureBushRegionLeft, leftBushPos1.x, leftBushPos1.y);
             sb.draw(imgTextureBushRegionLeft, leftBushPos2.x, leftBushPos2.y);
 			
-			Assets.blockedFont.draw(sb, String.valueOf(points), (cam.viewportWidth / 2), cat.getPosition().y + 1300);
+			Assets.blockedFont.draw(sb, String.valueOf(points), (cam.viewportWidth / 2), cat.getPosition().y + 1000);
+		
+		if(!gameStarted)
+		{
+			
+		}
+		
 		if(catDead){
 			sb.draw(splatScreenTexture, cat.getPosition().x - 500, cat.getPosition().y - 500);
 			sb.end();

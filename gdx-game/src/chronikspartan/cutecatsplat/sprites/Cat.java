@@ -79,11 +79,14 @@ public class Cat{
 	public void splat(float dt){
 		// Run splat animation
         splatAnimation.update(dt);
-		if(splatFrameCount < NUMBER_OF_SPLAT_FRAMES)
+		
+		// Move cat a few frames ahead
+		if(splatFrameCount < 1 )
 		{
 			position.y = position.y + 20;
 			splatFrameCount++;
 		}
+		
 		catDead = true;
 	}
 
