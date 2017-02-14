@@ -290,7 +290,7 @@ public class PlayState extends State {
             sb.draw(imgTextureBushRegionLeft, leftBushPos1.x, leftBushPos1.y);
             sb.draw(imgTextureBushRegionLeft, leftBushPos2.x, leftBushPos2.y);
 			
-			Assets.blockedFont.draw(sb, String.valueOf(points), (cam.viewportWidth / 2), cat.getPosition().y + 1000);
+			assets.font.draw(sb, String.valueOf(points), (cam.viewportWidth / 2), cat.getPosition().y + 1000);
 		
 		if(!gameStarted)
 		{

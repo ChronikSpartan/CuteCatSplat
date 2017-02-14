@@ -77,11 +77,11 @@ public class RankingsState extends State {
 			
 		//Assets.blockedFont.draw(sb, String.valueOf(points), (cam.viewportWidth / 2), cat.getPosition().y + 200);
 		Label highScore1 = new Label("1st Place: " + String.valueOf(Assets.getHighScore1()), 
-			new Label.LabelStyle(Assets.blockedFont, Color.RED));
+			new Label.LabelStyle(Assets.font, Color.RED));
 		Label highScore2 = new Label("2nd Place: " + String.valueOf(Assets.getHighScore2()), 
-									 new Label.LabelStyle(Assets.blockedFont, Color.RED));
+									 new Label.LabelStyle(Assets.font, Color.RED));
 		Label highScore3 = new Label("3rd Place: " + String.valueOf(Assets.getHighScore3()), 
-									 new Label.LabelStyle(Assets.blockedFont, Color.RED));
+									 new Label.LabelStyle(Assets.font, Color.RED));
 	
 		// Create table to hold actors for stage
         Table menuTable = new Table();

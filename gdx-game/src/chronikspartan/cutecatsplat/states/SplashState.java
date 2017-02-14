@@ -19,8 +19,10 @@ public class SplashState extends State {
 
     public SplashState(GameStateManager gsm, Assets assets){
         super(gsm, assets);
+		try{
 		splashScreen = new Texture("images/Splash_Screen.png");
-
+		}
+		catch(Exception e){e=e;}
 		// Set up camera
 		cam.setToOrtho(false, WIDTH, HEIGHT);
 

@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.assets.*;
 
 public class Assets {
@@ -30,15 +31,16 @@ public class Assets {
 	public static AssetDescriptor menuScreen = new AssetDescriptor<Texture>("images/Buttons_and_Screens/Menu_Screen.png", Texture.class);
 	public static AssetDescriptor rankingsScreen = new AssetDescriptor<Texture>("images/Buttons_and_Screens/Rankings_Screen.png", Texture.class);
 	
-	public static BitmapFont blockedFont;
+//	public static FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("images/Font/blocked.ttf"));
+//	public static FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+	public static BitmapFont font;
 	
     public static int width = Gdx.graphics.getWidth();
     public static int height = Gdx.graphics.getHeight();
 	
     public static void load(){
-		blockedFont = new BitmapFont(Gdx.files.internal("images/Font/cutecatfont.fnt"), 
-			Gdx.files.internal("images/Font/cutecatfont.png"), false);
-	
+	//	parameter.size = 18;
+	//	font = generator.generateFont(parameter);
 		manager.load(textureCat);
 		manager.load(play1);
 		manager.load(play2);
@@ -64,12 +66,12 @@ public class Assets {
 		if (!prefs.contains("highScore3")) 
 			prefs.putInteger("highScore3", 0);
 	 
-		blockedFont.setUseIntegerPositions(false);
+		//font.setUseIntegerPositions(false);
     }
 	
 	public static void clear(){
 		manager.clear();
-		blockedFont.dispose();
+		font.dispose();
 	}
 	
 	// Receives an integer and maps it to the String highScore1 in prefs
@@ -108,6 +110,6 @@ public class Assets {
 	public void dispose()
 	{
 		manager.dispose();
-		blockedFont.dispose();
+		font.dispose();
 	}
 }
