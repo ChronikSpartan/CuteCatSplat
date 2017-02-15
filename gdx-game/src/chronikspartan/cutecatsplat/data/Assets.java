@@ -31,16 +31,17 @@ public class Assets {
 	public static AssetDescriptor menuScreen = new AssetDescriptor<Texture>("images/Buttons_and_Screens/Menu_Screen.png", Texture.class);
 	public static AssetDescriptor rankingsScreen = new AssetDescriptor<Texture>("images/Buttons_and_Screens/Rankings_Screen.png", Texture.class);
 	
-//	public static FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("images/Font/blocked.ttf"));
-//	public static FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+	public FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("images/Font/blocked.ttf"));
+	public FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
 	public static BitmapFont font;
 	
     public static int width = Gdx.graphics.getWidth();
     public static int height = Gdx.graphics.getHeight();
 	
-    public static void load(){
-	//	parameter.size = 18;
-	//	font = generator.generateFont(parameter);
+    public void load(){
+		parameter.size = 80;
+		font = generator.generateFont(parameter);
+	
 		manager.load(textureCat);
 		manager.load(play1);
 		manager.load(play2);
