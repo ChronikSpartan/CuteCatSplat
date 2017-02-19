@@ -10,6 +10,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -24,11 +25,15 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import java.util.Random;
 
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+
 import chronikspartan.cutecatsplat.data.Assets;
 import chronikspartan.cutecatsplat.CuteCatSplat;
 import chronikspartan.cutecatsplat.ParallaxBackground;
 import chronikspartan.cutecatsplat.ParallaxLayer;
 import chronikspartan.cutecatsplat.CreateButton;
+import chronikspartan.cutecatsplat.MyGestureDetector;
 import chronikspartan.cutecatsplat.sprites.Cat;
 import chronikspartan.cutecatsplat.sprites.Wall;
 import chronikspartan.cutecatsplat.data.*;
@@ -57,29 +62,40 @@ public class PlayState extends State {
 	private float viewportScaling = 2.5f;
     private ParallaxBackground parallax_background;
     private Vector3 touch;
-    private Texture bush, texture_grass, splatScreenTexture, catTexture, restart1, restart2, back1, back2;
+    private Texture bush, texture_grass, swipe, splatScreenTexture, catSpriteMap, restart1, restart2, back1, back2;
     private TextureRegion imgTextureBushRegionLeft, imgTextureBushRegionRight, imgTextureGrassRegion;
     private Vector2 rightBushPos1, rightBushPos2, leftBushPos1, leftBushPos2;
+	
+	private FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+	private static BitmapFont font;
 
 	private CreateButton buttonCreator = new CreateButton();
 	private Button restartButton, returnButton;
     private Stage stage;
+	private MyGestureDetector gestureDetector;
 	
 	private Random rand;
-	
+
 	// Public members
     public int points = 0;
 	
     protected PlayState(GameStateManager gsm, Assets assets){
         super(gsm, assets);
-        cat = new Cat(540, 970);
+		catSpriteMap = assets.manager.get(Assets.catSpriteMap);
+        cat = new Cat(CuteCatSplat.WIDTH/2 - catSpriteMap.getWidth()/6, 970, assets);
         touch = new Vector3();
-
+		
 		// Set camera size
         cam.setToOrtho(false, CuteCatSplat.WIDTH, CuteCatSplat.HEIGHT);
 		
-		// Load bush texture
+		// Load textures
 		bush = new Texture("images/Bush.png");
+		swipe = assets.manager.get(Assets.swipe);
+		
+		// Create font
+		parameter.size = 150;
+		font = assets.generator.generateFont(parameter);
+		font.setColor(0, 0.6f, 0.6f, 1);
 		
 		rand = new Random();
 		
@@ -99,9 +115,6 @@ public class PlayState extends State {
 					break;
 		}
 		
-		// Create splat screen
-	
-
 		// Create texture regions for bushes and flip for both sides
         imgTextureBushRegionRight = new TextureRegion(bush);
         imgTextureBushRegionLeft = new TextureRegion(bush);
@@ -136,6 +149,7 @@ public class PlayState extends State {
 	    restartButton = buttonCreator.NewButton(restart1, restart2);
       	restartButton.addListener(new InputListener(){
 				public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
+					Gdx.input.vibrate(5);
 					return true;
 				}
 				public void touchUp(InputEvent event, float x, float y, int pointer, int button){
@@ -148,7 +162,12 @@ public class PlayState extends State {
 	    returnButton = buttonCreator.NewButton(back1, back2);
       	returnButton.addListener(new InputListener(){
 				public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
-					return true;
+					if(catDead)
+					{
+						Gdx.input.vibrate(5);
+						return true;
+					}
+					return false;
 				}
 				public void touchUp(InputEvent event, float x, float y, int pointer, int button){
 					// Set PlayState to load
@@ -166,25 +185,53 @@ public class PlayState extends State {
             }
         };
 			
-		// Create table to hold actors for stage
-        Table menuTable = new Table();
-		menuTable.add().height(restartButton.getHeight());
-        menuTable.row();
-        menuTable.row();
-        menuTable.add().height(restartButton.getHeight());
-        menuTable.row();
-        menuTable.add(restartButton).height(restartButton.getHeight()/2).width(restartButton.getWidth()/2);
-        menuTable.row();
-        menuTable.add().height(restartButton.getHeight()/2);
-        menuTable.row();
-        menuTable.add(returnButton).height(returnButton.getHeight()/2).width(returnButton.getWidth()/2);
-        menuTable.setFillParent(true);
+		// Create end table to hold actors for stage
+        Table endTable = new Table();
+		endTable.add().height(restartButton.getHeight());
+        endTable.row();
+        endTable.row();
+        endTable.add().height(restartButton.getHeight());
+        endTable.row();
+        endTable.add(restartButton).height(restartButton.getHeight()/2).width(restartButton.getWidth()/2);
+        endTable.row();
+        endTable.add().height(restartButton.getHeight()/2);
+        endTable.row();
+        endTable.add(returnButton).height(returnButton.getHeight()/2).width(returnButton.getWidth()/2);
+        endTable.setFillParent(true);
+		
 
 		// Create stage and set for input processor
         stage = new Stage(new StretchViewport(CuteCatSplat.WIDTH/2.5f, CuteCatSplat.HEIGHT/2.5f));
-		stage.addActor(menuTable);
+		stage.addActor(endTable);
 		
-		InputMultiplexer multiplexer = new InputMultiplexer(stage, backProcessor);
+		gestureDetector = 
+			new MyGestureDetector(new MyGestureDetector.DirectionListener() 
+			{
+				@Override
+				public void onRight(float deltaX) {
+					if(!catDead)
+						cat.moveRight(deltaX);
+				}
+
+				@Override
+				public void onLeft(float deltaX) {
+					if(!catDead)
+						cat.moveLeft(deltaX);
+				}
+
+				@Override
+				public void onDown(float deltaY) {
+					// Unused
+				}
+				
+				@Override
+				public void onUp(float deltaY) {
+					// Unused
+				}
+				
+			});
+		
+		InputMultiplexer multiplexer = new InputMultiplexer(stage, backProcessor, gestureDetector);
         Gdx.input.setInputProcessor(multiplexer);
 		Gdx.input.setCatchBackKey(true);
     }
@@ -203,14 +250,15 @@ public class PlayState extends State {
 				
 				gameStarted = true;
 			}
+			/*
 			// Get x movement of touch and set to touch vector
             touch.set(Gdx.input.getX(), 0, 0);
             cam.unproject(touch);
-			catTexture = assets.manager.get(Assets.textureCat);
 			// Move cat to where finger is (minus half cat width to ensure its centered)
-            cat.move((int)(touch.x - catTexture.getWidth()/2));
+            cat.move((int)(touch.x - catSpriteMap.getWidth()/6));
 			
 			//cat.move2();
+			*/
         }
     }
 
@@ -254,6 +302,8 @@ public class PlayState extends State {
 					// End game of collision occurs
             		if(wall.collides(cat.getBounds())){
 						catDead = true;
+						assets.splat.play();
+						Gdx.input.vibrate(300);
                 		setScores();
 					}
 
@@ -266,6 +316,8 @@ public class PlayState extends State {
         		if(cat.getPosition().x <= bush.getWidth() - 50 ||
                 		cat.getPosition().x >= (cam.viewportWidth - bush.getWidth() - 25)){
             		catDead = true;
+					assets.splat.play();
+					Gdx.input.vibrate(300);
 					setScores();
 				}
 			}
@@ -285,17 +337,16 @@ public class PlayState extends State {
                 sb.draw(wall.getRightWall(), wall.getPosRightWall().x, wall.getPosRightWall().y);
             	}
 			}
+			else
+			{
+				sb.draw(swipe, (cam.viewportWidth / 2) - (swipe.getWidth() / 2), cat.getPosition().y - 300);
+			}
             sb.draw(imgTextureBushRegionRight, rightBushPos1.x, rightBushPos1.y);
             sb.draw(imgTextureBushRegionRight, rightBushPos2.x, rightBushPos2.y);
             sb.draw(imgTextureBushRegionLeft, leftBushPos1.x, leftBushPos1.y);
             sb.draw(imgTextureBushRegionLeft, leftBushPos2.x, leftBushPos2.y);
 			
-			assets.font.draw(sb, String.valueOf(points), (cam.viewportWidth / 2), cat.getPosition().y + 1000);
-		
-		if(!gameStarted)
-		{
-			
-		}
+			font.draw(sb, String.valueOf(points), (cam.viewportWidth / 2) - parameter.size/4, cat.getPosition().y + 1000);
 		
 		if(catDead){
 			sb.draw(splatScreenTexture, cat.getPosition().x - 500, cat.getPosition().y - 500);

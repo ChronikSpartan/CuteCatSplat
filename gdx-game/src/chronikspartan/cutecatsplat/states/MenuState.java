@@ -33,9 +33,8 @@ public class MenuState extends State {
 	private static final int PLAYSTATE = 1;
 	private static final int RANKINGSSTATE = 2;
 	
-    private Texture background, splashScreen, play1, play2, rankings1, rankings2;
-	private Image logoImage;
-    private Button playButton, rankingsButton;
+    private Texture background, play1, play2, rankings1, rankings2;
+	private Button playButton, rankingsButton;
     private Stage stage;
 	private CreateButton buttonCreator = new CreateButton();
 	
@@ -43,10 +42,15 @@ public class MenuState extends State {
 	
     public MenuState(GameStateManager gsm, Assets assets){
         super(gsm, assets);
-		splashScreen = new Texture("images/Splash_Screen.png");
-		
 		// Set up camera
 		cam.setToOrtho(false, CuteCatSplat.WIDTH, CuteCatSplat.HEIGHT);
+		
+		if(!assets.themeTune.isLooping()){
+			assets.themeTune.setVolume(1f);
+			assets.themeTune.setLooping(true);
+		}
+		//assets.themeTune.loop(0.5f);
+		//assets.themeTune.play();
 		
 		background = assets.manager.get(Assets.menuScreen);
 		play1 = assets.manager.get(Assets.play1);
@@ -57,12 +61,14 @@ public class MenuState extends State {
 		// Create play button style and add listener
 	    playButton = buttonCreator.NewButton(play1, play2);
       	playButton.addListener(new InputListener(){
-				public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
+				Gdx.input.vibrate(5);
 				return true;
 			}
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button){
 				// Set PlayState to load
 				stateToLoad = PLAYSTATE;
+				Assets.miaow.play();
 			}
 		});
 			
@@ -70,14 +76,15 @@ public class MenuState extends State {
 		// Same for rankings button
         rankingsButton = buttonCreator.NewButton(rankings1, rankings2);
 		rankingsButton.addListener(new InputListener(){
-				public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
-					return true;
-				}
-				public void touchUp(InputEvent event, float x, float y, int pointer, int button){
-					// Set RankingsStaTe to load
-					stateToLoad = RANKINGSSTATE;
-				}
-			});
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
+				Gdx.input.vibrate(5);
+				return true;
+			}
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button){
+				// Set RankingsStaTe to load
+				stateToLoad = RANKINGSSTATE;
+			}
+		});
 			
 		InputProcessor backProcessor = new InputAdapter() {
             @Override

@@ -2,10 +2,11 @@ package chronikspartan.cutecatsplat.data;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.assets.*;
 
@@ -14,12 +15,13 @@ public class Assets {
 	
 	public static Preferences prefs = Gdx.app.getPreferences("CuteCatSplat");
 	
-	public static AssetDescriptor textureCat = new AssetDescriptor<Texture>("images/Cat_Run_1.png", Texture.class);
+	public static AssetDescriptor catSpriteMap = new AssetDescriptor<Texture>("images/Cat_Sprite_Map.png", Texture.class);
 	public static AssetDescriptor textureSplatScreen1 = new AssetDescriptor<Texture>("images/Splat_Screen_1.jpg", Texture.class);
 	public static AssetDescriptor textureSplatScreen2 = new AssetDescriptor<Texture>("images/Splat_Screen_2.jpg", Texture.class);
 	public static AssetDescriptor textureSplatScreen3 = new AssetDescriptor<Texture>("images/Splat_Screen_3.jpg", Texture.class);
 	public static AssetDescriptor textureSplatScreen4 = new AssetDescriptor<Texture>("images/Splat_Screen_4.jpg", Texture.class);
 	public static AssetDescriptor textureSplatScreen5 = new AssetDescriptor<Texture>("images/Splat_Screen_5.jpg", Texture.class);
+	public static AssetDescriptor swipe = new AssetDescriptor<Texture>("images/Swipe.png", Texture.class);
 	public static AssetDescriptor play1 = new AssetDescriptor<Texture>("images/Buttons_and_Screens/Play_1.png", Texture.class);
 	public static AssetDescriptor play2 = new AssetDescriptor<Texture>("images/Buttons_and_Screens/Play_2.png", Texture.class);
 	public static AssetDescriptor rankings1 = new AssetDescriptor<Texture>("images/Buttons_and_Screens/Rankings_1.png", Texture.class);
@@ -30,19 +32,18 @@ public class Assets {
 	public static AssetDescriptor restart2 = new AssetDescriptor<Texture>("images/Buttons_and_Screens/Restart_2.png", Texture.class);
 	public static AssetDescriptor menuScreen = new AssetDescriptor<Texture>("images/Buttons_and_Screens/Menu_Screen.png", Texture.class);
 	public static AssetDescriptor rankingsScreen = new AssetDescriptor<Texture>("images/Buttons_and_Screens/Rankings_Screen.png", Texture.class);
+	public static Music themeTune = Gdx.audio.newMusic(Gdx.files.internal("audio/Cute_Cat_Theme.wav"));
+	public static Music miaow = Gdx.audio.newMusic(Gdx.files.internal("audio/Miaow.wav"));
+	public static Sound splat = Gdx.audio.newSound(Gdx.files.internal("audio/Splat.wav"));
 	
-	public FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("images/Font/blocked.ttf"));
-	public FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-	public static BitmapFont font;
+	public FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("images/Font/BubblegumSans-Regular.ttf"));
 	
     public static int width = Gdx.graphics.getWidth();
     public static int height = Gdx.graphics.getHeight();
 	
     public void load(){
-		parameter.size = 80;
-		font = generator.generateFont(parameter);
-	
-		manager.load(textureCat);
+		manager.load(catSpriteMap);
+		manager.load(swipe);
 		manager.load(play1);
 		manager.load(play2);
 		manager.load(rankings1);
@@ -72,7 +73,9 @@ public class Assets {
 	
 	public static void clear(){
 		manager.clear();
-		font.dispose();
+		themeTune.dispose();
+		miaow.dispose();
+		splat.dispose();
 	}
 	
 	// Receives an integer and maps it to the String highScore1 in prefs
@@ -111,6 +114,8 @@ public class Assets {
 	public void dispose()
 	{
 		manager.dispose();
-		font.dispose();
+		themeTune.dispose();
+		miaow.dispose();
+		splat.dispose();
 	}
 }

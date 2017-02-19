@@ -20,6 +20,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+
 import chronikspartan.cutecatsplat.CuteCatSplat;
 import chronikspartan.cutecatsplat.CreateButton;
 import chronikspartan.cutecatsplat.data.Assets;
@@ -40,6 +43,13 @@ public class RankingsState extends State {
 	private CreateButton buttonCreator = new CreateButton();
     private Button backButton;
     private Stage stage;
+	
+	public FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+	public static BitmapFont font;
+	
+	public Color gold = new Color(1f, 0.85f, 0f, 1);
+	public Color silver = new Color(0.75f, 0.75f, 0.75f, 1);
+	public Color bronze = new Color(0.8f, 0.5f, 0.2f, 1);
 
 	private int stateToLoad = 0;
 
@@ -53,10 +63,15 @@ public class RankingsState extends State {
 		back1 = assets.manager.get(Assets.back1);
 		back2 = assets.manager.get(Assets.back2);
 		
+		// Create font
+		parameter.size = 50;
+		font = assets.generator.generateFont(parameter);
+		
 		// Create Back button and add listener
         backButton = buttonCreator.NewButton(back1, back2);
       	backButton.addListener(new InputListener(){
 				public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
+					Gdx.input.vibrate(5);
 					return true;
 				}
 				public void touchUp(InputEvent event, float x, float y, int pointer, int button){
@@ -77,11 +92,11 @@ public class RankingsState extends State {
 			
 		//Assets.blockedFont.draw(sb, String.valueOf(points), (cam.viewportWidth / 2), cat.getPosition().y + 200);
 		Label highScore1 = new Label("1st Place: " + String.valueOf(Assets.getHighScore1()), 
-			new Label.LabelStyle(Assets.font, Color.RED));
+			new Label.LabelStyle(font, gold));
 		Label highScore2 = new Label("2nd Place: " + String.valueOf(Assets.getHighScore2()), 
-									 new Label.LabelStyle(Assets.font, Color.RED));
+									 new Label.LabelStyle(font, silver));
 		Label highScore3 = new Label("3rd Place: " + String.valueOf(Assets.getHighScore3()), 
-									 new Label.LabelStyle(Assets.font, Color.RED));
+									 new Label.LabelStyle(font, bronze));
 	
 		// Create table to hold actors for stage
         Table menuTable = new Table();
@@ -89,15 +104,15 @@ public class RankingsState extends State {
 		menuTable.row();
 		menuTable.add(highScore1);
         menuTable.row();
-        menuTable.add().height(backButton.getHeight()/2);
+        menuTable.add().height(backButton.getHeight()/3);
 		menuTable.row();
 		menuTable.add(highScore2);
         menuTable.row();
-        menuTable.add().height(backButton.getHeight()/2);
+        menuTable.add().height(backButton.getHeight()/3);
 		menuTable.row();
 		menuTable.add(highScore3);
         menuTable.row();
-        menuTable.add().height(backButton.getHeight()/2);
+        menuTable.add().height(backButton.getHeight()/3);
         menuTable.row();
         menuTable.add(backButton).height(backButton.getHeight()/2).width(backButton.getWidth()/2);
         menuTable.setFillParent(true);
