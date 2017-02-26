@@ -1,5 +1,6 @@
 package chronikspartan.cutecatsplat.sprites;
 
+import chronikspartan.cutecatsplat.data.Assets;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
@@ -12,8 +13,8 @@ import java.util.Random;
  */
 
 public class Wall {
-    private static final int FLUCTUATION = 160;
-    private static final int WALL_GAP = 20;
+    private static final int FLUCTUATION = 900;
+    private static final int WALL_GAP = 150;
     private static final int LEFT_OFFSET = 5;
     public static final int WALL_WIDTH = 52;
 
@@ -24,13 +25,13 @@ public class Wall {
     private Random rand;
 	boolean pointRecorded;
 
-    public Wall(float y){
+    public Wall(float y, Assets assets){
 		// Load wall texture and then create two Texure Regions
 		// one for each sidevof wall
-        wall = new Texture("images/Wall.png");
+        wall = assets.manager.get(Assets.wall);
         leftWall = new TextureRegion(wall);
         rightWall = new TextureRegion(wall);
-        rightWall.flip(true, false);
+        leftWall.flip(true, false);
 
 		// Initialise
         rand = new Random();

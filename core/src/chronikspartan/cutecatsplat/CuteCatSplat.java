@@ -11,8 +11,8 @@ import chronikspartan.cutecatsplat.states.SplashState;
 import chronikspartan.cutecatsplat.data.Assets;
 
 public class CuteCatSplat extends ApplicationAdapter{
-    public static final int WIDTH = 480;
-    public static final int HEIGHT = 800;
+    public static final int WIDTH = 1080;
+    public static final int HEIGHT = 1820;
     public static final String TITLE = "Cute Cat Splat";
 
     private GameStateManager gsm;
@@ -24,10 +24,10 @@ public class CuteCatSplat extends ApplicationAdapter{
     public void create(){
         batch = new SpriteBatch();
 		assets = new Assets();
+		assets.clear();
 		assets.load();
         gsm = new GameStateManager();
         gsm.push(new SplashState(gsm, assets));
-        Assets.load();
     }
 
     @Override

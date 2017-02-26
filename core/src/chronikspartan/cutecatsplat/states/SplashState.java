@@ -9,6 +9,9 @@ import com.badlogic.gdx.*;
 
 public class SplashState extends State {
 	private static final int MENUSTATE = 3;
+	private static final int WIDTH = 480;
+	private static final int HEIGHT = 800;
+	
 	private long startTime = TimeUtils.millis();
 	
 	private Texture splashScreen;
@@ -17,9 +20,9 @@ public class SplashState extends State {
     public SplashState(GameStateManager gsm, Assets assets){
         super(gsm, assets);
 		splashScreen = new Texture("images/Splash_Screen.png");
-
+		
 		// Set up camera
-		cam.setToOrtho(false, 400, 600);
+		cam.setToOrtho(false, WIDTH, HEIGHT);
 
         
 	}
@@ -33,19 +36,19 @@ public class SplashState extends State {
 		// Load PlayState if button selected
 		if(stateToLoad == MENUSTATE)
 			gsm.set(new MenuState(gsm, assets));
+		
     }
 
     @Override
     public void render(SpriteBatch sb) {
 		sb.setProjectionMatrix(cam.combined);
-		if(assets.manager.update() && TimeUtils.millis() - startTime > 1500){
+		if(assets.manager.update() && TimeUtils.millis() - startTime > 4000){
 			stateToLoad = MENUSTATE;
 		}
 		else
 		{
 			sb.begin();
-			sb.draw(splashScreen, 200 - splashScreen.getWidth()/2, 
-				300 - splashScreen.getHeight()/2);
+			sb.draw(splashScreen, WIDTH/2 - 200, HEIGHT/2 - 300);
 			sb.end();
 		}
 
