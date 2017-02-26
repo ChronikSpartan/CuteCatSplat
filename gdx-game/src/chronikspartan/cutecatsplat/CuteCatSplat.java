@@ -24,6 +24,7 @@ public class CuteCatSplat extends ApplicationAdapter{
     public void create(){
         batch = new SpriteBatch();
 		assets = new Assets();
+		assets.clear();
 		assets.load();
         gsm = new GameStateManager();
         gsm.push(new SplashState(gsm, assets));

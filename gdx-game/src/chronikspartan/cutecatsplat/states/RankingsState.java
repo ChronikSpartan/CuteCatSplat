@@ -30,7 +30,6 @@ import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.utils.*;
-//import android.media.*;
 
 /**
  * Created by cube on 1/20/2017.
@@ -90,7 +89,6 @@ public class RankingsState extends State {
             }
         };
 			
-		//Assets.blockedFont.draw(sb, String.valueOf(points), (cam.viewportWidth / 2), cat.getPosition().y + 200);
 		Label highScore1 = new Label("1st Place: " + String.valueOf(Assets.getHighScore1()), 
 			new Label.LabelStyle(font, gold));
 		Label highScore2 = new Label("2nd Place: " + String.valueOf(Assets.getHighScore2()), 

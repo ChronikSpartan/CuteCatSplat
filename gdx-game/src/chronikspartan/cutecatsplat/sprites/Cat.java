@@ -15,12 +15,10 @@ import com.badlogic.gdx.utils.*;
  */
 
 public class Cat{
-    private static final int RUN_SPEED = 15;
     private static final int FORWARD_MOVEMENT = 600;
 	private static final int NUMBER_OF_CAT_SPRITE_IMAGES = 3;
 	private static final int NUMBER_OF_SPLAT_FRAMES = 4;
 	private static final int NUMBER_OF_DIRECTIONAL_FRAMES = 3;
-	//private int sideMovement = 1;
     private Vector3 position;
     private Vector3 velocity;
     private Rectangle bounds;
@@ -41,9 +39,9 @@ public class Cat{
         velocity = new Vector3(0, 0, 0);
 		
         catTexture = assets.manager.get(Assets.catSpriteMap);
-		splatTexture = new Texture("images/Splat_Sprite_Map.png");
-		leftTexture = new Texture("images/Cat_Sprite_Map_Left.png");
-		rightTexture = new Texture("images/Cat_Sprite_Map_Right.png");
+		splatTexture = assets.manager.get(Assets.splatTexture);
+		leftTexture = assets.manager.get(Assets.leftTexture);
+		rightTexture = assets.manager.get(Assets.rightTexture);
 		
         catAnimation = new Animation(new TextureRegion(catTexture), NUMBER_OF_CAT_SPRITE_IMAGES, 0.4f);
 		splatAnimation = new Animation(new TextureRegion(splatTexture), NUMBER_OF_SPLAT_FRAMES, 0.2f);
@@ -66,11 +64,8 @@ public class Cat{
 		else
 			catAnimation.update(dt);
 		
-		// Move1 cat
+		// Move cat
         position.add(0, FORWARD_MOVEMENT * dt, 0);
-		
-		// Move2 cat
-		//velocity.scl(1/dt);	
 		
 		// Move bounds with cat.
         bounds.setPosition(position.x + 3, position.y);

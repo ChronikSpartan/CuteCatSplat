@@ -6,6 +6,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -73,6 +74,7 @@ public class PlayState extends State {
 	private Button restartButton, returnButton;
     private Stage stage;
 	private MyGestureDetector gestureDetector;
+	private Sound splat, screech, miaow2;
 	
 	private Random rand;
 
@@ -89,13 +91,18 @@ public class PlayState extends State {
         cam.setToOrtho(false, CuteCatSplat.WIDTH, CuteCatSplat.HEIGHT);
 		
 		// Load textures
-		bush = new Texture("images/Bush.png");
+		bush = assets.manager.get(Assets.bush);
 		swipe = assets.manager.get(Assets.swipe);
+		
+		// Load sound
+		miaow2 = assets.manager.get(Assets.miaow2);
+		splat = assets.manager.get(Assets.splat);
+		screech = assets.manager.get(Assets.screech);
 		
 		// Create font
 		parameter.size = 150;
 		font = assets.generator.generateFont(parameter);
-		font.setColor(0, 0.6f, 0.6f, 1);
+		font.setColor(0, 0.5f, 0.5f, 1);
 		
 		rand = new Random();
 		
@@ -129,7 +136,7 @@ public class PlayState extends State {
         leftBushPos2 = new Vector2(0, cam.position.y - cam.viewportHeight / 2 + bush.getHeight());
 
         // Create grass background texture region
-        texture_grass = new Texture(Gdx.files.internal("images/Grass-orig.png"));
+        texture_grass = new Texture(Gdx.files.internal("images/Grass.png"));
         texture_grass.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         imgTextureGrassRegion = new TextureRegion(texture_grass);
         imgTextureGrassRegion.setRegion(0, 0, texture_grass.getWidth(),
@@ -154,6 +161,7 @@ public class PlayState extends State {
 				}
 				public void touchUp(InputEvent event, float x, float y, int pointer, int button){
 					// Set PlayState to load
+					miaow2.play();
 					stateToLoad = PLAYSTATE;
 				}
 			});
@@ -244,21 +252,12 @@ public class PlayState extends State {
 			{
 				// Create and load array to hold the walls
 				walls = new Array<Wall>();
-				walls.add(new Wall(START_DISTANCE + cat.getPosition().y));
+				walls.add(new Wall(START_DISTANCE + cat.getPosition().y, assets));
 				for(int i = 1; i < WALL_COUNT; i++)
-					walls.add(new Wall(i*(WALL_SPACING + Wall.WALL_WIDTH) + cat.getPosition().y + START_DISTANCE));
+					walls.add(new Wall(i*(WALL_SPACING + Wall.WALL_WIDTH) + cat.getPosition().y + START_DISTANCE, assets));
 				
 				gameStarted = true;
 			}
-			/*
-			// Get x movement of touch and set to touch vector
-            touch.set(Gdx.input.getX(), 0, 0);
-            cam.unproject(touch);
-			// Move cat to where finger is (minus half cat width to ensure its centered)
-            cat.move((int)(touch.x - catSpriteMap.getWidth()/6));
-			
-			//cat.move2();
-			*/
         }
     }
 
@@ -302,7 +301,8 @@ public class PlayState extends State {
 					// End game of collision occurs
             		if(wall.collides(cat.getBounds())){
 						catDead = true;
-						assets.splat.play();
+						screech.play(0.6f);
+						splat.play(0.8f);
 						Gdx.input.vibrate(300);
                 		setScores();
 					}
@@ -316,7 +316,8 @@ public class PlayState extends State {
         		if(cat.getPosition().x <= bush.getWidth() - 50 ||
                 		cat.getPosition().x >= (cam.viewportWidth - bush.getWidth() - 25)){
             		catDead = true;
-					assets.splat.play();
+					screech.play(0.6f);
+					splat.play(0.8f);
 					Gdx.input.vibrate(300);
 					setScores();
 				}

@@ -6,6 +6,8 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -37,6 +39,8 @@ public class MenuState extends State {
 	private Button playButton, rankingsButton;
     private Stage stage;
 	private CreateButton buttonCreator = new CreateButton();
+	private Music theme;
+	private Sound purr, miaow;
 	
 	private int stateToLoad = 0;
 	
@@ -45,12 +49,17 @@ public class MenuState extends State {
 		// Set up camera
 		cam.setToOrtho(false, CuteCatSplat.WIDTH, CuteCatSplat.HEIGHT);
 		
-		if(!assets.themeTune.isLooping()){
-			assets.themeTune.setVolume(1f);
-			assets.themeTune.setLooping(true);
+		
+		theme = assets.manager.get(Assets.theme);
+		miaow = assets.manager.get(Assets.miaow);
+		purr = assets.manager.get(Assets.purr);
+		
+		if(!theme.isPlaying())
+		{
+			theme.setLooping(true);
+			theme.setVolume(0.1f);
+			theme.play();
 		}
-		//assets.themeTune.loop(0.5f);
-		//assets.themeTune.play();
 		
 		background = assets.manager.get(Assets.menuScreen);
 		play1 = assets.manager.get(Assets.play1);
@@ -68,7 +77,7 @@ public class MenuState extends State {
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button){
 				// Set PlayState to load
 				stateToLoad = PLAYSTATE;
-				Assets.miaow.play();
+				miaow.play();
 			}
 		});
 			
@@ -83,6 +92,7 @@ public class MenuState extends State {
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button){
 				// Set RankingsStaTe to load
 				stateToLoad = RANKINGSSTATE;
+				purr.play();
 			}
 		});
 			
@@ -92,7 +102,6 @@ public class MenuState extends State {
 
                 if ((keycode == Keys.ESCAPE) || (keycode == Keys.BACK) )
 				{
-					Assets.clear();
 					Gdx.app.exit();
 				}
                 return false;

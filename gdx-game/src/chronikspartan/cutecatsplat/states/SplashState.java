@@ -19,10 +19,8 @@ public class SplashState extends State {
 
     public SplashState(GameStateManager gsm, Assets assets){
         super(gsm, assets);
-		try{
 		splashScreen = new Texture("images/Splash_Screen.png");
-		}
-		catch(Exception e){e=e;}
+		
 		// Set up camera
 		cam.setToOrtho(false, WIDTH, HEIGHT);
 
@@ -38,6 +36,7 @@ public class SplashState extends State {
 		// Load PlayState if button selected
 		if(stateToLoad == MENUSTATE)
 			gsm.set(new MenuState(gsm, assets));
+		
     }
 
     @Override

@@ -35,24 +35,5 @@ public class MyGestureDetector extends GestureDetector {
 			}
 			return super.pan(x, y, deltaX, deltaY);
 		}
-/*
-		@Override
-		public boolean fling(float velocityX, float velocityY, int button) {
-			if(Math.abs(velocityX)>Math.abs(velocityY)){
-				if(velocityX>0){
-                    directionListener.onRight(velocityX);
-				}else{
-                    directionListener.onLeft(velocityX);
-				}
-			}else{
-				if(velocityY>0){
-                    directionListener.onDown(velocityY);
-				}else{                                  
-                    directionListener.onUp(velocityY);
-				}
-			}
-			return super.fling(velocityX, velocityY, button);
-		}
-		*/
 	}
 }
