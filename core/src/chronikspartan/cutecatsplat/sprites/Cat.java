@@ -38,10 +38,10 @@ public class Cat{
 
         velocity = new Vector3(0, 0, 0);
 		
-        catTexture = assets.manager.get(Assets.catSpriteMap);
-		splatTexture = assets.manager.get(Assets.splatTexture);
-		leftTexture = assets.manager.get(Assets.leftTexture);
-		rightTexture = assets.manager.get(Assets.rightTexture);
+        catTexture = (Texture) assets.manager.get(Assets.catSpriteMap);
+		splatTexture = (Texture) assets.manager.get(Assets.splatTexture);
+		leftTexture = (Texture) assets.manager.get(Assets.leftTexture);
+		rightTexture = (Texture) assets.manager.get(Assets.rightTexture);
 		
         catAnimation = new Animation(new TextureRegion(catTexture), NUMBER_OF_CAT_SPRITE_IMAGES, 0.4f);
 		splatAnimation = new Animation(new TextureRegion(splatTexture), NUMBER_OF_SPLAT_FRAMES, 0.2f);

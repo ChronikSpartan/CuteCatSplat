@@ -50,9 +50,9 @@ public class MenuState extends State {
 		cam.setToOrtho(false, CuteCatSplat.WIDTH, CuteCatSplat.HEIGHT);
 		
 		
-		theme = assets.manager.get(Assets.theme);
-		miaow = assets.manager.get(Assets.miaow);
-		purr = assets.manager.get(Assets.purr);
+		theme = (Music) assets.manager.get(Assets.theme);
+		miaow = (Sound) assets.manager.get(Assets.miaow);
+		purr = (Sound) assets.manager.get(Assets.purr);
 		
 		if(!theme.isPlaying())
 		{
@@ -61,11 +61,11 @@ public class MenuState extends State {
 			theme.play();
 		}
 		
-		background = assets.manager.get(Assets.menuScreen);
-		play1 = assets.manager.get(Assets.play1);
-		play2 = assets.manager.get(Assets.play2);
-		rankings1 = assets.manager.get(Assets.rankings1);
-		rankings2 = assets.manager.get(Assets.rankings2);
+		background = (Texture) assets.manager.get(Assets.menuScreen);
+		play1 = (Texture) assets.manager.get(Assets.play1);
+		play2 = (Texture) assets.manager.get(Assets.play2);
+		rankings1 = (Texture) assets.manager.get(Assets.rankings1);
+		rankings2 = (Texture) assets.manager.get(Assets.rankings2);
 		
 		// Create play button style and add listener
 	    playButton = buttonCreator.NewButton(play1, play2);

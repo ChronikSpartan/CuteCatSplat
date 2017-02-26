@@ -28,7 +28,7 @@ public class Wall {
     public Wall(float y, Assets assets){
 		// Load wall texture and then create two Texure Regions
 		// one for each sidevof wall
-        wall = assets.manager.get(Assets.wall);
+        wall = (Texture) assets.manager.get(Assets.wall);
         leftWall = new TextureRegion(wall);
         rightWall = new TextureRegion(wall);
         leftWall.flip(true, false);

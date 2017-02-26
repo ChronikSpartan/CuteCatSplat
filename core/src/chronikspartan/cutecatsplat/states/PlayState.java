@@ -83,7 +83,7 @@ public class PlayState extends State {
 	
     protected PlayState(GameStateManager gsm, Assets assets){
         super(gsm, assets);
-		catSpriteMap = assets.manager.get(Assets.catSpriteMap);
+		catSpriteMap = (Texture) assets.manager.get(Assets.catSpriteMap);
         cat = new Cat(CuteCatSplat.WIDTH/2 - catSpriteMap.getWidth()/6, 970, assets);
         touch = new Vector3();
 		
@@ -91,13 +91,13 @@ public class PlayState extends State {
         cam.setToOrtho(false, CuteCatSplat.WIDTH, CuteCatSplat.HEIGHT);
 		
 		// Load textures
-		bush = assets.manager.get(Assets.bush);
-		swipe = assets.manager.get(Assets.swipe);
+		bush = (Texture) assets.manager.get(Assets.bush);
+		swipe = (Texture) assets.manager.get(Assets.swipe);
 		
 		// Load sound
-		miaow2 = assets.manager.get(Assets.miaow2);
-		splat = assets.manager.get(Assets.splat);
-		screech = assets.manager.get(Assets.screech);
+		miaow2 = (Sound) assets.manager.get(Assets.miaow2);
+		splat = (Sound) assets.manager.get(Assets.splat);
+		screech = (Sound) assets.manager.get(Assets.screech);
 		
 		// Create font
 		parameter.size = 150;
@@ -108,17 +108,17 @@ public class PlayState extends State {
 		
 		switch(rand.nextInt(5))
 		{
-			case 0: splatScreenTexture = assets.manager.get(Assets.textureSplatScreen1);
+			case 0: splatScreenTexture = (Texture) assets.manager.get(Assets.textureSplatScreen1);
 					break;
-			case 1: splatScreenTexture = assets.manager.get(Assets.textureSplatScreen2);
+			case 1: splatScreenTexture = (Texture) assets.manager.get(Assets.textureSplatScreen2);
 					break;
-			case 2: splatScreenTexture = assets.manager.get(Assets.textureSplatScreen3);
+			case 2: splatScreenTexture = (Texture) assets.manager.get(Assets.textureSplatScreen3);
 					break;
-			case 3: splatScreenTexture = assets.manager.get(Assets.textureSplatScreen4);
+			case 3: splatScreenTexture = (Texture) assets.manager.get(Assets.textureSplatScreen4);
 					break;
-			case 4: splatScreenTexture = assets.manager.get(Assets.textureSplatScreen5);
+			case 4: splatScreenTexture = (Texture) assets.manager.get(Assets.textureSplatScreen5);
 					break;
-			default: splatScreenTexture = assets.manager.get(Assets.textureSplatScreen1);
+			default: splatScreenTexture = (Texture) assets.manager.get(Assets.textureSplatScreen1);
 					break;
 		}
 		
@@ -147,10 +147,10 @@ public class PlayState extends State {
                 new ParallaxLayer(imgTextureGrassRegion, new Vector2(0, 20), new Vector2(0, 0)),
         }, Assets.width, Assets.height, new Vector2(0, 40));
 		
-		restart1 = assets.manager.get(Assets.restart1);
-		restart2 = assets.manager.get(Assets.restart2);
-		back1 = assets.manager.get(Assets.back1);
-		back2 = assets.manager.get(Assets.back2);
+		restart1 = (Texture) assets.manager.get(Assets.restart1);
+		restart2 = (Texture) assets.manager.get(Assets.restart2);
+		back1 = (Texture) assets.manager.get(Assets.back1);
+		back2 = (Texture) assets.manager.get(Assets.back2);
 		
 		// Create restart button style and add listener
 	    restartButton = buttonCreator.NewButton(restart1, restart2);

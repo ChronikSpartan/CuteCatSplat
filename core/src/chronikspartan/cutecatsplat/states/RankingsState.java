@@ -57,10 +57,10 @@ public class RankingsState extends State {
 		// Set up camera
 		cam.setToOrtho(false, CuteCatSplat.WIDTH, CuteCatSplat.HEIGHT);
 
-        background = assets.manager.get(Assets.rankingsScreen);
+        background = (Texture) assets.manager.get(Assets.rankingsScreen);
 
-		back1 = assets.manager.get(Assets.back1);
-		back2 = assets.manager.get(Assets.back2);
+		back1 = (Texture) assets.manager.get(Assets.back1);
+		back2 = (Texture) assets.manager.get(Assets.back2);
 		
 		// Create font
 		parameter.size = 50;
