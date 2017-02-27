@@ -44,8 +44,8 @@ public class MenuState extends State {
 	
 	private int stateToLoad = 0;
 	
-    public MenuState(GameStateManager gsm, Assets assets){
-        super(gsm, assets);
+    public MenuState(GameStateManager gsm, Assets assets, AdsController adsController){
+        super(gsm, assets, adsController);
 		// Set up camera
 		cam.setToOrtho(false, CuteCatSplat.WIDTH, CuteCatSplat.HEIGHT);
 		
@@ -136,11 +136,11 @@ public class MenuState extends State {
     public void update(float dt) {
 		// Load PlayState if button selected
 		if(stateToLoad == PLAYSTATE)
-			gsm.set(new PlayState(gsm, assets));
+			gsm.set(new PlayState(gsm, assets, adsController));
 			
 		// Load MenuState if button selected
 		if(stateToLoad == RANKINGSSTATE)
-			gsm.set(new RankingsState(gsm, assets));
+			gsm.set(new RankingsState(gsm, assets, adsController));
     }
 
     @Override

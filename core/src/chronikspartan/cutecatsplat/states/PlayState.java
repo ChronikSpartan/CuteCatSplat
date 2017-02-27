@@ -29,6 +29,7 @@ import java.util.Random;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
+import chronikspartan.cutecatsplat.AdsController;
 import chronikspartan.cutecatsplat.data.Assets;
 import chronikspartan.cutecatsplat.CuteCatSplat;
 import chronikspartan.cutecatsplat.ParallaxBackground;
@@ -81,8 +82,8 @@ public class PlayState extends State {
 	// Public members
     public int points = 0;
 	
-    protected PlayState(GameStateManager gsm, Assets assets){
-        super(gsm, assets);
+    protected PlayState(GameStateManager gsm, Assets assets, AdsController adsController){
+        super(gsm, assets, adsController);
 		catSpriteMap = (Texture) assets.manager.get(Assets.catSpriteMap);
         cat = new Cat(CuteCatSplat.WIDTH/2 - catSpriteMap.getWidth()/6, 970, assets);
         touch = new Vector3();
@@ -264,12 +265,15 @@ public class PlayState extends State {
     @Override
     public void update(float dt) {
 		// Load PlayState if button selected
-		if(stateToLoad == PLAYSTATE)
-			gsm.set(new PlayState(gsm, assets));
+		if(stateToLoad == PLAYSTATE) {
+			if (adsController.isWifiConnected())
+				adsController.showBannerAd();
+			gsm.set(new PlayState(gsm, assets, adsController));
+		}
 
 		// Load MenuState if button selected
 		if(stateToLoad == MENUSTATE)
-			gsm.set(new MenuState(gsm, assets));
+			gsm.set(new MenuState(gsm, assets, adsController));
 
 		if (catDead)
 		{

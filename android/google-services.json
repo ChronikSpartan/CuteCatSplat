@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "236235648881",
+    "firebase_url": "https://cute-cat-splat.firebaseio.com",
+    "project_id": "cute-cat-splat",
+    "storage_bucket": "cute-cat-splat.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:236235648881:android:906fc70666a3c17c",
+        "android_client_info": {
+          "package_name": "chronikspartan.cutecatsplat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "236235648881-t4cj0krn32sqb28ghnceeab4v96qmgc0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDI286dzsXCcujcvH15sWC18Iqyqf0KeTA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

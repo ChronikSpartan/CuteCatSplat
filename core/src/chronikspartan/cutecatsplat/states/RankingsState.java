@@ -23,6 +23,7 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
+import chronikspartan.cutecatsplat.AdsController;
 import chronikspartan.cutecatsplat.CuteCatSplat;
 import chronikspartan.cutecatsplat.CreateButton;
 import chronikspartan.cutecatsplat.data.Assets;
@@ -52,8 +53,8 @@ public class RankingsState extends State {
 
 	private int stateToLoad = 0;
 
-    public RankingsState(GameStateManager gsm, Assets assets){
-        super(gsm, assets);
+    public RankingsState(GameStateManager gsm, Assets assets, AdsController adsController){
+        super(gsm, assets, adsController);
 		// Set up camera
 		cam.setToOrtho(false, CuteCatSplat.WIDTH, CuteCatSplat.HEIGHT);
 
@@ -132,7 +133,7 @@ public class RankingsState extends State {
     public void update(float dt) {
 		// Load PlayState if button selected
 		if(stateToLoad == MENUSTATE)
-			gsm.set(new MenuState(gsm, assets));
+			gsm.set(new MenuState(gsm, assets, adsController));
     }
 
     @Override

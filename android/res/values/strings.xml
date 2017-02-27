@@ -2,5 +2,6 @@
 <resources>
 
     <string name="app_name">Cute Cat Splat</string>
+    <string name="interstitial_ad_unit_id">ca-app-pub-6491016065744731/9152240807</string>
 
 </resources>
