@@ -17,7 +17,7 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 
 public class AndroidLauncher extends AndroidApplication implements AdsController{
-	private static final String INTERSTITIAL_AD_UNIT_ID = "6491016065744731/9152240807";
+	private static final String INTERSTITIAL_AD_UNIT_ID = "ca-app-pub-6491016065744731/9152240807";
 	AdView bannerAd;
 	InterstitialAd interstitialAd;
 	@Override

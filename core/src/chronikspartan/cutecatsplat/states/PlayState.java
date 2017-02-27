@@ -267,7 +267,12 @@ public class PlayState extends State {
 		// Load PlayState if button selected
 		if(stateToLoad == PLAYSTATE) {
 			if (adsController.isWifiConnected())
-				adsController.showBannerAd();
+				adsController.showInterstitialAd(new Runnable() {
+					@Override
+					public void run() {
+						return;
+					}
+				});
 			gsm.set(new PlayState(gsm, assets, adsController));
 		}
 

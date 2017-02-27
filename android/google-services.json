@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "236235648881-ig7vciqobamnksih319m6kldel3gsh46.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "chronikspartan.cutecatsplat",
+            "certificate_hash": "6b9fa3d610e00cb3dca310d05adbbfba33753286"
+          }
+        },
+        {
           "client_id": "236235648881-t4cj0krn32sqb28ghnceeab4v96qmgc0.apps.googleusercontent.com",
           "client_type": 3
         }
