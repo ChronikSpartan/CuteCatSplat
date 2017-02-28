@@ -82,11 +82,12 @@ public class AndroidLauncher extends AndroidApplication implements AdsController
 	}
 
 	@Override
-	public boolean isWifiConnected(){
+	public boolean isNetworkConnected(){
 		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo ni = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+		NetworkInfo niWifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+		NetworkInfo niMob = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
 
-		return (ni != null && ni.isConnected());
+		return ((niWifi != null && niWifi.isConnected()) || (niMob != null && niMob.isConnected()));
 	}
 
 	@Override
@@ -99,13 +100,13 @@ public class AndroidLauncher extends AndroidApplication implements AdsController
 						@Override
 						public void onAdClosed() {
 							Gdx.app.postRunnable(then);
-							AdRequest.Builder builder = new AdRequest.Builder();
-							AdRequest ad = builder.build();
-							interstitialAd.loadAd(ad);
 						}
 					});
 				}
 				interstitialAd.show();
+				AdRequest.Builder builder = new AdRequest.Builder();
+				AdRequest ad = builder.build();
+				interstitialAd.loadAd(ad);
 			}
 		});
 	}

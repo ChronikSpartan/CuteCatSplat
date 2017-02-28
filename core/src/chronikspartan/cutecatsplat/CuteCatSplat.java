@@ -46,18 +46,6 @@ public class CuteCatSplat extends ApplicationAdapter{
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         gsm.update(Gdx.graphics.getDeltaTime());
         gsm.render(batch);
-
-        if (adsController.isWifiConnected()) {
-            adsController.showInterstitialAd(new Runnable() {
-                @Override
-                public void run() {
-                    System.out.println("Interstitial app closed");
-                    Gdx.app.exit();
-                }
-            });
-        } else {
-            System.out.println("Interstitial ad not (yet) loaded");
-        }
     }
 
     private class DummyAdsController implements AdsController {
@@ -72,7 +60,7 @@ public class CuteCatSplat extends ApplicationAdapter{
         }
 
         @Override
-        public boolean isWifiConnected() {
+        public boolean isNetworkConnected() {
             return false;
         }
 

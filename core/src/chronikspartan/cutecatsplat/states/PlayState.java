@@ -1,18 +1,14 @@
 package chronikspartan.cutecatsplat.states;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -32,13 +28,10 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import chronikspartan.cutecatsplat.AdsController;
 import chronikspartan.cutecatsplat.data.Assets;
 import chronikspartan.cutecatsplat.CuteCatSplat;
-import chronikspartan.cutecatsplat.ParallaxBackground;
-import chronikspartan.cutecatsplat.ParallaxLayer;
 import chronikspartan.cutecatsplat.CreateButton;
 import chronikspartan.cutecatsplat.MyGestureDetector;
 import chronikspartan.cutecatsplat.sprites.Cat;
 import chronikspartan.cutecatsplat.sprites.Wall;
-import chronikspartan.cutecatsplat.data.*;
 
 /**
  * Created by cube on 1/20/2017.
@@ -60,13 +53,11 @@ public class PlayState extends State {
 	private Array<Wall> walls;
 	
 	private int stateToLoad = 0;
-	
-	private float viewportScaling = 2.5f;
-    private ParallaxBackground parallax_background;
+
     private Vector3 touch;
     private Texture bush, texture_grass, swipe, splatScreenTexture, catSpriteMap, restart1, restart2, back1, back2;
-    private TextureRegion imgTextureBushRegionLeft, imgTextureBushRegionRight, imgTextureGrassRegion;
-    private Vector2 rightBushPos1, rightBushPos2, leftBushPos1, leftBushPos2;
+    private TextureRegion imgTextureBushRegionLeft, imgTextureBushRegionRight, imgTextureGrassRegion, imgTextureGrassRegion2;
+    private Vector2 rightBushPos1, rightBushPos2, leftBushPos1, leftBushPos2, backgroundPos, backgroundPos2;
 	
 	private FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
 	private static BitmapFont font;
@@ -140,13 +131,13 @@ public class PlayState extends State {
         texture_grass = new Texture(Gdx.files.internal("images/Grass.png"));
         texture_grass.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         imgTextureGrassRegion = new TextureRegion(texture_grass);
-        imgTextureGrassRegion.setRegion(0, 0, texture_grass.getWidth(),
-										texture_grass.getHeight());
-		
-        // Set up scrolling parallax background
-        parallax_background = new ParallaxBackground(new ParallaxLayer[]{
-                new ParallaxLayer(imgTextureGrassRegion, new Vector2(0, 20), new Vector2(0, 0)),
-        }, Assets.width, Assets.height, new Vector2(0, 40));
+        imgTextureGrassRegion.setRegion(0, 0, texture_grass.getWidth()* 10,
+										texture_grass.getHeight()* 10);
+		imgTextureGrassRegion2 = new TextureRegion(imgTextureGrassRegion);
+
+
+		backgroundPos = new Vector2(0, cam.position.y - cam.viewportHeight / 2);
+		backgroundPos2 = new Vector2(0, cam.position.y - (cam.viewportHeight / 2) + imgTextureGrassRegion2.getRegionHeight());
 		
 		restart1 = (Texture) assets.manager.get(Assets.restart1);
 		restart2 = (Texture) assets.manager.get(Assets.restart2);
@@ -266,8 +257,7 @@ public class PlayState extends State {
     public void update(float dt) {
 		// Load PlayState if button selected
 		if(stateToLoad == PLAYSTATE) {
-			if (adsController.isWifiConnected())
-				adsController.showInterstitialAd(new Runnable() {
+			adsController.showInterstitialAd(new Runnable() {
 					@Override
 					public void run() {
 						return;
@@ -277,13 +267,19 @@ public class PlayState extends State {
 		}
 
 		// Load MenuState if button selected
-		if(stateToLoad == MENUSTATE)
+		if(stateToLoad == MENUSTATE) {
+			adsController.showInterstitialAd(new Runnable() {
+				@Override
+				public void run() {
+					return;
+				}
+			});
 			gsm.set(new MenuState(gsm, assets, adsController));
+		}
 
 		if (catDead)
 		{
 			cat.splat(dt);
-			parallax_background.render(0f);
 		}
 		else 
 		{
@@ -295,9 +291,6 @@ public class PlayState extends State {
 
 			cam.update();
 
-			// Render parallax background
-			parallax_background.render(dt);
-			
 			handleInput();
 		
 			if(gameStarted)
@@ -339,7 +332,9 @@ public class PlayState extends State {
 		// Draw everything to sprite batch
 		sb.begin();
 			sb.setProjectionMatrix(cam.combined);
-            sb.draw(cat.getTexture(), cat.getPosition().x, cat.getPosition().y);
+			sb.draw(imgTextureGrassRegion, backgroundPos.x, backgroundPos.y);
+			sb.draw(imgTextureGrassRegion2, backgroundPos2.x, backgroundPos2.y);
+			sb.draw(cat.getTexture(), cat.getPosition().x, cat.getPosition().y);
             if(gameStarted)
 			{
 				for(Wall wall : walls) {
@@ -386,10 +381,17 @@ public class PlayState extends State {
             rightBushPos2.add(0, bush.getHeight() * 2);
 
         if((cam.position.y - cam.viewportHeight / 2) > (leftBushPos1.y + bush.getHeight()))
-            leftBushPos1.add(0, bush.getHeight() * 2);
+			leftBushPos1.add(0, bush.getHeight() * 2);
 
-        if((cam.position.y - cam.viewportHeight / 2) > (leftBushPos2.y + bush.getHeight()))
-            leftBushPos2.add(0, bush.getHeight() * 2);
+		if((cam.position.y - cam.viewportHeight / 2) > (leftBushPos2.y + bush.getHeight()))
+			leftBushPos2.add(0, bush.getHeight() * 2);
+
+		if((cam.position.y - cam.viewportHeight / 2) > (backgroundPos.y + imgTextureGrassRegion.getRegionHeight()))
+			backgroundPos.add(0, imgTextureGrassRegion.getRegionHeight() * 2);
+
+		if((cam.position.y - cam.viewportHeight / 2) > (backgroundPos2.y + imgTextureGrassRegion2.getRegionHeight()))
+			backgroundPos2.add(0, imgTextureGrassRegion2.getRegionHeight() * 2);
+
     }
 	
 	private void setScores(){
