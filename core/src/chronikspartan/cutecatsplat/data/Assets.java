@@ -16,6 +16,8 @@ public class Assets {
 	public static Preferences prefs = Gdx.app.getPreferences("CuteCatSplat");
 	
 	public static AssetDescriptor catSpriteMap = new AssetDescriptor<Texture>("images/Cat_Sprite_Map.png", Texture.class);
+	public static AssetDescriptor wallExplode = new AssetDescriptor<Texture>("images/Wall_Explode.png", Texture.class);
+	public static AssetDescriptor catNip = new AssetDescriptor<Texture>("images/Cat_Nip.png", Texture.class);
 	public static AssetDescriptor splatTexture = new AssetDescriptor<Texture>("images/Splat_Sprite_Map.png", Texture.class);
 	public static AssetDescriptor leftTexture = new AssetDescriptor<Texture>("images/Cat_Sprite_Map_Left.png", Texture.class);
 	public static AssetDescriptor rightTexture = new AssetDescriptor<Texture>("images/Cat_Sprite_Map_Right.png", Texture.class);
@@ -51,6 +53,8 @@ public class Assets {
 	
     public void load(){
 		manager.load(catSpriteMap);
+		manager.load(wallExplode);
+		manager.load(catNip);
 		manager.load(splatTexture);
 		manager.load(leftTexture);
 		manager.load(rightTexture);

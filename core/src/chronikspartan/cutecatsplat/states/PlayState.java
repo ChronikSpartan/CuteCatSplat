@@ -312,6 +312,11 @@ public class PlayState extends State {
 					// Add points if fence passed
             		if(wall.pointGained(cat.getBounds()))
                 		points ++;
+
+					// Add points if fence passed
+					if(wall.catNipGained(cat.getBounds())){}
+					// start timer
+					// remove catnip
         		}
 
 				// End game if cat hits bushes
@@ -338,8 +343,9 @@ public class PlayState extends State {
             if(gameStarted)
 			{
 				for(Wall wall : walls) {
-                sb.draw(wall.getLeftWall(), wall.getPosLeftWall().x, wall.getPosLeftWall().y);
-                sb.draw(wall.getRightWall(), wall.getPosRightWall().x, wall.getPosRightWall().y);
+                	sb.draw(wall.getLeftWall(), wall.getPosLeftWall().x, wall.getPosLeftWall().y);
+                	sb.draw(wall.getRightWall(), wall.getPosRightWall().x, wall.getPosRightWall().y);
+					sb.draw(wall.getCatNip(), wall.getPosCatNip().x, wall.getPosCatNip().y);
             	}
 			}
 			else

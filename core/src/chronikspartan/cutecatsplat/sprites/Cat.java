@@ -42,7 +42,7 @@ public class Cat{
 		splatTexture = (Texture) assets.manager.get(Assets.splatTexture);
 		leftTexture = (Texture) assets.manager.get(Assets.leftTexture);
 		rightTexture = (Texture) assets.manager.get(Assets.rightTexture);
-		
+
         catAnimation = new Animation(new TextureRegion(catTexture), NUMBER_OF_CAT_SPRITE_IMAGES, 0.4f);
 		splatAnimation = new Animation(new TextureRegion(splatTexture), NUMBER_OF_SPLAT_FRAMES, 0.2f);
 		leftAnimation = new Animation(new TextureRegion(leftTexture), NUMBER_OF_DIRECTIONAL_FRAMES, 0.4f);

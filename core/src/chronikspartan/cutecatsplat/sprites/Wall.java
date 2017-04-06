@@ -19,9 +19,9 @@ public class Wall {
     public static final int WALL_WIDTH = 52;
 
     private static Texture wall;
-    private TextureRegion rightWall, leftWall;
-    private Vector2 posRightWall, posLeftWall;
-    private Rectangle boundsRight, boundsLeft, pointGate;
+    private TextureRegion rightWall, leftWall, wallExplode, catNip;
+    private Vector2 posRightWall, posLeftWall, posCatNip;
+    private Rectangle boundsRight, boundsLeft, pointGate, catNipBounds;
     private Random rand;
 	boolean pointRecorded;
 
@@ -29,6 +29,8 @@ public class Wall {
 		// Load wall texture and then create two Texure Regions
 		// one for each sidevof wall
         wall = (Texture) assets.manager.get(Assets.wall);
+        catNip = new TextureRegion((Texture) assets.manager.get(Assets.catNip), 0, 0, 96, 96);
+        wallExplode = new TextureRegion((Texture) assets.manager.get(Assets.wallExplode));
         leftWall = new TextureRegion(wall);
         rightWall = new TextureRegion(wall);
         leftWall.flip(true, false);
@@ -44,6 +46,9 @@ public class Wall {
 		// Create boundaries for wall collisions
         boundsRight = new Rectangle(posRightWall.x, posRightWall.y, rightWall.getRegionWidth(), rightWall.getRegionHeight());
         boundsLeft = new Rectangle(posLeftWall.x, posLeftWall.y, leftWall.getRegionWidth(), leftWall.getRegionHeight());
+
+        posCatNip = new Vector2();
+        catNipBounds = new Rectangle();
 		
 		// Create boundaries for points gate
 		pointGate = new Rectangle(boundsLeft);
@@ -59,6 +64,8 @@ public class Wall {
         return leftWall;
     }
 
+    public TextureRegion getCatNip() { return catNip; }
+
     public Vector2 getPosLeftWall() {
         return posRightWall;
     }
@@ -67,7 +74,11 @@ public class Wall {
         return posLeftWall;
     }
 
+    public Vector2 getPosCatNip() { return posCatNip; }
+
     public void reposition(float y){
+        Random catNipGenerator = new Random();
+        int cng = catNipGenerator.nextInt(5);
 		// Reposition walls and boundaries
         posRightWall.set(rand.nextInt(FLUCTUATION) + WALL_GAP + LEFT_OFFSET, y);
         posLeftWall.set(posRightWall.x - WALL_GAP - wall.getWidth(), y);
@@ -75,6 +86,11 @@ public class Wall {
         boundsRight.setPosition(posRightWall.x, posRightWall.y);
         boundsLeft.setPosition(posLeftWall.x, posLeftWall.y);
         pointGate.setPosition(boundsLeft.x + WALL_GAP, boundsLeft.y + boundsLeft.getHeight());
+
+        if(cng == 3) {
+            posCatNip.set(posRightWall.x - WALL_GAP, y);
+            catNipBounds.setPosition(posCatNip.x, posCatNip.y);
+        }
 		
 		// Reset point recorded flag ready to record a new point
 		pointRecorded = false;
@@ -93,6 +109,11 @@ public class Wall {
 		}
 		return false;
 			
+    }
+
+    public boolean catNipGained(Rectangle player){
+        return false;
+
     }
 
     public void dispose(){
