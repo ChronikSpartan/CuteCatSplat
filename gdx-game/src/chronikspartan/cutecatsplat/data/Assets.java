@@ -16,9 +16,14 @@ public class Assets {
 	public static Preferences prefs = Gdx.app.getPreferences("CuteCatSplat");
 	
 	public static AssetDescriptor catSpriteMap = new AssetDescriptor<Texture>("images/Cat_Sprite_Map.png", Texture.class);
+	public static AssetDescriptor wallExplode = new AssetDescriptor<Texture>("images/Wall_Explode.png", Texture.class);
+	public static AssetDescriptor catNip = new AssetDescriptor<Texture>("images/Cat_Nip.png", Texture.class);
 	public static AssetDescriptor splatTexture = new AssetDescriptor<Texture>("images/Splat_Sprite_Map.png", Texture.class);
 	public static AssetDescriptor leftTexture = new AssetDescriptor<Texture>("images/Cat_Sprite_Map_Left.png", Texture.class);
 	public static AssetDescriptor rightTexture = new AssetDescriptor<Texture>("images/Cat_Sprite_Map_Right.png", Texture.class);
+	public static AssetDescriptor textureStarsScreen1 = new AssetDescriptor<Texture>("images/Cat_Nip_Stars_1.png", Texture.class);
+	public static AssetDescriptor textureStarsScreen2 = new AssetDescriptor<Texture>("images/Cat_Nip_Stars_2.png", Texture.class);
+	public static AssetDescriptor textureStarsScreen3 = new AssetDescriptor<Texture>("images/Cat_Nip_Stars_3.png", Texture.class);
 	public static AssetDescriptor textureSplatScreen1 = new AssetDescriptor<Texture>("images/Splat_Screen_1.jpg", Texture.class);
 	public static AssetDescriptor textureSplatScreen2 = new AssetDescriptor<Texture>("images/Splat_Screen_2.jpg", Texture.class);
 	public static AssetDescriptor textureSplatScreen3 = new AssetDescriptor<Texture>("images/Splat_Screen_3.jpg", Texture.class);
@@ -51,6 +56,8 @@ public class Assets {
 	
     public void load(){
 		manager.load(catSpriteMap);
+		manager.load(wallExplode);
+		manager.load(catNip);
 		manager.load(splatTexture);
 		manager.load(leftTexture);
 		manager.load(rightTexture);
@@ -78,6 +85,9 @@ public class Assets {
 		manager.load(textureSplatScreen3);
 		manager.load(textureSplatScreen4);
 		manager.load(textureSplatScreen5);
+		manager.load(textureStarsScreen1);
+		manager.load(textureStarsScreen2);
+		manager.load(textureStarsScreen3);
 		
 		// Provide default high scores of 0
 		if (!prefs.contains("highScore1"))

@@ -20,6 +20,15 @@ public class CuteCatSplat extends ApplicationAdapter{
     private SpriteBatch batch;
     Texture img;
 
+    private AdsController adsController;
+
+    public CuteCatSplat(AdsController adsController) {
+        if (adsController != null)
+            this.adsController = adsController;
+        else
+            this.adsController = new DummyAdsController();
+    }
+
     @Override
     public void create(){
         batch = new SpriteBatch();
@@ -27,7 +36,9 @@ public class CuteCatSplat extends ApplicationAdapter{
 		assets.clear();
 		assets.load();
         gsm = new GameStateManager();
-        gsm.push(new SplashState(gsm, assets));
+        gsm.push(new SplashState(gsm, assets, adsController));
+
+
     }
 
     @Override
@@ -35,5 +46,27 @@ public class CuteCatSplat extends ApplicationAdapter{
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         gsm.update(Gdx.graphics.getDeltaTime());
         gsm.render(batch);
+    }
+
+    private class DummyAdsController implements AdsController {
+        @Override
+        public void showBannerAd() {
+
+        }
+
+        @Override
+        public void hideBannerAd() {
+
+        }
+
+        @Override
+        public boolean isNetworkConnected() {
+            return false;
+        }
+
+        @Override
+        public void showInterstitialAd(Runnable then) {
+
+        }
     }
 }

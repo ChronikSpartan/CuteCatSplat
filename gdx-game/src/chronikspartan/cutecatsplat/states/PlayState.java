@@ -1,23 +1,18 @@
 package chronikspartan.cutecatsplat.states;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
-
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -27,17 +22,16 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import java.util.Random;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
+import chronikspartan.cutecatsplat.AdsController;
 import chronikspartan.cutecatsplat.data.Assets;
 import chronikspartan.cutecatsplat.CuteCatSplat;
-import chronikspartan.cutecatsplat.ParallaxBackground;
-import chronikspartan.cutecatsplat.ParallaxLayer;
 import chronikspartan.cutecatsplat.CreateButton;
 import chronikspartan.cutecatsplat.MyGestureDetector;
 import chronikspartan.cutecatsplat.sprites.Cat;
 import chronikspartan.cutecatsplat.sprites.Wall;
-import chronikspartan.cutecatsplat.data.*;
 
 /**
  * Created by cube on 1/20/2017.
@@ -56,16 +50,18 @@ public class PlayState extends State {
     private Cat cat;
 	private boolean catDead = false;
 	private boolean gameStarted = false;
+	private boolean showStars = false;
 	private Array<Wall> walls;
 	
 	private int stateToLoad = 0;
-	
-	private float viewportScaling = 2.5f;
-    private ParallaxBackground parallax_background;
+	private int starsCounter = 0;
+	private int starSelect = 0;
+	private int catNipCounter = 0;
+
     private Vector3 touch;
-    private Texture bush, texture_grass, swipe, splatScreenTexture, catSpriteMap, restart1, restart2, back1, back2;
-    private TextureRegion imgTextureBushRegionLeft, imgTextureBushRegionRight, imgTextureGrassRegion;
-    private Vector2 rightBushPos1, rightBushPos2, leftBushPos1, leftBushPos2;
+    private Texture bush, texture_grass, swipe, splatScreenTexture, starsTexture, catSpriteMap, restart1, restart2, back1, back2;
+    private TextureRegion imgTextureBushRegionLeft, imgTextureBushRegionRight, imgTextureGrassRegion, imgTextureGrassRegion2;
+    private Vector2 rightBushPos1, rightBushPos2, leftBushPos1, leftBushPos2, backgroundPos, backgroundPos2;
 	
 	private FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
 	private static BitmapFont font;
@@ -77,13 +73,23 @@ public class PlayState extends State {
 	private Sound splat, screech, miaow2;
 	
 	private Random rand;
-
+	
+	private boolean touchLeftWall = false;
+	private boolean touchRightWall = false;
+	
+	//Debug
+	Texture debugTexture = new Texture("images/Splash_Screen.png");
+	TextureRegion debugRectangle;
+	
 	// Public members
     public int points = 0;
+	public boolean catNipActivated = false;
+	public boolean wallSmash = false;
 	
-    protected PlayState(GameStateManager gsm, Assets assets){
-        super(gsm, assets);
-		catSpriteMap = assets.manager.get(Assets.catSpriteMap);
+    protected PlayState(GameStateManager gsm, Assets assets, AdsController adsController){
+        super(gsm, assets, adsController);
+		
+		catSpriteMap = (Texture) assets.manager.get(Assets.catSpriteMap);
         cat = new Cat(CuteCatSplat.WIDTH/2 - catSpriteMap.getWidth()/6, 970, assets);
         touch = new Vector3();
 		
@@ -91,13 +97,13 @@ public class PlayState extends State {
         cam.setToOrtho(false, CuteCatSplat.WIDTH, CuteCatSplat.HEIGHT);
 		
 		// Load textures
-		bush = assets.manager.get(Assets.bush);
-		swipe = assets.manager.get(Assets.swipe);
+		bush = (Texture) assets.manager.get(Assets.bush);
+		swipe = (Texture) assets.manager.get(Assets.swipe);
 		
 		// Load sound
-		miaow2 = assets.manager.get(Assets.miaow2);
-		splat = assets.manager.get(Assets.splat);
-		screech = assets.manager.get(Assets.screech);
+		miaow2 = (Sound) assets.manager.get(Assets.miaow2);
+		splat = (Sound) assets.manager.get(Assets.splat);
+		screech = (Sound) assets.manager.get(Assets.screech);
 		
 		// Create font
 		parameter.size = 150;
@@ -108,17 +114,17 @@ public class PlayState extends State {
 		
 		switch(rand.nextInt(5))
 		{
-			case 0: splatScreenTexture = assets.manager.get(Assets.textureSplatScreen1);
+			case 0: splatScreenTexture = (Texture) assets.manager.get(Assets.textureSplatScreen1);
 					break;
-			case 1: splatScreenTexture = assets.manager.get(Assets.textureSplatScreen2);
+			case 1: splatScreenTexture = (Texture) assets.manager.get(Assets.textureSplatScreen2);
 					break;
-			case 2: splatScreenTexture = assets.manager.get(Assets.textureSplatScreen3);
+			case 2: splatScreenTexture = (Texture) assets.manager.get(Assets.textureSplatScreen3);
 					break;
-			case 3: splatScreenTexture = assets.manager.get(Assets.textureSplatScreen4);
+			case 3: splatScreenTexture = (Texture) assets.manager.get(Assets.textureSplatScreen4);
 					break;
-			case 4: splatScreenTexture = assets.manager.get(Assets.textureSplatScreen5);
+			case 4: splatScreenTexture = (Texture) assets.manager.get(Assets.textureSplatScreen5);
 					break;
-			default: splatScreenTexture = assets.manager.get(Assets.textureSplatScreen1);
+			default: splatScreenTexture = (Texture) assets.manager.get(Assets.textureSplatScreen1);
 					break;
 		}
 		
@@ -139,18 +145,18 @@ public class PlayState extends State {
         texture_grass = new Texture(Gdx.files.internal("images/Grass.png"));
         texture_grass.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         imgTextureGrassRegion = new TextureRegion(texture_grass);
-        imgTextureGrassRegion.setRegion(0, 0, texture_grass.getWidth(),
-										texture_grass.getHeight());
+        imgTextureGrassRegion.setRegion(0, 0, texture_grass.getWidth()* 10,
+										texture_grass.getHeight()* 10);
+		imgTextureGrassRegion2 = new TextureRegion(imgTextureGrassRegion);
+
+
+		backgroundPos = new Vector2(0, cam.position.y - cam.viewportHeight / 2);
+		backgroundPos2 = new Vector2(0, cam.position.y - (cam.viewportHeight / 2) + imgTextureGrassRegion2.getRegionHeight());
 		
-        // Set up scrolling parallax background
-        parallax_background = new ParallaxBackground(new ParallaxLayer[]{
-                new ParallaxLayer(imgTextureGrassRegion, new Vector2(0, 20), new Vector2(0, 0)),
-        }, Assets.width, Assets.height, new Vector2(0, 40));
-		
-		restart1 = assets.manager.get(Assets.restart1);
-		restart2 = assets.manager.get(Assets.restart2);
-		back1 = assets.manager.get(Assets.back1);
-		back2 = assets.manager.get(Assets.back2);
+		restart1 = (Texture) assets.manager.get(Assets.restart1);
+		restart2 = (Texture) assets.manager.get(Assets.restart2);
+		back1 = (Texture) assets.manager.get(Assets.back1);
+		back2 = (Texture) assets.manager.get(Assets.back2);
 		
 		// Create restart button style and add listener
 	    restartButton = buttonCreator.NewButton(restart1, restart2);
@@ -217,13 +223,13 @@ public class PlayState extends State {
 			{
 				@Override
 				public void onRight(float deltaX) {
-					if(!catDead)
+					if(!catDead && !touchRightWall)
 						cat.moveRight(deltaX);
 				}
 
 				@Override
 				public void onLeft(float deltaX) {
-					if(!catDead)
+					if(!catDead && !touchLeftWall)
 						cat.moveLeft(deltaX);
 				}
 
@@ -263,18 +269,56 @@ public class PlayState extends State {
 
     @Override
     public void update(float dt) {
+		if(starsCounter<10)
+		{
+			starsCounter++;
+		}
+		else{
+			starSelect++;
+			if(starSelect > 2)
+				starSelect = 0;
+			switch(starSelect)
+			{
+				case 0:
+					starsTexture = (Texture) assets.manager.get(Assets.textureStarsScreen1);
+					break;
+				case 1:
+					starsTexture = (Texture) assets.manager.get(Assets.textureStarsScreen2);
+					break;
+				case 2:
+					starsTexture = (Texture) assets.manager.get(Assets.textureStarsScreen3);
+					break;
+				default:
+					starsTexture = (Texture) assets.manager.get(Assets.textureStarsScreen3);
+					break;
+			}
+			starsCounter = 0;
+		}
 		// Load PlayState if button selected
-		if(stateToLoad == PLAYSTATE)
-			gsm.set(new PlayState(gsm, assets));
+		if(stateToLoad == PLAYSTATE) {
+			adsController.showInterstitialAd(new Runnable() {
+					@Override
+					public void run() {
+						return;
+					}
+				});
+			gsm.set(new PlayState(gsm, assets, adsController));
+		}
 
 		// Load MenuState if button selected
-		if(stateToLoad == MENUSTATE)
-			gsm.set(new MenuState(gsm, assets));
+		if(stateToLoad == MENUSTATE) {
+			adsController.showInterstitialAd(new Runnable() {
+				@Override
+				public void run() {
+					return;
+				}
+			});
+			gsm.set(new MenuState(gsm, assets, adsController));
+		}
 
 		if (catDead)
 		{
 			cat.splat(dt);
-			parallax_background.render(0f);
 		}
 		else 
 		{
@@ -286,35 +330,67 @@ public class PlayState extends State {
 
 			cam.update();
 
-			// Render parallax background
-			parallax_background.render(dt);
-			
 			handleInput();
 		
 			if(gameStarted)
 			{
+				// Reset wall touch flags
+				touchLeftWall = touchRightWall = false;
+				
         		for(Wall wall : walls){
 					// Reposition walls if they move off screen
             		if(cam.position.y - (cam.viewportHeight / 2) > wall.getPosLeftWall().y + wall.getLeftWall().getRegionHeight())
                 		wall.reposition(wall.getPosLeftWall().y + ((Wall.WALL_WIDTH + WALL_SPACING) * WALL_COUNT));
 
 					// End game of collision occurs
-            		if(wall.collides(cat.getBounds())){
+            		if(!catNipActivated && (wall.collidesWithLeft(cat.getBounds()) || wall.collidesWithRight(cat.getBounds()))){
 						catDead = true;
 						screech.play(0.6f);
 						splat.play(0.8f);
 						Gdx.input.vibrate(300);
                 		setScores();
 					}
+					else if (wall.collidesWithLeft(cat.getBounds()))
+					{
+						wall.explode(dt, "LEFT");
+					}
+					else if (wall.collidesWithRight(cat.getBounds()))
+					{
+						wall.explode(dt, "RIGHT");
+					}
+					
+					if(wall.collidesWithLeft(cat.getSideBounds()))
+						touchLeftWall = true;
+					
+					if(wall.collidesWithRight(cat.getSideBounds()))
+						touchRightWall = true;
 
 					// Add points if fence passed
             		if(wall.pointGained(cat.getBounds()))
                 		points ++;
+
+					// Activate cat nip
+					if(wall.catNipGained(cat.getBounds())){
+						catNipActivated = true;
+						showStars = true;
+					}
         		}
+				
+				if(catNipActivated)
+					catNipCounter++;
+				
+				if(catNipCounter == 400)
+					showStars = false;
+					
+				if(catNipCounter == 500)
+				{
+					catNipActivated = false;
+					catNipCounter = 0;
+				}
 
 				// End game if cat hits bushes
-        		if(cat.getPosition().x <= bush.getWidth() - 50 ||
-                		cat.getPosition().x >= (cam.viewportWidth - bush.getWidth() - 25)){
+        		if(!catNipActivated && (cat.getPosition().x <= bush.getWidth() - 50 ||
+                		cat.getPosition().x >= (cam.viewportWidth - bush.getWidth() - 25))){
             		catDead = true;
 					screech.play(0.6f);
 					splat.play(0.8f);
@@ -330,18 +406,29 @@ public class PlayState extends State {
 		// Draw everything to sprite batch
 		sb.begin();
 			sb.setProjectionMatrix(cam.combined);
-            sb.draw(cat.getTexture(), cat.getPosition().x, cat.getPosition().y);
+			sb.draw(imgTextureGrassRegion, backgroundPos.x, backgroundPos.y);
+			sb.draw(imgTextureGrassRegion2, backgroundPos2.x, backgroundPos2.y);
             if(gameStarted)
 			{
 				for(Wall wall : walls) {
-                sb.draw(wall.getLeftWall(), wall.getPosLeftWall().x, wall.getPosLeftWall().y);
-                sb.draw(wall.getRightWall(), wall.getPosRightWall().x, wall.getPosRightWall().y);
+                	sb.draw(wall.getLeftWall(), wall.getPosLeftWall().x, wall.getPosLeftWall().y);
+                	sb.draw(wall.getRightWall(), wall.getPosRightWall().x, wall.getPosRightWall().y);
+					sb.draw(wall.getCatNip(), wall.getPosCatNip().x, wall.getPosCatNip().y);
+
+					//Debug
+
+					//Debug
+					debugRectangle = new TextureRegion(debugTexture,(int)wall.getDebugPointGate().getWidth(), (int)wall.getDebugPointGate().getHeight());
+					
+					sb.draw(debugRectangle, wall.getDebugPointGate().getX(),
+					wall.getDebugPointGate().getY());
             	}
 			}
 			else
 			{
 				sb.draw(swipe, (cam.viewportWidth / 2) - (swipe.getWidth() / 2), cat.getPosition().y - 300);
 			}
+			sb.draw(cat.getTexture(), cat.getPosition().x, cat.getPosition().y);
             sb.draw(imgTextureBushRegionRight, rightBushPos1.x, rightBushPos1.y);
             sb.draw(imgTextureBushRegionRight, rightBushPos2.x, rightBushPos2.y);
             sb.draw(imgTextureBushRegionLeft, leftBushPos1.x, leftBushPos1.y);
@@ -354,6 +441,11 @@ public class PlayState extends State {
 			sb.end();
 			stage.act();
 			stage.draw();
+		}
+		else 
+		if(showStars){
+			sb.draw(starsTexture, CuteCatSplat.WIDTH/2 - starsTexture.getWidth()/2, cat.getPosition().y - 500);
+			sb.end();
 		}
 		else
 			sb.end();
@@ -377,10 +469,17 @@ public class PlayState extends State {
             rightBushPos2.add(0, bush.getHeight() * 2);
 
         if((cam.position.y - cam.viewportHeight / 2) > (leftBushPos1.y + bush.getHeight()))
-            leftBushPos1.add(0, bush.getHeight() * 2);
+			leftBushPos1.add(0, bush.getHeight() * 2);
 
-        if((cam.position.y - cam.viewportHeight / 2) > (leftBushPos2.y + bush.getHeight()))
-            leftBushPos2.add(0, bush.getHeight() * 2);
+		if((cam.position.y - cam.viewportHeight / 2) > (leftBushPos2.y + bush.getHeight()))
+			leftBushPos2.add(0, bush.getHeight() * 2);
+
+		if((cam.position.y - cam.viewportHeight / 2) > (backgroundPos.y + imgTextureGrassRegion.getRegionHeight()))
+			backgroundPos.add(0, imgTextureGrassRegion.getRegionHeight() * 2);
+
+		if((cam.position.y - cam.viewportHeight / 2) > (backgroundPos2.y + imgTextureGrassRegion2.getRegionHeight()))
+			backgroundPos2.add(0, imgTextureGrassRegion2.getRegionHeight() * 2);
+
     }
 	
 	private void setScores(){

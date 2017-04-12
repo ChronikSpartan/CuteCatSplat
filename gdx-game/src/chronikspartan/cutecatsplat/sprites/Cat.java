@@ -21,7 +21,7 @@ public class Cat{
 	private static final int NUMBER_OF_DIRECTIONAL_FRAMES = 3;
     private Vector3 position;
     private Vector3 velocity;
-    private Rectangle bounds;
+    private Rectangle bounds, sideBounds;
     private Animation catAnimation, splatAnimation, leftAnimation, rightAnimation;
 	private Integer splatFrameCount = 0;
 
@@ -38,18 +38,20 @@ public class Cat{
 
         velocity = new Vector3(0, 0, 0);
 		
-        catTexture = assets.manager.get(Assets.catSpriteMap);
-		splatTexture = assets.manager.get(Assets.splatTexture);
-		leftTexture = assets.manager.get(Assets.leftTexture);
-		rightTexture = assets.manager.get(Assets.rightTexture);
-		
-        catAnimation = new Animation(new TextureRegion(catTexture), NUMBER_OF_CAT_SPRITE_IMAGES, 0.4f);
-		splatAnimation = new Animation(new TextureRegion(splatTexture), NUMBER_OF_SPLAT_FRAMES, 0.2f);
-		leftAnimation = new Animation(new TextureRegion(leftTexture), NUMBER_OF_DIRECTIONAL_FRAMES, 0.4f);
-		rightAnimation = new Animation(new TextureRegion(rightTexture), NUMBER_OF_DIRECTIONAL_FRAMES, 0.4f);
+        catTexture = (Texture) assets.manager.get(Assets.catSpriteMap);
+		splatTexture = (Texture) assets.manager.get(Assets.splatTexture);
+		leftTexture = (Texture) assets.manager.get(Assets.leftTexture);
+		rightTexture = (Texture) assets.manager.get(Assets.rightTexture);
+
+        catAnimation = new Animation(new TextureRegion(catTexture), NUMBER_OF_CAT_SPRITE_IMAGES, 0.4f, true);
+		splatAnimation = new Animation(new TextureRegion(splatTexture), NUMBER_OF_SPLAT_FRAMES, 0.2f, false);
+		leftAnimation = new Animation(new TextureRegion(leftTexture), NUMBER_OF_DIRECTIONAL_FRAMES, 0.4f, true);
+		rightAnimation = new Animation(new TextureRegion(rightTexture), NUMBER_OF_DIRECTIONAL_FRAMES, 0.4f, true);
 		
 		// Set cat bounds
-        bounds = new Rectangle(x + 3, y, (catTexture.getWidth() / NUMBER_OF_CAT_SPRITE_IMAGES)- 6, catTexture.getHeight());
+        bounds = new Rectangle(x + 15, y + (catTexture.getHeight()/1.2f), (catTexture.getWidth() / NUMBER_OF_CAT_SPRITE_IMAGES)- 30, catTexture.getHeight()/10);
+		sideBounds = new Rectangle(x + 12, y, (catTexture.getWidth() / NUMBER_OF_CAT_SPRITE_IMAGES)- 24, catTexture.getHeight());
+		
     }
 
     public void update(float dt){
@@ -68,7 +70,9 @@ public class Cat{
         position.add(0, FORWARD_MOVEMENT * dt, 0);
 		
 		// Move bounds with cat.
-        bounds.setPosition(position.x + 3, position.y);
+        bounds.setPosition(position.x + 15, position.y + (catTexture.getHeight()/1.2f));
+		sideBounds.setPosition(position.x + 12, position.y);
+		
     }
 	
 	public void moveRight(float deltaX)
@@ -111,6 +115,10 @@ public class Cat{
     public Rectangle getBounds(){
         return bounds;
     }
+	
+	public Rectangle getSideBounds(){
+        return sideBounds;
+    }
 
     public Vector3 getPosition() {
         return position;
@@ -119,8 +127,6 @@ public class Cat{
     public TextureRegion getTexture() {
 		if(catDead)
 		{
-			if(splatAnimation.getFrameNumber() == NUMBER_OF_SPLAT_FRAMES - 1)
-				splatAnimation.callFinalFrame();
 			return splatAnimation.getFrame();
 		}
 		else if(moveLeft)

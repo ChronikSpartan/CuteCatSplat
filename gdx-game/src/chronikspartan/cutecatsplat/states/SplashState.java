@@ -1,5 +1,6 @@
 package chronikspartan.cutecatsplat.states;
 
+import chronikspartan.cutecatsplat.AdsController;
 import chronikspartan.cutecatsplat.CuteCatSplat;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -17,8 +18,8 @@ public class SplashState extends State {
 	private Texture splashScreen;
 	private int stateToLoad = 0;
 
-    public SplashState(GameStateManager gsm, Assets assets){
-        super(gsm, assets);
+    public SplashState(GameStateManager gsm, Assets assets, AdsController adsController){
+        super(gsm, assets, adsController);
 		splashScreen = new Texture("images/Splash_Screen.png");
 		
 		// Set up camera
@@ -35,7 +36,7 @@ public class SplashState extends State {
     public void update(float dt) {
 		// Load PlayState if button selected
 		if(stateToLoad == MENUSTATE)
-			gsm.set(new MenuState(gsm, assets));
+			gsm.set(new MenuState(gsm, assets, adsController));
 		
     }
 
