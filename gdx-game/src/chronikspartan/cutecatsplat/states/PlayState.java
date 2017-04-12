@@ -77,10 +77,6 @@ public class PlayState extends State {
 	private boolean touchLeftWall = false;
 	private boolean touchRightWall = false;
 	
-	//Debug
-	Texture debugTexture = new Texture("images/Splash_Screen.png");
-	TextureRegion debugRectangle;
-	
 	// Public members
     public int points = 0;
 	public boolean catNipActivated = false;
@@ -414,14 +410,6 @@ public class PlayState extends State {
                 	sb.draw(wall.getLeftWall(), wall.getPosLeftWall().x, wall.getPosLeftWall().y);
                 	sb.draw(wall.getRightWall(), wall.getPosRightWall().x, wall.getPosRightWall().y);
 					sb.draw(wall.getCatNip(), wall.getPosCatNip().x, wall.getPosCatNip().y);
-
-					//Debug
-
-					//Debug
-					debugRectangle = new TextureRegion(debugTexture,(int)wall.getDebugPointGate().getWidth(), (int)wall.getDebugPointGate().getHeight());
-					
-					sb.draw(debugRectangle, wall.getDebugPointGate().getX(),
-					wall.getDebugPointGate().getY());
             	}
 			}
 			else

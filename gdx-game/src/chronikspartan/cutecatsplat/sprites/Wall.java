@@ -61,11 +61,6 @@ public class Wall {
 		pointGate.y = pointGate.y + boundsLeft.height;
 		pointGate.x = 0;
 	}
-	
-	public Rectangle getDebugPointGate()
-	{
-		return pointGate;
-	}
 
     public TextureRegion getLeftWall() {
 		if(explode && side =="RIGHT"){
