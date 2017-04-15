@@ -148,19 +148,19 @@ public class CatSelectState extends State {
         Table menuTable = new Table();
 		menuTable.add().height(sparkyButton.getHeight());
 		menuTable.row();
-		menuTable.add(sparkyButton).height(sparkyButton.getHeight()/2).width(sparkyButton.getWidth()/2);
+		menuTable.add(sparkyButton).height(sparkyButton.getHeight()/2.5f).width(sparkyButton.getWidth()/2.5f);
         menuTable.row();
         menuTable.add().height(sparkyButton.getHeight()/3);
 		menuTable.row();
-		menuTable.add(leroyButton).height(sparkyButton.getHeight()/2).width(sparkyButton.getWidth()/2);
+		menuTable.add(leroyButton).height(sparkyButton.getHeight()/2.5f).width(sparkyButton.getWidth()/2.5f);
         menuTable.row();
         menuTable.add().height(sparkyButton.getHeight()/3);
 		menuTable.row();
-		menuTable.add(tillyButton).height(sparkyButton.getHeight()/2).width(sparkyButton.getWidth()/2);
+		menuTable.add(tillyButton).height(sparkyButton.getHeight()/2.5f).width(sparkyButton.getWidth()/2.5f);
         menuTable.row();
         menuTable.add().height(sparkyButton.getHeight()/3);
         menuTable.row();
-        menuTable.add(trampyButton).height(sparkyButton.getHeight()/2).width(sparkyButton.getWidth()/2);
+        menuTable.add(trampyButton).height(sparkyButton.getHeight()/2.5f).width(sparkyButton.getWidth()/2.5f);
         menuTable.setFillParent(true);
 
 		// Create stage and set for input processor

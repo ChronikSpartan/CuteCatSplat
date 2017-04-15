@@ -246,7 +246,7 @@ public class PlayState extends State {
 				
 			});
 		
-		InputMultiplexer multiplexer = new InputMultiplexer(stage, backProcessor, gestureDetector);
+		InputMultiplexer multiplexer = new InputMultiplexer(gestureDetector, stage, backProcessor);
         Gdx.input.setInputProcessor(multiplexer);
 		Gdx.input.setCatchBackKey(true);
     }
