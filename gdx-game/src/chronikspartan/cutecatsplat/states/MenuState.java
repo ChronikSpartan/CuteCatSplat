@@ -32,7 +32,7 @@ import chronikspartan.cutecatsplat.data.*;
  */
 
 public class MenuState extends State {
-	private static final int PLAYSTATE = 1;
+	private static final int CATSELECTSTATE = 4;
 	private static final int RANKINGSSTATE = 2;
 	
     private Texture background, play1, play2, rankings1, rankings2;
@@ -76,7 +76,7 @@ public class MenuState extends State {
 			}
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button){
 				// Set PlayState to load
-				stateToLoad = PLAYSTATE;
+				stateToLoad = CATSELECTSTATE;
 				miaow.play();
 			}
 		});
@@ -135,8 +135,8 @@ public class MenuState extends State {
     @Override
     public void update(float dt) {
 		// Load PlayState if button selected
-		if(stateToLoad == PLAYSTATE)
-			gsm.set(new PlayState(gsm, assets, adsController));
+		if(stateToLoad == CATSELECTSTATE)
+			gsm.set(new CatSelectState(gsm, assets, adsController));
 			
 		// Load MenuState if button selected
 		if(stateToLoad == RANKINGSSTATE)

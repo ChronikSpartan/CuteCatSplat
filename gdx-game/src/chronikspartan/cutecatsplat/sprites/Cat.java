@@ -31,17 +31,45 @@ public class Cat{
 	private boolean moveLeft = false;
 	private boolean moveRight = false;
 
-    public Cat(int x, int y, Assets assets){
+    public Cat(int x, int y, Assets assets, String name){
 
 		// Set original cat position
         position = new Vector3(x, y, 0);
 
         velocity = new Vector3(0, 0, 0);
 		
-        catTexture = (Texture) assets.manager.get(Assets.catSpriteMap);
-		splatTexture = (Texture) assets.manager.get(Assets.splatTexture);
-		leftTexture = (Texture) assets.manager.get(Assets.leftTexture);
-		rightTexture = (Texture) assets.manager.get(Assets.rightTexture);
+		switch (name){
+			case "Sparky":
+				catTexture = (Texture) assets.manager.get(Assets.catSpriteMap);
+				splatTexture = (Texture) assets.manager.get(Assets.splatTexture);
+				leftTexture = (Texture) assets.manager.get(Assets.leftTexture);
+				rightTexture = (Texture) assets.manager.get(Assets.rightTexture);
+				break;
+			case "Leroy":
+				catTexture = (Texture) assets.manager.get(Assets.leroySpriteMap);
+				splatTexture = (Texture) assets.manager.get(Assets.splatTexture);
+				leftTexture = (Texture) assets.manager.get(Assets.leroyLeftTexture);
+				rightTexture = (Texture) assets.manager.get(Assets.leroyRightTexture);
+				break;
+			case "Tilly":
+				catTexture = (Texture) assets.manager.get(Assets.tillySpriteMap);
+				splatTexture = (Texture) assets.manager.get(Assets.splatTexture);
+				leftTexture = (Texture) assets.manager.get(Assets.tillyLeftTexture);
+				rightTexture = (Texture) assets.manager.get(Assets.tillyRightTexture);
+				break;
+			case "Trampy":
+				catTexture = (Texture) assets.manager.get(Assets.trampySpriteMap);
+				splatTexture = (Texture) assets.manager.get(Assets.splatTexture);
+				leftTexture = (Texture) assets.manager.get(Assets.trampyLeftTexture);
+				rightTexture = (Texture) assets.manager.get(Assets.trampyRightTexture);
+				break;
+			default:
+				catTexture = (Texture) assets.manager.get(Assets.catSpriteMap);
+				splatTexture = (Texture) assets.manager.get(Assets.splatTexture);
+				leftTexture = (Texture) assets.manager.get(Assets.leftTexture);
+				rightTexture = (Texture) assets.manager.get(Assets.rightTexture);
+				break;
+		}
 
         catAnimation = new Animation(new TextureRegion(catTexture), NUMBER_OF_CAT_SPRITE_IMAGES, 0.4f, true);
 		splatAnimation = new Animation(new TextureRegion(splatTexture), NUMBER_OF_SPLAT_FRAMES, 0.2f, false);

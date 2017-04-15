@@ -57,7 +57,8 @@ public class PlayState extends State {
 	private int starsCounter = 0;
 	private int starSelect = 0;
 	private int catNipCounter = 0;
-
+	private int catNipSetCounter = 1000;
+	
     private Vector3 touch;
     private Texture bush, texture_grass, swipe, splatScreenTexture, starsTexture, catSpriteMap, restart1, restart2, back1, back2;
     private TextureRegion imgTextureBushRegionLeft, imgTextureBushRegionRight, imgTextureGrassRegion, imgTextureGrassRegion2;
@@ -77,16 +78,20 @@ public class PlayState extends State {
 	private boolean touchLeftWall = false;
 	private boolean touchRightWall = false;
 	
+	private String catName;
+	
 	// Public members
     public int points = 0;
 	public boolean catNipActivated = false;
 	public boolean wallSmash = false;
 	
-    protected PlayState(GameStateManager gsm, Assets assets, AdsController adsController){
+    protected PlayState(GameStateManager gsm, Assets assets, AdsController adsController, String catName){
         super(gsm, assets, adsController);
 		
+		this.catName = catName;
+		
 		catSpriteMap = (Texture) assets.manager.get(Assets.catSpriteMap);
-        cat = new Cat(CuteCatSplat.WIDTH/2 - catSpriteMap.getWidth()/6, 970, assets);
+        cat = new Cat(CuteCatSplat.WIDTH/2 - catSpriteMap.getWidth()/6, 970, assets, catName);
         touch = new Vector3();
 		
 		// Set camera size
@@ -298,7 +303,7 @@ public class PlayState extends State {
 						return;
 					}
 				});
-			gsm.set(new PlayState(gsm, assets, adsController));
+			gsm.set(new PlayState(gsm, assets, adsController, catName));
 		}
 
 		// Load MenuState if button selected
@@ -319,6 +324,7 @@ public class PlayState extends State {
 		else 
 		{
 			updateBush();
+			catNipSetCounter++;
 			
 			// Update cat and camera position
 			cat.update(dt);
@@ -335,8 +341,12 @@ public class PlayState extends State {
 				
         		for(Wall wall : walls){
 					// Reposition walls if they move off screen
-            		if(cam.position.y - (cam.viewportHeight / 2) > wall.getPosLeftWall().y + wall.getLeftWall().getRegionHeight())
-                		wall.reposition(wall.getPosLeftWall().y + ((Wall.WALL_WIDTH + WALL_SPACING) * WALL_COUNT));
+            		if(cam.position.y - (cam.viewportHeight / 2) > wall.getPosLeftWall().y + wall.wallHeight){
+                		if(wall.reposition(wall.getPosLeftWall().y + ((Wall.WALL_WIDTH + WALL_SPACING) * WALL_COUNT), catNipSetCounter))
+						{
+							catNipSetCounter = 0;
+						}
+					}
 
 					// End game of collision occurs
             		if(!catNipActivated && (wall.collidesWithLeft(cat.getBounds()) || wall.collidesWithRight(cat.getBounds()))){
@@ -355,33 +365,32 @@ public class PlayState extends State {
 						wall.explode(dt, "RIGHT");
 					}
 					
-					if(wall.collidesWithLeft(cat.getSideBounds()))
-						touchLeftWall = true;
-					
-					if(wall.collidesWithRight(cat.getSideBounds()))
-						touchRightWall = true;
+					touchLeftWall = wall.collidesWithLeft(cat.getSideBounds());
+					touchRightWall = wall.collidesWithRight(cat.getSideBounds());
 
 					// Add points if fence passed
             		if(wall.pointGained(cat.getBounds()))
                 		points ++;
 
-					// Activate cat nip
+					// Activate cat nip and stars overlay
 					if(wall.catNipGained(cat.getBounds())){
-						catNipActivated = true;
-						showStars = true;
+						catNipActivated = showStars = true;
 					}
         		}
 				
 				if(catNipActivated)
 					catNipCounter++;
 				
-				if(catNipCounter == 400)
-					showStars = false;
-					
-				if(catNipCounter == 500)
-				{
-					catNipActivated = false;
-					catNipCounter = 0;
+				switch(catNipCounter){
+					case 400:
+						showStars = false;
+						break;
+					case 500:
+						catNipActivated = false;
+						catNipCounter = 0;
+						break;
+					default:
+						break;
 				}
 
 				// End game if cat hits bushes

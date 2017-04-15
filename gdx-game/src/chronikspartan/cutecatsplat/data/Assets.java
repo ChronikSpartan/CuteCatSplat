@@ -15,12 +15,25 @@ public class Assets {
 	
 	public static Preferences prefs = Gdx.app.getPreferences("CuteCatSplat");
 	
+	public static AssetDescriptor catIconSparky = new AssetDescriptor<Texture>("images/Cat_Icon_Sparky.png", Texture.class);
+	public static AssetDescriptor catIconLeroy = new AssetDescriptor<Texture>("images/Cat_Icon_Leroy.png", Texture.class);
+	public static AssetDescriptor catIconTilly = new AssetDescriptor<Texture>("images/Cat_Icon_Tilly.png", Texture.class);
+	public static AssetDescriptor catIconTrampy = new AssetDescriptor<Texture>("images/Cat_Icon_Trampy.png", Texture.class);
 	public static AssetDescriptor catSpriteMap = new AssetDescriptor<Texture>("images/Cat_Sprite_Map.png", Texture.class);
+	public static AssetDescriptor leroySpriteMap = new AssetDescriptor<Texture>("images/Cat_Sprite_Map_Leroy.png", Texture.class);
+	public static AssetDescriptor tillySpriteMap = new AssetDescriptor<Texture>("images/Cat_Sprite_Map_Tilly.png", Texture.class);
+	public static AssetDescriptor trampySpriteMap = new AssetDescriptor<Texture>("images/Cat_Sprite_Map_Trampy.png", Texture.class);
 	public static AssetDescriptor wallExplode = new AssetDescriptor<Texture>("images/Wall_Explode.png", Texture.class);
 	public static AssetDescriptor catNip = new AssetDescriptor<Texture>("images/Cat_Nip.png", Texture.class);
 	public static AssetDescriptor splatTexture = new AssetDescriptor<Texture>("images/Splat_Sprite_Map.png", Texture.class);
 	public static AssetDescriptor leftTexture = new AssetDescriptor<Texture>("images/Cat_Sprite_Map_Left.png", Texture.class);
 	public static AssetDescriptor rightTexture = new AssetDescriptor<Texture>("images/Cat_Sprite_Map_Right.png", Texture.class);
+	public static AssetDescriptor leroyLeftTexture = new AssetDescriptor<Texture>("images/Cat_Sprite_Map_Left_Leroy.png", Texture.class);
+	public static AssetDescriptor leroyRightTexture = new AssetDescriptor<Texture>("images/Cat_Sprite_Map_Right_Leroy.png", Texture.class);
+	public static AssetDescriptor tillyLeftTexture = new AssetDescriptor<Texture>("images/Cat_Sprite_Map_Left_Tilly.png", Texture.class);
+	public static AssetDescriptor tillyRightTexture = new AssetDescriptor<Texture>("images/Cat_Sprite_Map_Right_Tilly.png", Texture.class);
+	public static AssetDescriptor trampyLeftTexture = new AssetDescriptor<Texture>("images/Cat_Sprite_Map_Left_Trampy.png", Texture.class);
+	public static AssetDescriptor trampyRightTexture = new AssetDescriptor<Texture>("images/Cat_Sprite_Map_Right_Trampy.png", Texture.class);
 	public static AssetDescriptor textureStarsScreen1 = new AssetDescriptor<Texture>("images/Cat_Nip_Stars_1.png", Texture.class);
 	public static AssetDescriptor textureStarsScreen2 = new AssetDescriptor<Texture>("images/Cat_Nip_Stars_2.png", Texture.class);
 	public static AssetDescriptor textureStarsScreen3 = new AssetDescriptor<Texture>("images/Cat_Nip_Stars_3.png", Texture.class);
@@ -55,12 +68,25 @@ public class Assets {
     public static int height = Gdx.graphics.getHeight();
 	
     public void load(){
+		manager.load(catIconSparky);
+		manager.load(catIconLeroy);
+		manager.load(catIconTilly);
+		manager.load(catIconTrampy);
 		manager.load(catSpriteMap);
+		manager.load(leroySpriteMap);
+		manager.load(tillySpriteMap);
+		manager.load(trampySpriteMap);
 		manager.load(wallExplode);
 		manager.load(catNip);
 		manager.load(splatTexture);
 		manager.load(leftTexture);
 		manager.load(rightTexture);
+		manager.load(leroyLeftTexture);
+		manager.load(leroyRightTexture);
+		manager.load(tillyLeftTexture);
+		manager.load(tillyRightTexture);
+		manager.load(trampyLeftTexture);
+		manager.load(trampyRightTexture);
 		manager.load(swipe);
 		manager.load(wall);
 		manager.load(bush);
