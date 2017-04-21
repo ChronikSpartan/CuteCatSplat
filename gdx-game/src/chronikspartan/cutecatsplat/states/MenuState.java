@@ -19,6 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 
 import chronikspartan.cutecatsplat.CuteCatSplat;
 import chronikspartan.cutecatsplat.CreateButton;
@@ -26,6 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.*;
 import chronikspartan.cutecatsplat.*;
 import com.badlogic.gdx.utils.*;
 import chronikspartan.cutecatsplat.data.*;
+import org.apache.http.ssl.*;
 
 /**
  * Created by cube on 1/20/2017.
@@ -41,6 +43,9 @@ public class MenuState extends State {
 	private CreateButton buttonCreator = new CreateButton();
 	private Music theme;
 	private Sound purr, miaow;
+	private Dialog rateMeBox;
+	
+	private AppRater appRater;
 	
 	private int stateToLoad = 0;
 	
@@ -49,6 +54,8 @@ public class MenuState extends State {
 		// Set up camera
 		cam.setToOrtho(false, CuteCatSplat.WIDTH, CuteCatSplat.HEIGHT);
 		
+		appRater = new AppRater();
+		rateMeBox = appRater.showRateDialog();
 		
 		theme = (Music) assets.manager.get(Assets.theme);
 		miaow = (Sound) assets.manager.get(Assets.miaow);
@@ -123,6 +130,9 @@ public class MenuState extends State {
         stage = new Stage(new StretchViewport(CuteCatSplat.WIDTH/2.5f, CuteCatSplat.HEIGHT/2.5f));
 		stage.addActor(menuTable);
 		
+		if(rateMeBox != null)
+			rateMeBox.show(stage);
+		
 		InputMultiplexer multiplexer = new InputMultiplexer(stage, backProcessor);
         Gdx.input.setInputProcessor(multiplexer);
 		Gdx.input.setCatchBackKey(true);
@@ -157,5 +167,6 @@ public class MenuState extends State {
     @Override
     public void dispose(){
         assets.dispose();
+		appRater.dispose();
     }
 }

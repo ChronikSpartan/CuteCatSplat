@@ -57,6 +57,7 @@ public class PlayState extends State {
 	private int starsCounter = 0;
 	private int starSelect = 0;
 	private int catNipCounter = 0;
+	private int catNipCollected = 0;
 	private int catNipSetCounter = 1000;
 	
     private Vector3 touch;
@@ -371,10 +372,17 @@ public class PlayState extends State {
 					// Add points if fence passed
             		if(wall.pointGained(cat.getBounds()))
                 		points ++;
+						
+					if(points > 10)
+						Assets.unlockTilly();
+						
+					if(catNipCollected == 5)
+						Assets.unlockTrampy();
 
 					// Activate cat nip and stars overlay
 					if(wall.catNipGained(cat.getBounds())){
 						catNipActivated = showStars = true;
+						catNipCollected++;
 					}
         		}
 				

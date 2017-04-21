@@ -15,6 +15,7 @@ public class Assets {
 	
 	public static Preferences prefs = Gdx.app.getPreferences("CuteCatSplat");
 	
+	public static AssetDescriptor catIconShadow = new AssetDescriptor<Texture>("images/Cat_Icon_Shadow.png", Texture.class);
 	public static AssetDescriptor catIconSparky = new AssetDescriptor<Texture>("images/Cat_Icon_Sparky.png", Texture.class);
 	public static AssetDescriptor catIconLeroy = new AssetDescriptor<Texture>("images/Cat_Icon_Leroy.png", Texture.class);
 	public static AssetDescriptor catIconTilly = new AssetDescriptor<Texture>("images/Cat_Icon_Tilly.png", Texture.class);
@@ -68,6 +69,7 @@ public class Assets {
     public static int height = Gdx.graphics.getHeight();
 	
     public void load(){
+		manager.load(catIconShadow);
 		manager.load(catIconSparky);
 		manager.load(catIconLeroy);
 		manager.load(catIconTilly);
@@ -159,6 +161,39 @@ public class Assets {
 	// Retrieves the current 3rd place high score
 	public static int getHighScore3() {
 		return prefs.getInteger("highScore3");
+	}
+	
+	// Unlocks Leroy
+	public static void unlockLeroy() {
+		prefs.putBoolean("LeroyUnlocked", true);
+		prefs.flush();
+	}
+
+	// Retrieves if Leroy is unlocked
+	public static Boolean checkLeroy() {
+		return prefs.getBoolean("LeroyUnlocked");
+	}
+	
+	// Unlocks Leroy
+	public static void unlockTilly() {
+		prefs.putBoolean("TillyUnlocked", true);
+		prefs.flush();
+	}
+
+	// Retrieves if Leroy is unlocked
+	public static Boolean checkTilly() {
+		return prefs.getBoolean("TillyUnlocked");
+	}
+	
+	// Unlocks Leroy
+	public static void unlockTrampy() {
+		prefs.putBoolean("TrampyUnlocked", true);
+		prefs.flush();
+	}
+
+	// Retrieves if Leroy is unlocked
+	public static Boolean checkTrampy() {
+		return prefs.getBoolean("TrampyUnlocked");
 	}
 	
 	public void dispose()

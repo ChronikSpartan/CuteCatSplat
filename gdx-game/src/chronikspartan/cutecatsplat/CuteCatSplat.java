@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import android.content.Context;
+
 import chronikspartan.cutecatsplat.states.GameStateManager;
 import chronikspartan.cutecatsplat.states.SplashState;
 import chronikspartan.cutecatsplat.data.Assets;
@@ -37,8 +39,6 @@ public class CuteCatSplat extends ApplicationAdapter{
 		assets.load();
         gsm = new GameStateManager();
         gsm.push(new SplashState(gsm, assets, adsController));
-
-
     }
 
     @Override
