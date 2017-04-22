@@ -10,6 +10,7 @@ import android.widget.RelativeLayout;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.android.*;
+
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdRequest;

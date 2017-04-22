@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Google Play game services IDs.
+Save this file as res/values/games-ids.xml in your project.
+-->
+<resources>
+    <string name="app_id">236235648881</string>
+    <string name="achievement_first_gate_baby">CgkI8d73hfAGEAIQAQ</string>
+    <string name="achievement_getting_the_hang_of_it">CgkI8d73hfAGEAIQAg</string>
+    <string name="achievement_the_ninth_gate">CgkI8d73hfAGEAIQAw</string>
+    <string name="achievement_what_is_this">CgkI8d73hfAGEAIQBA</string>
+    <string name="achievement_420_cat">CgkI8d73hfAGEAIQBQ</string>
+    <string name="leaderboard_world_championship">CgkI8d73hfAGEAIQAA</string>
+</resources>

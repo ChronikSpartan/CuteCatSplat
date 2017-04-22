@@ -37,8 +37,6 @@ public class CuteCatSplat extends ApplicationAdapter{
 		assets.load();
         gsm = new GameStateManager();
         gsm.push(new SplashState(gsm, assets, adsController));
-
-
     }
 
     @Override

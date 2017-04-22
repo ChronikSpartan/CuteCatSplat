@@ -13,14 +13,15 @@ public class Animation {
     private float currentFrameTime;
     private int frameCount;
     private int frame;
-	private boolean finalFrame = false;
+	private boolean loopable = false;
 
-    public Animation(TextureRegion region, int frameCount, float cycleTime){
+    public Animation(TextureRegion region, int frameCount, float cycleTime, boolean loopable){
         frames = new Array<TextureRegion>();
         int frameWidth = region.getRegionWidth() / frameCount;
         for (int i = 0; i < frameCount; i++)
             frames.add(new TextureRegion(region, i * frameWidth, 0, frameWidth, region.getRegionHeight()));
         this.frameCount = frameCount;
+		this.loopable = loopable;
         maxFrameTime = cycleTime / frameCount;
         frame = 0;
     }
@@ -32,11 +33,17 @@ public class Animation {
             currentFrameTime = 0;
         }
 
-        if((frame >= frameCount) && !finalFrame)
+        if((frame >= frameCount) && loopable){
             frame = 0;
-		else if(finalFrame)
-			frame = frameCount - 1;
+		}else if(frame >= frameCount)
+		{
+			frame--;
+		}
     }
+	
+	public void reset(){
+		frame = 0;
+	}
 
     public TextureRegion getFrame(){
         return frames.get(frame);
@@ -44,10 +51,6 @@ public class Animation {
 	
 	public int getFrameNumber(){
 		return frame;
-	}
-	
-	public void callFinalFrame(){
-		finalFrame = true;
 	}
 
 }

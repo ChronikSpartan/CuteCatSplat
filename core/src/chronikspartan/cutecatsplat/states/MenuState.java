@@ -19,6 +19,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+
 
 import chronikspartan.cutecatsplat.CuteCatSplat;
 import chronikspartan.cutecatsplat.CreateButton;
@@ -32,7 +34,7 @@ import chronikspartan.cutecatsplat.data.*;
  */
 
 public class MenuState extends State {
-	private static final int PLAYSTATE = 1;
+	private static final int CATSELECTSTATE = 4;
 	private static final int RANKINGSSTATE = 2;
 	
     private Texture background, play1, play2, rankings1, rankings2;
@@ -41,6 +43,9 @@ public class MenuState extends State {
 	private CreateButton buttonCreator = new CreateButton();
 	private Music theme;
 	private Sound purr, miaow;
+	private Dialog rateMeBox;
+	
+	private AppRater appRater;
 	
 	private int stateToLoad = 0;
 	
@@ -49,6 +54,8 @@ public class MenuState extends State {
 		// Set up camera
 		cam.setToOrtho(false, CuteCatSplat.WIDTH, CuteCatSplat.HEIGHT);
 		
+		appRater = new AppRater();
+		rateMeBox = appRater.showRateDialog();
 		
 		theme = (Music) assets.manager.get(Assets.theme);
 		miaow = (Sound) assets.manager.get(Assets.miaow);
@@ -76,7 +83,7 @@ public class MenuState extends State {
 			}
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button){
 				// Set PlayState to load
-				stateToLoad = PLAYSTATE;
+				stateToLoad = CATSELECTSTATE;
 				miaow.play();
 			}
 		});
@@ -123,6 +130,9 @@ public class MenuState extends State {
         stage = new Stage(new StretchViewport(CuteCatSplat.WIDTH/2.5f, CuteCatSplat.HEIGHT/2.5f));
 		stage.addActor(menuTable);
 		
+		if(rateMeBox != null)
+			rateMeBox.show(stage);
+		
 		InputMultiplexer multiplexer = new InputMultiplexer(stage, backProcessor);
         Gdx.input.setInputProcessor(multiplexer);
 		Gdx.input.setCatchBackKey(true);
@@ -135,8 +145,8 @@ public class MenuState extends State {
     @Override
     public void update(float dt) {
 		// Load PlayState if button selected
-		if(stateToLoad == PLAYSTATE)
-			gsm.set(new PlayState(gsm, assets, adsController));
+		if(stateToLoad == CATSELECTSTATE)
+			gsm.set(new CatSelectState(gsm, assets, adsController));
 			
 		// Load MenuState if button selected
 		if(stateToLoad == RANKINGSSTATE)
@@ -157,5 +167,6 @@ public class MenuState extends State {
     @Override
     public void dispose(){
         assets.dispose();
+		appRater.dispose();
     }
 }

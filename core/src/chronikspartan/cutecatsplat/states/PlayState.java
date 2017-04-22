@@ -13,7 +13,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
-
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -50,12 +49,18 @@ public class PlayState extends State {
     private Cat cat;
 	private boolean catDead = false;
 	private boolean gameStarted = false;
+	private boolean showStars = false;
 	private Array<Wall> walls;
 	
 	private int stateToLoad = 0;
-
+	private int starsCounter = 0;
+	private int starSelect = 0;
+	private int catNipCounter = 0;
+	private int catNipCollected = 0;
+	private int catNipSetCounter = 1000;
+	
     private Vector3 touch;
-    private Texture bush, texture_grass, swipe, splatScreenTexture, catSpriteMap, restart1, restart2, back1, back2;
+    private Texture bush, texture_grass, swipe, splatScreenTexture, starsTexture, catSpriteMap, restart1, restart2, back1, back2;
     private TextureRegion imgTextureBushRegionLeft, imgTextureBushRegionRight, imgTextureGrassRegion, imgTextureGrassRegion2;
     private Vector2 rightBushPos1, rightBushPos2, leftBushPos1, leftBushPos2, backgroundPos, backgroundPos2;
 	
@@ -69,14 +74,24 @@ public class PlayState extends State {
 	private Sound splat, screech, miaow2;
 	
 	private Random rand;
-
+	
+	private boolean touchLeftWall = false;
+	private boolean touchRightWall = false;
+	
+	private int catType;
+	
 	// Public members
     public int points = 0;
+	public boolean catNipActivated = false;
+	public boolean wallSmash = false;
 	
-    protected PlayState(GameStateManager gsm, Assets assets, AdsController adsController){
+    protected PlayState(GameStateManager gsm, Assets assets, AdsController adsController, int catType){
         super(gsm, assets, adsController);
+		
+		this.catType = catType;
+		
 		catSpriteMap = (Texture) assets.manager.get(Assets.catSpriteMap);
-        cat = new Cat(CuteCatSplat.WIDTH/2 - catSpriteMap.getWidth()/6, 970, assets);
+        cat = new Cat(CuteCatSplat.WIDTH/2 - catSpriteMap.getWidth()/6, 970, assets, catType);
         touch = new Vector3();
 		
 		// Set camera size
@@ -209,13 +224,13 @@ public class PlayState extends State {
 			{
 				@Override
 				public void onRight(float deltaX) {
-					if(!catDead)
+					if(!catDead && !touchRightWall)
 						cat.moveRight(deltaX);
 				}
 
 				@Override
 				public void onLeft(float deltaX) {
-					if(!catDead)
+					if(!catDead && !touchLeftWall)
 						cat.moveLeft(deltaX);
 				}
 
@@ -231,7 +246,7 @@ public class PlayState extends State {
 				
 			});
 		
-		InputMultiplexer multiplexer = new InputMultiplexer(stage, backProcessor, gestureDetector);
+		InputMultiplexer multiplexer = new InputMultiplexer(gestureDetector, stage, backProcessor);
         Gdx.input.setInputProcessor(multiplexer);
 		Gdx.input.setCatchBackKey(true);
     }
@@ -255,6 +270,31 @@ public class PlayState extends State {
 
     @Override
     public void update(float dt) {
+		if(starsCounter<10)
+		{
+			starsCounter++;
+		}
+		else{
+			starSelect++;
+			if(starSelect > 2)
+				starSelect = 0;
+			switch(starSelect)
+			{
+				case 0:
+					starsTexture = (Texture) assets.manager.get(Assets.textureStarsScreen1);
+					break;
+				case 1:
+					starsTexture = (Texture) assets.manager.get(Assets.textureStarsScreen2);
+					break;
+				case 2:
+					starsTexture = (Texture) assets.manager.get(Assets.textureStarsScreen3);
+					break;
+				default:
+					starsTexture = (Texture) assets.manager.get(Assets.textureStarsScreen3);
+					break;
+			}
+			starsCounter = 0;
+		}
 		// Load PlayState if button selected
 		if(stateToLoad == PLAYSTATE) {
 			adsController.showInterstitialAd(new Runnable() {
@@ -263,7 +303,7 @@ public class PlayState extends State {
 						return;
 					}
 				});
-			gsm.set(new PlayState(gsm, assets, adsController));
+			gsm.set(new PlayState(gsm, assets, adsController, catType));
 		}
 
 		// Load MenuState if button selected
@@ -284,6 +324,7 @@ public class PlayState extends State {
 		else 
 		{
 			updateBush();
+			catNipSetCounter++;
 			
 			// Update cat and camera position
 			cat.update(dt);
@@ -295,33 +336,73 @@ public class PlayState extends State {
 		
 			if(gameStarted)
 			{
+				// Reset wall touch flags
+				touchLeftWall = touchRightWall = false;
+				
         		for(Wall wall : walls){
 					// Reposition walls if they move off screen
-            		if(cam.position.y - (cam.viewportHeight / 2) > wall.getPosLeftWall().y + wall.getLeftWall().getRegionHeight())
-                		wall.reposition(wall.getPosLeftWall().y + ((Wall.WALL_WIDTH + WALL_SPACING) * WALL_COUNT));
+            		if(cam.position.y - (cam.viewportHeight / 2) > wall.getPosLeftWall().y + wall.wallHeight){
+                		if(wall.reposition(wall.getPosLeftWall().y + ((Wall.WALL_WIDTH + WALL_SPACING) * WALL_COUNT), catNipSetCounter))
+						{
+							catNipSetCounter = 0;
+						}
+					}
 
 					// End game of collision occurs
-            		if(wall.collides(cat.getBounds())){
+            		if(!catNipActivated && (wall.collidesWithLeft(cat.getBounds()) || wall.collidesWithRight(cat.getBounds()))){
 						catDead = true;
 						screech.play(0.6f);
 						splat.play(0.8f);
 						Gdx.input.vibrate(300);
                 		setScores();
 					}
+					else if (wall.collidesWithLeft(cat.getBounds()))
+					{
+						wall.explode(dt, "LEFT");
+					}
+					else if (wall.collidesWithRight(cat.getBounds()))
+					{
+						wall.explode(dt, "RIGHT");
+					}
+					
+					touchLeftWall = wall.collidesWithLeft(cat.getSideBounds());
+					touchRightWall = wall.collidesWithRight(cat.getSideBounds());
 
 					// Add points if fence passed
             		if(wall.pointGained(cat.getBounds()))
                 		points ++;
+						
+					if(points > 10)
+						Assets.unlockTilly();
+						
+					if(catNipCollected == 5)
+						Assets.unlockTrampy();
 
-					// Add points if fence passed
-					if(wall.catNipGained(cat.getBounds())){}
-					// start timer
-					// remove catnip
+					// Activate cat nip and stars overlay
+					if(wall.catNipGained(cat.getBounds())){
+						catNipActivated = showStars = true;
+						catNipCollected++;
+					}
         		}
+				
+				if(catNipActivated)
+					catNipCounter++;
+				
+				switch(catNipCounter){
+					case 400:
+						showStars = false;
+						break;
+					case 500:
+						catNipActivated = false;
+						catNipCounter = 0;
+						break;
+					default:
+						break;
+				}
 
 				// End game if cat hits bushes
-        		if(cat.getPosition().x <= bush.getWidth() - 50 ||
-                		cat.getPosition().x >= (cam.viewportWidth - bush.getWidth() - 25)){
+        		if(!catNipActivated && (cat.getPosition().x <= bush.getWidth() - 50 ||
+                		cat.getPosition().x >= (cam.viewportWidth - bush.getWidth() - 25))){
             		catDead = true;
 					screech.play(0.6f);
 					splat.play(0.8f);
@@ -339,7 +420,6 @@ public class PlayState extends State {
 			sb.setProjectionMatrix(cam.combined);
 			sb.draw(imgTextureGrassRegion, backgroundPos.x, backgroundPos.y);
 			sb.draw(imgTextureGrassRegion2, backgroundPos2.x, backgroundPos2.y);
-			sb.draw(cat.getTexture(), cat.getPosition().x, cat.getPosition().y);
             if(gameStarted)
 			{
 				for(Wall wall : walls) {
@@ -352,6 +432,7 @@ public class PlayState extends State {
 			{
 				sb.draw(swipe, (cam.viewportWidth / 2) - (swipe.getWidth() / 2), cat.getPosition().y - 300);
 			}
+			sb.draw(cat.getTexture(), cat.getPosition().x, cat.getPosition().y);
             sb.draw(imgTextureBushRegionRight, rightBushPos1.x, rightBushPos1.y);
             sb.draw(imgTextureBushRegionRight, rightBushPos2.x, rightBushPos2.y);
             sb.draw(imgTextureBushRegionLeft, leftBushPos1.x, leftBushPos1.y);
@@ -364,6 +445,11 @@ public class PlayState extends State {
 			sb.end();
 			stage.act();
 			stage.draw();
+		}
+		else 
+		if(showStars){
+			sb.draw(starsTexture, CuteCatSplat.WIDTH/2 - starsTexture.getWidth()/2, cat.getPosition().y - 500);
+			sb.end();
 		}
 		else
 			sb.end();

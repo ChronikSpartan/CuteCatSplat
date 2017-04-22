@@ -2,8 +2,6 @@ package chronikspartan.cutecatsplat.data;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
@@ -15,12 +13,29 @@ public class Assets {
 	
 	public static Preferences prefs = Gdx.app.getPreferences("CuteCatSplat");
 	
+	public static AssetDescriptor splatIcon = new AssetDescriptor<Texture>("images/Splat.png", Texture.class);
+	public static AssetDescriptor catIconSparky = new AssetDescriptor<Texture>("images/Cat_Icon_Sparky.png", Texture.class);
+	public static AssetDescriptor catIconLeroy = new AssetDescriptor<Texture>("images/Cat_Icon_Leroy.png", Texture.class);
+	public static AssetDescriptor catIconTilly = new AssetDescriptor<Texture>("images/Cat_Icon_Tilly.png", Texture.class);
+	public static AssetDescriptor catIconTrampy = new AssetDescriptor<Texture>("images/Cat_Icon_Trampy.png", Texture.class);
 	public static AssetDescriptor catSpriteMap = new AssetDescriptor<Texture>("images/Cat_Sprite_Map.png", Texture.class);
+	public static AssetDescriptor leroySpriteMap = new AssetDescriptor<Texture>("images/Cat_Sprite_Map_Leroy.png", Texture.class);
+	public static AssetDescriptor tillySpriteMap = new AssetDescriptor<Texture>("images/Cat_Sprite_Map_Tilly.png", Texture.class);
+	public static AssetDescriptor trampySpriteMap = new AssetDescriptor<Texture>("images/Cat_Sprite_Map_Trampy.png", Texture.class);
 	public static AssetDescriptor wallExplode = new AssetDescriptor<Texture>("images/Wall_Explode.png", Texture.class);
 	public static AssetDescriptor catNip = new AssetDescriptor<Texture>("images/Cat_Nip.png", Texture.class);
 	public static AssetDescriptor splatTexture = new AssetDescriptor<Texture>("images/Splat_Sprite_Map.png", Texture.class);
 	public static AssetDescriptor leftTexture = new AssetDescriptor<Texture>("images/Cat_Sprite_Map_Left.png", Texture.class);
 	public static AssetDescriptor rightTexture = new AssetDescriptor<Texture>("images/Cat_Sprite_Map_Right.png", Texture.class);
+	public static AssetDescriptor leroyLeftTexture = new AssetDescriptor<Texture>("images/Cat_Sprite_Map_Left_Leroy.png", Texture.class);
+	public static AssetDescriptor leroyRightTexture = new AssetDescriptor<Texture>("images/Cat_Sprite_Map_Right_Leroy.png", Texture.class);
+	public static AssetDescriptor tillyLeftTexture = new AssetDescriptor<Texture>("images/Cat_Sprite_Map_Left_Tilly.png", Texture.class);
+	public static AssetDescriptor tillyRightTexture = new AssetDescriptor<Texture>("images/Cat_Sprite_Map_Right_Tilly.png", Texture.class);
+	public static AssetDescriptor trampyLeftTexture = new AssetDescriptor<Texture>("images/Cat_Sprite_Map_Left_Trampy.png", Texture.class);
+	public static AssetDescriptor trampyRightTexture = new AssetDescriptor<Texture>("images/Cat_Sprite_Map_Right_Trampy.png", Texture.class);
+	public static AssetDescriptor textureStarsScreen1 = new AssetDescriptor<Texture>("images/Cat_Nip_Stars_1.png", Texture.class);
+	public static AssetDescriptor textureStarsScreen2 = new AssetDescriptor<Texture>("images/Cat_Nip_Stars_2.png", Texture.class);
+	public static AssetDescriptor textureStarsScreen3 = new AssetDescriptor<Texture>("images/Cat_Nip_Stars_3.png", Texture.class);
 	public static AssetDescriptor textureSplatScreen1 = new AssetDescriptor<Texture>("images/Splat_Screen_1.jpg", Texture.class);
 	public static AssetDescriptor textureSplatScreen2 = new AssetDescriptor<Texture>("images/Splat_Screen_2.jpg", Texture.class);
 	public static AssetDescriptor textureSplatScreen3 = new AssetDescriptor<Texture>("images/Splat_Screen_3.jpg", Texture.class);
@@ -52,12 +67,26 @@ public class Assets {
     public static int height = Gdx.graphics.getHeight();
 	
     public void load(){
+		manager.load(splatIcon);
+		manager.load(catIconSparky);
+		manager.load(catIconLeroy);
+		manager.load(catIconTilly);
+		manager.load(catIconTrampy);
 		manager.load(catSpriteMap);
+		manager.load(leroySpriteMap);
+		manager.load(tillySpriteMap);
+		manager.load(trampySpriteMap);
 		manager.load(wallExplode);
 		manager.load(catNip);
 		manager.load(splatTexture);
 		manager.load(leftTexture);
 		manager.load(rightTexture);
+		manager.load(leroyLeftTexture);
+		manager.load(leroyRightTexture);
+		manager.load(tillyLeftTexture);
+		manager.load(tillyRightTexture);
+		manager.load(trampyLeftTexture);
+		manager.load(trampyRightTexture);
 		manager.load(swipe);
 		manager.load(wall);
 		manager.load(bush);
@@ -82,6 +111,9 @@ public class Assets {
 		manager.load(textureSplatScreen3);
 		manager.load(textureSplatScreen4);
 		manager.load(textureSplatScreen5);
+		manager.load(textureStarsScreen1);
+		manager.load(textureStarsScreen2);
+		manager.load(textureStarsScreen3);
 		
 		// Provide default high scores of 0
 		if (!prefs.contains("highScore1"))
@@ -127,6 +159,39 @@ public class Assets {
 	// Retrieves the current 3rd place high score
 	public static int getHighScore3() {
 		return prefs.getInteger("highScore3");
+	}
+	
+	// Unlocks Leroy
+	public static void unlockLeroy() {
+		prefs.putBoolean("LeroyUnlocked", true);
+		prefs.flush();
+	}
+
+	// Retrieves if Leroy is unlocked
+	public static Boolean checkLeroy() {
+		return prefs.getBoolean("LeroyUnlocked");
+	}
+	
+	// Unlocks Leroy
+	public static void unlockTilly() {
+		prefs.putBoolean("TillyUnlocked", true);
+		prefs.flush();
+	}
+
+	// Retrieves if Leroy is unlocked
+	public static Boolean checkTilly() {
+		return prefs.getBoolean("TillyUnlocked");
+	}
+	
+	// Unlocks Leroy
+	public static void unlockTrampy() {
+		prefs.putBoolean("TrampyUnlocked", true);
+		prefs.flush();
+	}
+
+	// Retrieves if Leroy is unlocked
+	public static Boolean checkTrampy() {
+		return prefs.getBoolean("TrampyUnlocked");
 	}
 	
 	public void dispose()
