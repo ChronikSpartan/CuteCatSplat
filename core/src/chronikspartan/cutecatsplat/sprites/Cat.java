@@ -20,13 +20,12 @@ public class Cat{
 	private static final int NUMBER_OF_SPLAT_FRAMES = 4;
 	private static final int NUMBER_OF_DIRECTIONAL_FRAMES = 3;
     private Vector3 position;
-    private Vector3 velocity;
-    private Rectangle bounds, sideBounds;
+	private Rectangle bounds, sideBounds;
     private Animation catAnimation, splatAnimation, leftAnimation, rightAnimation;
 	private Integer splatFrameCount = 0;
 
-    private Texture catTexture, splatTexture, leftTexture, rightTexture;
-	
+    private Texture catTexture;
+
 	private boolean catDead = false;
 	private boolean moveLeft = false;
 	private boolean moveRight = false;
@@ -36,8 +35,7 @@ public class Cat{
 		// Set original cat position
         position = new Vector3(x, y, 0);
 
-        velocity = new Vector3(0, 0, 0);
-		
+		Texture splatTexture, leftTexture, rightTexture;
 		switch (catNumber){
 			case 1:
 				catTexture = (Texture) assets.manager.get(Assets.catSpriteMap);

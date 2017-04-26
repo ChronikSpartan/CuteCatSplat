@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '23.0.1'
+    compileSdkVersion 25
+    buildToolsVersion '25.2.0'
 
     defaultConfig {
         /*
@@ -29,11 +29,11 @@ android {
 }
 
 dependencies {
-    compile "com.android.support:appcompat-v7:23.0.1"
-    compile "com.android.support:support-v4:23.0.1"
+    compile "com.android.support:appcompat-v7:25.2.0"
+    compile "com.android.support:support-v4:25.2.0"
     // lock saved games at 7.8 since Appstate API is gone after 7.8
-    compile "com.google.android.gms:play-services-games:7.8.0"
-    compile "com.google.android.gms:play-services-appstate:7.8.0"
+    compile "com.google.android.gms:play-services-games:10.2.1"
+    compile "com.google.android.gms:play-services-appstate:8.4.0"
 }
 
 buildscript {

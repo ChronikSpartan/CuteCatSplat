@@ -133,18 +133,6 @@ public class Assets {
 		prefs.putInteger("highScore1", val);
 		prefs.flush();
 	}
-	
-	// Receives an integer and maps it to the String highScore2 in prefs
-	public static void setHighScore2(int val) {
-		prefs.putInteger("highScore2", val);
-		prefs.flush();
-	}
-	
-	// Receives an integer and maps it to the String highScore3 in prefs
-	public static void setHighScore3(int val) {
-		prefs.putInteger("highScore3", val);
-		prefs.flush();
-	}
 
 	// Retrieves the current 1st place high score
 	public static int getHighScore1() {

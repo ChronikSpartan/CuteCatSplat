@@ -21,51 +21,54 @@ import chronikspartan.cutecatsplat.AdsController;
 import chronikspartan.cutecatsplat.CuteCatSplat;
 import chronikspartan.cutecatsplat.CreateButton;
 import chronikspartan.cutecatsplat.data.Assets;
+import chronikspartan.cutecatsplat.services.PlayServices;
+
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.utils.*;
+
+import static com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.*;
 
 /**
  * Created by cube on 1/20/2017.
  */
 
-public class CatSelectState extends State {
+class CatSelectState extends State {
 	private static final int PLAYSTATE = 1;
 	private static final int MENUSTATE = 3;
 	
-    private Texture background, splatIcon, sparkyIcon, leroyIcon, tillyIcon, trampyIcon;
-	private CreateButton buttonCreator = new CreateButton();
-    private Button splatButton1, splatButton2, splatButton3, sparkyButton, leroyButton, tillyButton, trampyButton;
-    private Stage stage;
+    private Texture background;
+	private Stage stage;
 	private int catSelected = 1; // 1 = Sparky, 2 = Leroy, 3 = Tilly, 4 = Trampy
-	
-	public FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+
 	public static BitmapFont font;
 	
 	private int stateToLoad = 0;
 
-    public CatSelectState(GameStateManager gsm, Assets assets, AdsController adsController){
-        super(gsm, assets, adsController);
+    CatSelectState(GameStateManager gsm, Assets assets, AdsController adsController, PlayServices playServices){
+        super(gsm, assets, adsController, playServices);
 		// Set up camera
 		cam.setToOrtho(false, CuteCatSplat.WIDTH, CuteCatSplat.HEIGHT);
 
         background = (Texture) assets.manager.get(Assets.rankingsScreen);
 
-		splatIcon = (Texture) assets.manager.get(Assets.splatIcon);
-		sparkyIcon = (Texture) assets.manager.get(Assets.catIconSparky);
-		leroyIcon = (Texture) assets.manager.get(Assets.catIconLeroy);
-		tillyIcon = (Texture) assets.manager.get(Assets.catIconTilly);
-		trampyIcon = (Texture) assets.manager.get(Assets.catIconTrampy);
+		Texture splatIcon = (Texture) assets.manager.get(Assets.splatIcon);
+		Texture sparkyIcon = (Texture) assets.manager.get(Assets.catIconSparky);
+		Texture leroyIcon = (Texture) assets.manager.get(Assets.catIconLeroy);
+		Texture tillyIcon = (Texture) assets.manager.get(Assets.catIconTilly);
+		Texture trampyIcon = (Texture) assets.manager.get(Assets.catIconTrampy);
 		
 		// Create font
+		FreeTypeFontParameter parameter = new FreeTypeFontParameter();
 		parameter.size = 15;
 		font = assets.generator.generateFont(parameter);
-		
-		splatButton1 = buttonCreator.NewButton(splatIcon, splatIcon);
-		splatButton2 = buttonCreator.NewButton(splatIcon, splatIcon);
-		splatButton3 = buttonCreator.NewButton(splatIcon, splatIcon);
+
+		CreateButton buttonCreator = new CreateButton();
+		Button splatButton1 = buttonCreator.NewButton(splatIcon, splatIcon);
+		Button splatButton2 = buttonCreator.NewButton(splatIcon, splatIcon);
+		Button splatButton3 = buttonCreator.NewButton(splatIcon, splatIcon);
 		
 		// Create Sparky buttons and add listener
-        sparkyButton = buttonCreator.NewButton(sparkyIcon, sparkyIcon);
+		Button sparkyButton = buttonCreator.NewButton(sparkyIcon, sparkyIcon);
       	sparkyButton.addListener(new InputListener(){
 				public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
 					Gdx.input.vibrate(5);
@@ -79,7 +82,7 @@ public class CatSelectState extends State {
 			});
 			
 		// Create Leroy buttons and add listener
-        leroyButton = buttonCreator.NewButton(leroyIcon, leroyIcon);
+		Button leroyButton = buttonCreator.NewButton(leroyIcon, leroyIcon);
       	leroyButton.addListener(new InputListener(){
 				public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
 					Gdx.input.vibrate(5);
@@ -93,7 +96,7 @@ public class CatSelectState extends State {
 			});
 			
 		// Create Tilly buttons and add listener
-        tillyButton = buttonCreator.NewButton(tillyIcon, tillyIcon);
+		Button tillyButton = buttonCreator.NewButton(tillyIcon, tillyIcon);
       	tillyButton.addListener(new InputListener(){
 				public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
 					Gdx.input.vibrate(5);
@@ -107,7 +110,7 @@ public class CatSelectState extends State {
 			});
 			
 		// Create Trampy buttons and add listener
-        trampyButton = buttonCreator.NewButton(trampyIcon, trampyIcon);
+		Button trampyButton = buttonCreator.NewButton(trampyIcon, trampyIcon);
       	trampyButton.addListener(new InputListener(){
 				public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
 					Gdx.input.vibrate(5);
@@ -203,10 +206,10 @@ public class CatSelectState extends State {
     public void update(float dt) {
 		// Load Stateselected
 		if(stateToLoad == MENUSTATE)
-			gsm.set(new MenuState(gsm, assets, adsController));
+			gsm.set(new MenuState(gsm, assets, adsController, playServices));
 			
 		if(stateToLoad == PLAYSTATE)
-			gsm.set(new PlayState(gsm, assets, adsController, catSelected));
+			gsm.set(new PlayState(gsm, assets, adsController, playServices, catSelected));
     }
 
     @Override
@@ -224,5 +227,6 @@ public class CatSelectState extends State {
     @Override
     public void dispose(){
 		assets.dispose();
+		stage.dispose();
     }
 }

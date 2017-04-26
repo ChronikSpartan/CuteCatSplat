@@ -1,8 +1,10 @@
 package chronikspartan.cutecatsplat;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.*;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +18,20 @@ import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.games.Games;
+import com.google.example.games.basegameutils.GameHelper;
 
-public class AndroidLauncher extends AndroidApplication implements AdsController{
+import chronikspartan.cutecatsplat.services.PlayServices;
+
+public class AndroidLauncher extends AndroidApplication implements AdsController, PlayServices
+{
 	private static final String INTERSTITIAL_AD_UNIT_ID = "ca-app-pub-6491016065744731/9152240807";
 	AdView bannerAd;
 	InterstitialAd interstitialAd;
+
+	private GameHelper gameHelper;
+	private final static int requestCode = 1;
+
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
 		String str = com.badlogic.gdx.Version.VERSION;
@@ -28,8 +39,22 @@ public class AndroidLauncher extends AndroidApplication implements AdsController
 		
 		super.onCreate(savedInstanceState);
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
-		View gameView = initializeForView(new CuteCatSplat(this), config);
+		View gameView = initializeForView(new CuteCatSplat(this, this), config);
 		setupAds();
+
+		gameHelper = new GameHelper(this, GameHelper.CLIENT_GAMES);
+		gameHelper.enableDebugLog(false);
+
+		GameHelper.GameHelperListener gameHelperListener = new GameHelper.GameHelperListener()
+		{
+			@Override
+			public void onSignInFailed(){ }
+
+			@Override
+			public void onSignInSucceeded(){ }
+		};
+
+		gameHelper.setup(gameHelperListener);
 
 		RelativeLayout layout = new RelativeLayout(this);
 		layout.addView(gameView, ViewGroup.LayoutParams.MATCH_PARENT,
@@ -110,5 +135,123 @@ public class AndroidLauncher extends AndroidApplication implements AdsController
 				interstitialAd.loadAd(ad);
 			}
 		});
+	}
+
+	@Override
+	protected void onStart()
+	{
+		super.onStart();
+		gameHelper.onStart(this);
+	}
+
+	@Override
+	protected void onStop()
+	{
+		super.onStop();
+		gameHelper.onStop();
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data)
+	{
+		super.onActivityResult(requestCode, resultCode, data);
+		gameHelper.onActivityResult(requestCode, resultCode, data);
+	}
+
+	@Override
+	public void signIn()
+	{
+		try
+		{
+			runOnUiThread(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					gameHelper.beginUserInitiatedSignIn();
+				}
+			});
+		}
+		catch (Exception e)
+		{
+			Gdx.app.log("MainActivity", "Log in failed: " + e.getMessage() + ".");
+		}
+	}
+
+	@Override
+	public void signOut()
+	{
+		try
+		{
+			runOnUiThread(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					gameHelper.signOut();
+				}
+			});
+		}
+		catch (Exception e)
+		{
+			Gdx.app.log("MainActivity", "Log out failed: " + e.getMessage() + ".");
+		}
+	}
+
+	@Override
+	public void rateGame()
+	{
+		String str = "https://play.google.com/store/apps/details?id=chronikspartan.cutecatsplat";
+		startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(str)));
+	}
+
+	@Override
+	public void unlockAchievement()
+	{
+		Games.Achievements.unlock(gameHelper.getApiClient(),
+				getString(R.string.achievement_first_gate_baby));
+	}
+
+	@Override
+	public void submitScore(int highScore)
+	{
+		if (isSignedIn() == true)
+		{
+			Games.Leaderboards.submitScore(gameHelper.getApiClient(),
+					getString(R.string.leaderboard_world_championship), highScore);
+		}
+	}
+
+	@Override
+	public void showAchievement()
+	{
+		if (isSignedIn() == true)
+		{
+			startActivityForResult(Games.Achievements.getAchievementsIntent(gameHelper.getApiClient()), requestCode);
+		}
+		else
+		{
+			signIn();
+		}
+	}
+
+	@Override
+	public void showScore()
+	{
+		if (isSignedIn() == true)
+		{
+			startActivityForResult(Games.Leaderboards.getLeaderboardIntent(gameHelper.getApiClient(),
+					getString(R.string.leaderboard_world_championship)), requestCode);
+		}
+		else
+		{
+			signIn();
+		}
+	}
+
+	@Override
+	public boolean isSignedIn()
+	{
+		return gameHelper.isSignedIn();
 	}
 }

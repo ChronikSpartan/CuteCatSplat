@@ -11,6 +11,6 @@ public class DesktopLauncher {
 		config.width = CuteCatSplat.WIDTH;
 		config.height = CuteCatSplat.HEIGHT;
 		config.title = CuteCatSplat.TITLE;
-		new LwjglApplication(new CuteCatSplat(null), config);
+		new LwjglApplication(new CuteCatSplat(null, null), config);
 	}
 }

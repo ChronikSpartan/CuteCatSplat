@@ -28,8 +28,8 @@ public class Wall {
 	private Animation wallExploding;
     private Random rand;
 	private String side;
-	boolean pointRecorded;
-	boolean explode = false;
+	private boolean pointRecorded;
+	private boolean explode = false;
 
     public Wall(float y, Assets assets){
 		// Load wall texture and then create two Texure Regions
@@ -66,14 +66,14 @@ public class Wall {
 	}
 
     public TextureRegion getLeftWall() {
-		if(explode && side =="RIGHT"){
+		if(explode && side.equals("RIGHT")){
 			return wallExploding.getFrame();
 		}
 		return rightWall;
     }
 
     public TextureRegion getRightWall() {
-		if(explode && side =="LEFT"){
+		if(explode && side.equals("LEFT")){
 			return wallExploding.getFrame();
 		}
         return leftWall;
@@ -98,10 +98,6 @@ public class Wall {
 		wallExploding.update(dt);
 		explode = true;
     }
-	
-	public void shift(){
-		posRightWall.add(0, -wallExplode.getRegionHeight()/2);
-	}
 
     public boolean reposition(float y, int setCatNipCounter){
 		boolean catNipSet = false;
@@ -138,7 +134,7 @@ public class Wall {
     }
 
     public boolean pointGained(Rectangle player){
-		if (player.overlaps(pointGate) && pointRecorded == false){
+		if (player.overlaps(pointGate) && !pointRecorded){
 			// Set point recorded flag to true so multiple points
 			// are not gained while cat passes through gate
 			pointRecorded = true;

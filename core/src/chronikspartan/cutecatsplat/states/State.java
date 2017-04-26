@@ -6,24 +6,25 @@ import com.badlogic.gdx.math.Vector3;
 
 import chronikspartan.cutecatsplat.AdsController;
 import chronikspartan.cutecatsplat.data.*;
+import chronikspartan.cutecatsplat.services.PlayServices;
 
 /**
  * Created by cube on 1/20/2017.
  */
 
-public abstract class State {
-    protected OrthographicCamera cam;
-    protected Vector3 mouse;
-    protected GameStateManager gsm;
+abstract class State {
+    OrthographicCamera cam;
+    GameStateManager gsm;
 	protected Assets assets;
-    protected AdsController adsController;
+    AdsController adsController;
+    PlayServices playServices;
 
-    protected State(GameStateManager gsm, Assets assets, AdsController adsController){
+    State(GameStateManager gsm, Assets assets, AdsController adsController, PlayServices playServices){
         this.gsm = gsm;
 		this.assets = assets;
         this.adsController = adsController;
+        this.playServices = playServices;
         cam = new OrthographicCamera();
-        mouse = new Vector3();
     }
 
     protected abstract void handleInput();

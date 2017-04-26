@@ -48,9 +48,5 @@ public class Animation {
     public TextureRegion getFrame(){
         return frames.get(frame);
     }
-	
-	public int getFrameNumber(){
-		return frame;
-	}
 
 }

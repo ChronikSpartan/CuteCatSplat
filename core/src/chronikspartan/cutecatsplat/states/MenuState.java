@@ -1,63 +1,54 @@
 package chronikspartan.cutecatsplat.states;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 
-
-import chronikspartan.cutecatsplat.CuteCatSplat;
+import chronikspartan.cutecatsplat.AdsController;
+import chronikspartan.cutecatsplat.AppRater;
 import chronikspartan.cutecatsplat.CreateButton;
-import com.badlogic.gdx.scenes.scene2d.*;
-import chronikspartan.cutecatsplat.*;
-import com.badlogic.gdx.utils.*;
-import chronikspartan.cutecatsplat.data.*;
+import chronikspartan.cutecatsplat.CuteCatSplat;
+import chronikspartan.cutecatsplat.data.Assets;
+import chronikspartan.cutecatsplat.services.PlayServices;
 
 /**
  * Created by cube on 1/20/2017.
  */
 
-public class MenuState extends State {
+class MenuState extends State {
 	private static final int CATSELECTSTATE = 4;
 	private static final int RANKINGSSTATE = 2;
 	
-    private Texture background, play1, play2, rankings1, rankings2;
-	private Button playButton, rankingsButton;
-    private Stage stage;
-	private CreateButton buttonCreator = new CreateButton();
-	private Music theme;
+    private Texture background;
+	private Stage stage;
 	private Sound purr, miaow;
-	private Dialog rateMeBox;
-	
+
 	private AppRater appRater;
 	
 	private int stateToLoad = 0;
 	
-    public MenuState(GameStateManager gsm, Assets assets, AdsController adsController){
-        super(gsm, assets, adsController);
+    MenuState(GameStateManager gsm, final Assets assets, AdsController adsController, final PlayServices playServices){
+        super(gsm, assets, adsController, playServices);
 		// Set up camera
 		cam.setToOrtho(false, CuteCatSplat.WIDTH, CuteCatSplat.HEIGHT);
 		
 		appRater = new AppRater();
-		rateMeBox = appRater.showRateDialog();
-		
-		theme = (Music) assets.manager.get(Assets.theme);
+		Dialog rateMeBox = appRater.showRateDialog();
+
+		Music theme = (Music) assets.manager.get(Assets.theme);
 		miaow = (Sound) assets.manager.get(Assets.miaow);
 		purr = (Sound) assets.manager.get(Assets.purr);
 		
@@ -69,13 +60,14 @@ public class MenuState extends State {
 		}
 		
 		background = (Texture) assets.manager.get(Assets.menuScreen);
-		play1 = (Texture) assets.manager.get(Assets.play1);
-		play2 = (Texture) assets.manager.get(Assets.play2);
-		rankings1 = (Texture) assets.manager.get(Assets.rankings1);
-		rankings2 = (Texture) assets.manager.get(Assets.rankings2);
+		Texture play1 = (Texture) assets.manager.get(Assets.play1);
+		Texture play2 = (Texture) assets.manager.get(Assets.play2);
+		Texture rankings1 = (Texture) assets.manager.get(Assets.rankings1);
+		Texture rankings2 = (Texture) assets.manager.get(Assets.rankings2);
 		
 		// Create play button style and add listener
-	    playButton = buttonCreator.NewButton(play1, play2);
+		CreateButton buttonCreator = new CreateButton();
+		Button playButton = buttonCreator.NewButton(play1, play2);
       	playButton.addListener(new InputListener(){
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
 				Gdx.input.vibrate(5);
@@ -90,7 +82,7 @@ public class MenuState extends State {
 			
 
 		// Same for rankings button
-        rankingsButton = buttonCreator.NewButton(rankings1, rankings2);
+		Button rankingsButton = buttonCreator.NewButton(rankings1, rankings2);
 		rankingsButton.addListener(new InputListener(){
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
 				Gdx.input.vibrate(5);
@@ -98,7 +90,9 @@ public class MenuState extends State {
 			}
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button){
 				// Set RankingsStaTe to load
-				stateToLoad = RANKINGSSTATE;
+				//stateToLoad = RANKINGSSTATE;
+				playServices.submitScore(Assets.getHighScore1());
+				playServices.showScore();
 				purr.play();
 			}
 		});
@@ -132,6 +126,8 @@ public class MenuState extends State {
 		
 		if(rateMeBox != null)
 			rateMeBox.show(stage);
+
+		playServices.signIn();
 		
 		InputMultiplexer multiplexer = new InputMultiplexer(stage, backProcessor);
         Gdx.input.setInputProcessor(multiplexer);
@@ -146,11 +142,11 @@ public class MenuState extends State {
     public void update(float dt) {
 		// Load PlayState if button selected
 		if(stateToLoad == CATSELECTSTATE)
-			gsm.set(new CatSelectState(gsm, assets, adsController));
+			gsm.set(new CatSelectState(gsm, assets, adsController, playServices));
 			
 		// Load MenuState if button selected
 		if(stateToLoad == RANKINGSSTATE)
-			gsm.set(new RankingsState(gsm, assets, adsController));
+			gsm.set(new RankingsState(gsm, assets, adsController, playServices));
     }
 
     @Override
@@ -168,5 +164,6 @@ public class MenuState extends State {
     public void dispose(){
         assets.dispose();
 		appRater.dispose();
+		stage.dispose();
     }
 }

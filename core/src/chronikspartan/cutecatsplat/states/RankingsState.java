@@ -1,74 +1,62 @@
 package chronikspartan.cutecatsplat.states;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-
 import chronikspartan.cutecatsplat.AdsController;
-import chronikspartan.cutecatsplat.CuteCatSplat;
 import chronikspartan.cutecatsplat.CreateButton;
+import chronikspartan.cutecatsplat.CuteCatSplat;
 import chronikspartan.cutecatsplat.data.Assets;
-import com.badlogic.gdx.scenes.scene2d.*;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.utils.*;
+import chronikspartan.cutecatsplat.services.PlayServices;
+
+import static com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 
 /**
  * Created by cube on 1/20/2017.
  */
 
-public class RankingsState extends State {
+class RankingsState extends State {
 	private static final int MENUSTATE = 3;
 	
-    private Texture background, back1, back2;
-	private CreateButton buttonCreator = new CreateButton();
-    private Button backButton;
-    private Stage stage;
-	
-	public FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+    private Texture background;
+	private Stage stage;
+
 	public static BitmapFont font;
-	
-	public Color gold = new Color(1f, 0.85f, 0f, 1);
-	public Color silver = new Color(0.75f, 0.75f, 0.75f, 1);
-	public Color bronze = new Color(0.8f, 0.5f, 0.2f, 1);
 
 	private int stateToLoad = 0;
 
-    public RankingsState(GameStateManager gsm, Assets assets, AdsController adsController){
-        super(gsm, assets, adsController);
+    RankingsState(GameStateManager gsm, Assets assets, AdsController adsController, PlayServices playServices){
+        super(gsm, assets, adsController, playServices);
 		// Set up camera
 		cam.setToOrtho(false, CuteCatSplat.WIDTH, CuteCatSplat.HEIGHT);
 
         background = (Texture) assets.manager.get(Assets.rankingsScreen);
 
-		back1 = (Texture) assets.manager.get(Assets.back1);
-		back2 = (Texture) assets.manager.get(Assets.back2);
+		Texture back1 = (Texture) assets.manager.get(Assets.back1);
+		Texture back2 = (Texture) assets.manager.get(Assets.back2);
 		
 		// Create font
+		FreeTypeFontParameter parameter = new FreeTypeFontParameter();
 		parameter.size = 50;
 		font = assets.generator.generateFont(parameter);
 		
 		// Create Back button and add listener
-        backButton = buttonCreator.NewButton(back1, back2);
+		CreateButton buttonCreator = new CreateButton();
+		Button backButton = buttonCreator.NewButton(back1, back2);
       	backButton.addListener(new InputListener(){
 				public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
 					Gdx.input.vibrate(5);
@@ -89,12 +77,15 @@ public class RankingsState extends State {
                 return false;
             }
         };
-			
-		Label highScore1 = new Label("1st Place: " + String.valueOf(Assets.getHighScore1()), 
+
+		Color gold = new Color(1f, 0.85f, 0f, 1);
+		Label highScore1 = new Label("1st Place: " + String.valueOf(Assets.getHighScore1()),
 			new Label.LabelStyle(font, gold));
-		Label highScore2 = new Label("2nd Place: " + String.valueOf(Assets.getHighScore2()), 
+		Color silver = new Color(0.75f, 0.75f, 0.75f, 1);
+		Label highScore2 = new Label("2nd Place: " + String.valueOf(Assets.getHighScore2()),
 									 new Label.LabelStyle(font, silver));
-		Label highScore3 = new Label("3rd Place: " + String.valueOf(Assets.getHighScore3()), 
+		Color bronze = new Color(0.8f, 0.5f, 0.2f, 1);
+		Label highScore3 = new Label("3rd Place: " + String.valueOf(Assets.getHighScore3()),
 									 new Label.LabelStyle(font, bronze));
 	
 		// Create table to hold actors for stage
@@ -133,7 +124,7 @@ public class RankingsState extends State {
     public void update(float dt) {
 		// Load PlayState if button selected
 		if(stateToLoad == MENUSTATE)
-			gsm.set(new MenuState(gsm, assets, adsController));
+			gsm.set(new MenuState(gsm, assets, adsController, playServices));
     }
 
     @Override
@@ -151,5 +142,6 @@ public class RankingsState extends State {
     @Override
     public void dispose(){
 		assets.dispose();
+		stage.dispose();
     }
 }

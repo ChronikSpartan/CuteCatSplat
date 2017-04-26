@@ -29,6 +29,7 @@ import chronikspartan.cutecatsplat.data.Assets;
 import chronikspartan.cutecatsplat.CuteCatSplat;
 import chronikspartan.cutecatsplat.CreateButton;
 import chronikspartan.cutecatsplat.MyGestureDetector;
+import chronikspartan.cutecatsplat.services.PlayServices;
 import chronikspartan.cutecatsplat.sprites.Cat;
 import chronikspartan.cutecatsplat.sprites.Wall;
 
@@ -36,7 +37,7 @@ import chronikspartan.cutecatsplat.sprites.Wall;
  * Created by cube on 1/20/2017.
  */
 
-public class PlayState extends State {
+class PlayState extends State {
 	// Private constants
 	private static final int START_DISTANCE = 1500;
 	private static final int CAT_LOCATION = 400;
@@ -58,41 +59,36 @@ public class PlayState extends State {
 	private int catNipCounter = 0;
 	private int catNipCollected = 0;
 	private int catNipSetCounter = 1000;
-	
-    private Vector3 touch;
-    private Texture bush, texture_grass, swipe, splatScreenTexture, starsTexture, catSpriteMap, restart1, restart2, back1, back2;
-    private TextureRegion imgTextureBushRegionLeft, imgTextureBushRegionRight, imgTextureGrassRegion, imgTextureGrassRegion2;
+
+	private Texture bush;
+	private Texture swipe;
+	private Texture splatScreenTexture;
+	private Texture starsTexture;
+	private TextureRegion imgTextureBushRegionLeft, imgTextureBushRegionRight, imgTextureGrassRegion, imgTextureGrassRegion2;
     private Vector2 rightBushPos1, rightBushPos2, leftBushPos1, leftBushPos2, backgroundPos, backgroundPos2;
 	
 	private FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
 	private static BitmapFont font;
 
-	private CreateButton buttonCreator = new CreateButton();
-	private Button restartButton, returnButton;
-    private Stage stage;
-	private MyGestureDetector gestureDetector;
+	private Stage stage;
 	private Sound splat, screech, miaow2;
-	
-	private Random rand;
-	
+
 	private boolean touchLeftWall = false;
 	private boolean touchRightWall = false;
 	
 	private int catType;
 	
 	// Public members
-    public int points = 0;
-	public boolean catNipActivated = false;
-	public boolean wallSmash = false;
-	
-    protected PlayState(GameStateManager gsm, Assets assets, AdsController adsController, int catType){
-        super(gsm, assets, adsController);
+	private int points = 0;
+	private boolean catNipActivated = false;
+
+	PlayState(GameStateManager gsm, Assets assets, AdsController adsController, PlayServices playServices, int catType){
+        super(gsm, assets, adsController, playServices);
 		
 		this.catType = catType;
-		
-		catSpriteMap = (Texture) assets.manager.get(Assets.catSpriteMap);
+
+		Texture catSpriteMap = (Texture) assets.manager.get(Assets.catSpriteMap);
         cat = new Cat(CuteCatSplat.WIDTH/2 - catSpriteMap.getWidth()/6, 970, assets, catType);
-        touch = new Vector3();
 		
 		// Set camera size
         cam.setToOrtho(false, CuteCatSplat.WIDTH, CuteCatSplat.HEIGHT);
@@ -110,8 +106,8 @@ public class PlayState extends State {
 		parameter.size = 150;
 		font = assets.generator.generateFont(parameter);
 		font.setColor(0, 0.5f, 0.5f, 1);
-		
-		rand = new Random();
+
+		Random rand = new Random();
 		
 		switch(rand.nextInt(5))
 		{
@@ -143,7 +139,7 @@ public class PlayState extends State {
         leftBushPos2 = new Vector2(0, cam.position.y - cam.viewportHeight / 2 + bush.getHeight());
 
         // Create grass background texture region
-        texture_grass = new Texture(Gdx.files.internal("images/Grass.png"));
+		Texture texture_grass = new Texture(Gdx.files.internal("images/Grass.png"));
         texture_grass.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         imgTextureGrassRegion = new TextureRegion(texture_grass);
         imgTextureGrassRegion.setRegion(0, 0, texture_grass.getWidth()* 10,
@@ -153,14 +149,15 @@ public class PlayState extends State {
 
 		backgroundPos = new Vector2(0, cam.position.y - cam.viewportHeight / 2);
 		backgroundPos2 = new Vector2(0, cam.position.y - (cam.viewportHeight / 2) + imgTextureGrassRegion2.getRegionHeight());
-		
-		restart1 = (Texture) assets.manager.get(Assets.restart1);
-		restart2 = (Texture) assets.manager.get(Assets.restart2);
-		back1 = (Texture) assets.manager.get(Assets.back1);
-		back2 = (Texture) assets.manager.get(Assets.back2);
+
+		Texture restart1 = (Texture) assets.manager.get(Assets.restart1);
+		Texture restart2 = (Texture) assets.manager.get(Assets.restart2);
+		Texture back1 = (Texture) assets.manager.get(Assets.back1);
+		Texture back2 = (Texture) assets.manager.get(Assets.back2);
 		
 		// Create restart button style and add listener
-	    restartButton = buttonCreator.NewButton(restart1, restart2);
+		CreateButton buttonCreator = new CreateButton();
+		Button restartButton = buttonCreator.NewButton(restart1, restart2);
       	restartButton.addListener(new InputListener(){
 				public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
 					Gdx.input.vibrate(5);
@@ -174,7 +171,7 @@ public class PlayState extends State {
 			});
 			
 		// Create play button style and add listener
-	    returnButton = buttonCreator.NewButton(back1, back2);
+		Button returnButton = buttonCreator.NewButton(back1, back2);
       	returnButton.addListener(new InputListener(){
 				public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
 					if(catDead)
@@ -218,33 +215,31 @@ public class PlayState extends State {
 		// Create stage and set for input processor
         stage = new Stage(new StretchViewport(CuteCatSplat.WIDTH/2.5f, CuteCatSplat.HEIGHT/2.5f));
 		stage.addActor(endTable);
-		
-		gestureDetector = 
-			new MyGestureDetector(new MyGestureDetector.DirectionListener() 
-			{
-				@Override
-				public void onRight(float deltaX) {
-					if(!catDead && !touchRightWall)
-						cat.moveRight(deltaX);
-				}
 
-				@Override
-				public void onLeft(float deltaX) {
-					if(!catDead && !touchLeftWall)
-						cat.moveLeft(deltaX);
-				}
+		MyGestureDetector gestureDetector = new MyGestureDetector(new MyGestureDetector.DirectionListener() {
+			@Override
+			public void onRight(float deltaX) {
+				if (!catDead && !touchRightWall)
+					cat.moveRight(deltaX);
+			}
 
-				@Override
-				public void onDown(float deltaY) {
-					// Unused
-				}
-				
-				@Override
-				public void onUp(float deltaY) {
-					// Unused
-				}
-				
-			});
+			@Override
+			public void onLeft(float deltaX) {
+				if (!catDead && !touchLeftWall)
+					cat.moveLeft(deltaX);
+			}
+
+			@Override
+			public void onDown(float deltaY) {
+				// Unused
+			}
+
+			@Override
+			public void onUp(float deltaY) {
+				// Unused
+			}
+
+		});
 		
 		InputMultiplexer multiplexer = new InputMultiplexer(gestureDetector, stage, backProcessor);
         Gdx.input.setInputProcessor(multiplexer);
@@ -255,14 +250,14 @@ public class PlayState extends State {
     protected void handleInput() {
         if(Gdx.input.isTouched()) {
 			// Start game if paused
-			if(gameStarted == false)
+			if(!gameStarted)
 			{
 				// Create and load array to hold the walls
 				walls = new Array<Wall>();
 				walls.add(new Wall(START_DISTANCE + cat.getPosition().y, assets));
 				for(int i = 1; i < WALL_COUNT; i++)
 					walls.add(new Wall(i*(WALL_SPACING + Wall.WALL_WIDTH) + cat.getPosition().y + START_DISTANCE, assets));
-				
+
 				gameStarted = true;
 			}
         }
@@ -300,10 +295,9 @@ public class PlayState extends State {
 			adsController.showInterstitialAd(new Runnable() {
 					@Override
 					public void run() {
-						return;
 					}
 				});
-			gsm.set(new PlayState(gsm, assets, adsController, catType));
+			gsm.set(new PlayState(gsm, assets, adsController, playServices, catType));
 		}
 
 		// Load MenuState if button selected
@@ -311,10 +305,9 @@ public class PlayState extends State {
 			adsController.showInterstitialAd(new Runnable() {
 				@Override
 				public void run() {
-					return;
 				}
 			});
-			gsm.set(new MenuState(gsm, assets, adsController));
+			gsm.set(new MenuState(gsm, assets, adsController, playServices));
 		}
 
 		if (catDead)
@@ -488,15 +481,7 @@ public class PlayState extends State {
 	
 	private void setScores(){
 		if (points > Assets.getHighScore1()){
-			Assets.setHighScore3(Assets.getHighScore2());
-			Assets.setHighScore2(Assets.getHighScore1());
 			Assets.setHighScore1(points);
 		}
-		else if(points > Assets.getHighScore2()){
-			Assets.setHighScore3(Assets.getHighScore2());
-			Assets.setHighScore2(points);
-		}
-		else if(points > Assets.getHighScore3())
-			Assets.setHighScore3(points);
 	}
 }

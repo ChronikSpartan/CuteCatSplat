@@ -3,12 +3,12 @@ package chronikspartan.cutecatsplat;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import chronikspartan.cutecatsplat.data.Assets;
+import chronikspartan.cutecatsplat.services.PlayServices;
 import chronikspartan.cutecatsplat.states.GameStateManager;
 import chronikspartan.cutecatsplat.states.SplashState;
-import chronikspartan.cutecatsplat.data.Assets;
 
 public class CuteCatSplat extends ApplicationAdapter{
     public static final int WIDTH = 1080;
@@ -16,27 +16,27 @@ public class CuteCatSplat extends ApplicationAdapter{
     public static final String TITLE = "Cute Cat Splat";
 
     private GameStateManager gsm;
-	private Assets assets;
     private SpriteBatch batch;
-    Texture img;
 
     private AdsController adsController;
+    private static PlayServices playServices;
 
-    public CuteCatSplat(AdsController adsController) {
+    public CuteCatSplat(AdsController adsController, PlayServices playServices) {
         if (adsController != null)
             this.adsController = adsController;
         else
             this.adsController = new DummyAdsController();
+        this.playServices = playServices;
     }
 
     @Override
     public void create(){
         batch = new SpriteBatch();
-		assets = new Assets();
+        Assets assets = new Assets();
 		assets.clear();
 		assets.load();
         gsm = new GameStateManager();
-        gsm.push(new SplashState(gsm, assets, adsController));
+        gsm.push(new SplashState(gsm, assets, adsController, playServices));
     }
 
     @Override

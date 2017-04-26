@@ -6,8 +6,8 @@ import com.badlogic.gdx.graphics.g2d.*;
 
 public class MyGdxGame implements ApplicationListener
 {
-	Texture texture;
-	SpriteBatch batch;
+	private Texture texture;
+	private SpriteBatch batch;
 
 	@Override
 	public void create()

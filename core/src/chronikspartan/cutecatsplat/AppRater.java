@@ -1,28 +1,31 @@
 package chronikspartan.cutecatsplat;
 
-import chronikspartan.cutecatsplat.data.Assets;
-
-import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.utils.Align;
+
+import chronikspartan.cutecatsplat.data.Assets;
 
 public class AppRater extends ApplicationAdapter{
-	private final static String APP_PNAME = "chronikspartan.cutecatsplat";
-
 	private final static int DAYS_UNTIL_PROMPT = 0;
 	private final static int LAUNCHES_UNTIL_PROMPT = 4;
 	
 	private Preferences prefs = Gdx.app.getPreferences("AppRater");
-	
-	private TextButton btnRate, btnLate, btnNo;
+
+	private Skin skin  = new Skin(Gdx.files.internal("uiskin.json"));
+	private TextButton
+			btnRate = new TextButton("Fo sho!", skin),
+			btnLate = new TextButton("Laters!", skin),
+			btnNo = new TextButton("Nah!", skin);
 	
 	Stage stage = new Stage();
-	Skin skin  = new Skin(Gdx.files.internal("uiskin.json"));
+
 	
 	public Dialog showRateDialog() {
 		// Check if dialog should be displayed
@@ -34,10 +37,7 @@ public class AppRater extends ApplicationAdapter{
 		Dialog dialog = new Dialog("Pesky popup!", skin);
 
 		dialog.text("If you like cat nip and saving cats,\nor just want a free cat, please rate me.");
-					
-		btnRate = new TextButton("Fo sho!", skin);
-		btnLate = new TextButton("Laters!", skin);
-		btnNo = new TextButton("Nah!", skin);
+
 		dialog.padLeft(20f);
 		dialog.padRight(20f);
 		dialog.center();
@@ -50,7 +50,7 @@ public class AppRater extends ApplicationAdapter{
 				@Override
 				public void changed(ChangeEvent event, Actor actor) {
 					if(prefs != null){
-						Gdx.net.openURI("https://play.google.com/store/apps/details?id=" + APP_PNAME);
+						Gdx.net.openURI("https://play.google.com/store/apps/details?id=chronikspartan.cutecatsplat");
 						Assets.unlockLeroy();
 						setDontShowAppRater();
 					}
@@ -78,7 +78,7 @@ public class AppRater extends ApplicationAdapter{
 		return dialog;
     }
 	
-	public Boolean checkRequirements() {
+	private Boolean checkRequirements() {
 		if (dontShowAppRater()) { return false; }
 
 		// Increment launch counter
@@ -94,8 +94,7 @@ public class AppRater extends ApplicationAdapter{
 
 		// Wait at least n days before opening dialog
 		if (launch_count >= LAUNCHES_UNTIL_PROMPT) {
-			if (System.currentTimeMillis() >= date_firstLaunch + 
-                (DAYS_UNTIL_PROMPT * 24 * 60 * 60 * 1000)) {
+			if (System.currentTimeMillis() >= date_firstLaunch) {
 				return true;
 			}
 		}
@@ -104,34 +103,34 @@ public class AppRater extends ApplicationAdapter{
 	}   
 	
 	// Retrieves whether to show AppRater or not
-	public Boolean dontShowAppRater(){
+	private Boolean dontShowAppRater(){
 		return prefs.getBoolean("dontshowagain");
 	}
 
 	// Sets to not show AppRater 
-	public void setDontShowAppRater(){
+	private void setDontShowAppRater(){
 		prefs.putBoolean("dontshowagain", true);
 		prefs.flush();
 	}
 
 	// Retrieves AppRater launch counter
-	public int getAppRaterLaunchCount(){
+	private int getAppRaterLaunchCount(){
 		return  prefs.getInteger("launch_count");
 	}
 
 	// Sets AppRater launch counter
-	public void setAppRaterLaunchCount(int launch_count){
+	private void setAppRaterLaunchCount(int launch_count){
 		prefs.putInteger("launch_count", launch_count);
 		prefs.flush();
 	}
 
 	// Retrieves AppRater launch counter
-	public long getAppRaterDateFirstLaunch(){
+	private long getAppRaterDateFirstLaunch(){
 		return  prefs.getLong("date_firstlaunch");
 	}
 
 	// Sets AppRater launch counter
-	public void setAppRaterDateFirstLaunch(long date_firstLaunch){
+	private void setAppRaterDateFirstLaunch(long date_firstLaunch){
 		prefs.putLong("date_firstlaunch", date_firstLaunch);
 		prefs.flush();
 	}
