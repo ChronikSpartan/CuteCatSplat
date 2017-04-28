@@ -10,4 +10,7 @@ public interface AdsController {
     public void hideBannerAd();
     public boolean isNetworkConnected();
     public void showInterstitialAd (Runnable then);
+    public void showRewardAd();
+    public boolean getReward();
+    public void setReward(Boolean state);
 }

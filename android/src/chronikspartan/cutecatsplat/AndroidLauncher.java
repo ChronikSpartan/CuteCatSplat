@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.*;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 
 import com.badlogic.gdx.Gdx;
@@ -18,19 +19,30 @@ import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.reward.RewardItem;
+import com.google.android.gms.ads.reward.RewardedVideoAd;
+import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 import com.google.android.gms.games.Games;
 import com.google.example.games.basegameutils.GameHelper;
+import com.inmobi.sdk.InMobiSdk;
 
 import chronikspartan.cutecatsplat.services.PlayServices;
 
-public class AndroidLauncher extends AndroidApplication implements AdsController, PlayServices
+public class AndroidLauncher extends AndroidApplication implements AdsController, PlayServices, RewardedVideoAdListener
 {
 	private static final String INTERSTITIAL_AD_UNIT_ID = "ca-app-pub-6491016065744731/9152240807";
-	AdView bannerAd;
-	InterstitialAd interstitialAd;
-
+	private static final String REWARDED_AD_UNIT_ID = "ca-app-pub-6491016065744731/1782126409";
+	private AdView bannerAd;
+	private InterstitialAd interstitialAd;
+	private RewardedVideoAd rewardedVideoAd;
 	private GameHelper gameHelper;
 	private final static int requestCode = 1;
+
+	private AdRequest.Builder builder;
+	private AdRequest ad;
+
+	private Boolean gameContinue = false;
 
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
@@ -40,6 +52,10 @@ public class AndroidLauncher extends AndroidApplication implements AdsController
 		super.onCreate(savedInstanceState);
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		View gameView = initializeForView(new CuteCatSplat(this, this), config);
+
+		InMobiSdk.init(this, "7cd708a91a1848c8a36f4f10d2de3ee6");
+		builder = new AdRequest.Builder();
+		ad = builder.build();
 		setupAds();
 
 		gameHelper = new GameHelper(this, GameHelper.CLIENT_GAMES);
@@ -79,9 +95,38 @@ public class AndroidLauncher extends AndroidApplication implements AdsController
 		interstitialAd = new InterstitialAd(this);
 		interstitialAd.setAdUnitId(INTERSTITIAL_AD_UNIT_ID);
 
-		AdRequest.Builder builder = new AdRequest.Builder();
-		AdRequest ad = builder.build();
+		rewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
+		rewardedVideoAd.setRewardedVideoAdListener(this);
+
 		interstitialAd.loadAd(ad);
+		loadRewardAd();
+	}
+
+	private void loadRewardAd(){
+		if(!rewardedVideoAd.isLoaded()){
+			rewardedVideoAd.loadAd(REWARDED_AD_UNIT_ID, ad);
+		}
+	}
+
+	@Override
+	public boolean getReward(){
+		return gameContinue;
+	}
+
+	@Override
+	public void setReward(Boolean state){
+		gameContinue = state;
+	}
+
+	@Override
+	public void showRewardAd(){
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if(rewardedVideoAd.isLoaded())
+					rewardedVideoAd.show();
+					}
+		});
 	}
 
 	@Override
@@ -253,5 +298,39 @@ public class AndroidLauncher extends AndroidApplication implements AdsController
 	public boolean isSignedIn()
 	{
 		return gameHelper.isSignedIn();
+	}
+
+	@Override
+	public void onRewardedVideoAdLoaded() {
+	}
+
+	@Override
+	public void onRewardedVideoAdOpened() {
+
+	}
+
+	@Override
+	public void onRewardedVideoStarted() {
+
+	}
+
+	@Override
+	public void onRewardedVideoAdClosed() {
+		loadRewardAd();
+	}
+
+	@Override
+	public void onRewarded(RewardItem rewardItem) {
+		gameContinue = true;
+	}
+
+	@Override
+	public void onRewardedVideoAdLeftApplication() {
+
+	}
+
+	@Override
+	public void onRewardedVideoAdFailedToLoad(int i) {
+
 	}
 }

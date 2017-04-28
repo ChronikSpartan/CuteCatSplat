@@ -138,17 +138,7 @@ public class Assets {
 	public static int getHighScore1() {
 		return prefs.getInteger("highScore1");
 	}
-	
-	// Retrieves the current 2nd place high score
-	public static int getHighScore2() {
-		return prefs.getInteger("highScore2");
-	}
-	
-	// Retrieves the current 3rd place high score
-	public static int getHighScore3() {
-		return prefs.getInteger("highScore3");
-	}
-	
+
 	// Unlocks Leroy
 	public static void unlockLeroy() {
 		prefs.putBoolean("LeroyUnlocked", true);

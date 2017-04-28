@@ -6,11 +6,13 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -66,6 +68,7 @@ class PlayState extends State {
 	private Texture starsTexture;
 	private TextureRegion imgTextureBushRegionLeft, imgTextureBushRegionRight, imgTextureGrassRegion, imgTextureGrassRegion2;
     private Vector2 rightBushPos1, rightBushPos2, leftBushPos1, leftBushPos2, backgroundPos, backgroundPos2;
+	private InputProcessor backProcessor;
 	
 	private FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
 	private static BitmapFont font;
@@ -82,10 +85,11 @@ class PlayState extends State {
 	private int points = 0;
 	private boolean catNipActivated = false;
 
-	PlayState(GameStateManager gsm, Assets assets, AdsController adsController, PlayServices playServices, int catType){
+	PlayState(GameStateManager gsm, Assets assets, final AdsController adsController, PlayServices playServices, int catType, int points){
         super(gsm, assets, adsController, playServices);
 		
 		this.catType = catType;
+		this.points = points;
 
 		Texture catSpriteMap = (Texture) assets.manager.get(Assets.catSpriteMap);
         cat = new Cat(CuteCatSplat.WIDTH/2 - catSpriteMap.getWidth()/6, 970, assets, catType);
@@ -150,72 +154,6 @@ class PlayState extends State {
 		backgroundPos = new Vector2(0, cam.position.y - cam.viewportHeight / 2);
 		backgroundPos2 = new Vector2(0, cam.position.y - (cam.viewportHeight / 2) + imgTextureGrassRegion2.getRegionHeight());
 
-		Texture restart1 = (Texture) assets.manager.get(Assets.restart1);
-		Texture restart2 = (Texture) assets.manager.get(Assets.restart2);
-		Texture back1 = (Texture) assets.manager.get(Assets.back1);
-		Texture back2 = (Texture) assets.manager.get(Assets.back2);
-		
-		// Create restart button style and add listener
-		CreateButton buttonCreator = new CreateButton();
-		Button restartButton = buttonCreator.NewButton(restart1, restart2);
-      	restartButton.addListener(new InputListener(){
-				public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
-					Gdx.input.vibrate(5);
-					return true;
-				}
-				public void touchUp(InputEvent event, float x, float y, int pointer, int button){
-					// Set PlayState to load
-					miaow2.play();
-					stateToLoad = PLAYSTATE;
-				}
-			});
-			
-		// Create play button style and add listener
-		Button returnButton = buttonCreator.NewButton(back1, back2);
-      	returnButton.addListener(new InputListener(){
-				public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
-					if(catDead)
-					{
-						Gdx.input.vibrate(5);
-						return true;
-					}
-					return false;
-				}
-				public void touchUp(InputEvent event, float x, float y, int pointer, int button){
-					// Set PlayState to load
-					stateToLoad = MENUSTATE;
-				}
-			});
-			
-		InputProcessor backProcessor = new InputAdapter() {
-            @Override
-            public boolean keyDown(int keycode) {
-
-                if ((keycode == Keys.ESCAPE) || (keycode == Keys.BACK) )
-					stateToLoad = MENUSTATE;
-                return false;
-            }
-        };
-			
-		// Create end table to hold actors for stage
-        Table endTable = new Table();
-		endTable.add().height(restartButton.getHeight());
-        endTable.row();
-        endTable.row();
-        endTable.add().height(restartButton.getHeight());
-        endTable.row();
-        endTable.add(restartButton).height(restartButton.getHeight()/2).width(restartButton.getWidth()/2);
-        endTable.row();
-        endTable.add().height(restartButton.getHeight()/2);
-        endTable.row();
-        endTable.add(returnButton).height(returnButton.getHeight()/2).width(returnButton.getWidth()/2);
-        endTable.setFillParent(true);
-		
-
-		// Create stage and set for input processor
-        stage = new Stage(new StretchViewport(CuteCatSplat.WIDTH/2.5f, CuteCatSplat.HEIGHT/2.5f));
-		stage.addActor(endTable);
-
 		MyGestureDetector gestureDetector = new MyGestureDetector(new MyGestureDetector.DirectionListener() {
 			@Override
 			public void onRight(float deltaX) {
@@ -240,6 +178,22 @@ class PlayState extends State {
 			}
 
 		});
+
+		// Initialise stage
+		// Create stage and set for input processor
+		stage = new Stage(new StretchViewport(CuteCatSplat.WIDTH/2.5f, CuteCatSplat.HEIGHT/2.5f));
+
+		backProcessor = new InputAdapter() {
+			@Override
+			public boolean keyDown(int keycode) {
+
+				if ((keycode == Keys.ESCAPE) || (keycode == Keys.BACK) )
+					stateToLoad = MENUSTATE;
+				return false;
+			}
+		};
+
+		createGameOverScreen();
 		
 		InputMultiplexer multiplexer = new InputMultiplexer(gestureDetector, stage, backProcessor);
         Gdx.input.setInputProcessor(multiplexer);
@@ -265,6 +219,12 @@ class PlayState extends State {
 
     @Override
     public void update(float dt) {
+		if(adsController.getReward())
+		{
+			adsController.setReward(false);
+			gsm.set(new PlayState(gsm, assets, adsController, playServices, catType, points));
+		}
+
 		if(starsCounter<10)
 		{
 			starsCounter++;
@@ -292,21 +252,11 @@ class PlayState extends State {
 		}
 		// Load PlayState if button selected
 		if(stateToLoad == PLAYSTATE) {
-			adsController.showInterstitialAd(new Runnable() {
-					@Override
-					public void run() {
-					}
-				});
-			gsm.set(new PlayState(gsm, assets, adsController, playServices, catType));
+			gsm.set(new PlayState(gsm, assets, adsController, playServices, catType, 0));
 		}
 
 		// Load MenuState if button selected
 		if(stateToLoad == MENUSTATE) {
-			adsController.showInterstitialAd(new Runnable() {
-				@Override
-				public void run() {
-				}
-			});
 			gsm.set(new MenuState(gsm, assets, adsController, playServices));
 		}
 
@@ -396,7 +346,7 @@ class PlayState extends State {
 				// End game if cat hits bushes
         		if(!catNipActivated && (cat.getPosition().x <= bush.getWidth() - 50 ||
                 		cat.getPosition().x >= (cam.viewportWidth - bush.getWidth() - 25))){
-            		catDead = true;
+					catDead = true;
 					screech.play(0.6f);
 					splat.play(0.8f);
 					Gdx.input.vibrate(300);
@@ -456,6 +406,90 @@ class PlayState extends State {
         bush.dispose();
 		assets.dispose();
     }
+
+    private void createGameOverScreen(){
+		Texture watchAd1 = (Texture) assets.manager.get(Assets.play1);
+		Texture watchAd2 = (Texture) assets.manager.get(Assets.play2);
+		Texture restart1 = (Texture) assets.manager.get(Assets.restart1);
+		Texture restart2 = (Texture) assets.manager.get(Assets.restart2);
+		Texture back1 = (Texture) assets.manager.get(Assets.back1);
+		Texture back2 = (Texture) assets.manager.get(Assets.back2);
+
+		FreeTypeFontGenerator.FreeTypeFontParameter wafParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+		// Create font
+		wafParameter.size = 25;
+		BitmapFont watchAdfont = assets.generator.generateFont(wafParameter);
+		watchAdfont.setColor(0, 0.5f, 0.5f, 1);
+
+		Label watchAdLabel = new Label("Press button above to\nwatch video and continue\nscore with new life",
+				new Label.LabelStyle(watchAdfont, Color.BLACK));
+		watchAdLabel.setAlignment(Align.center);
+
+		// Create restart button style and add listener
+		CreateButton buttonCreator = new CreateButton();
+
+		Button watchAdButton = buttonCreator.NewButton(watchAd1, watchAd2);
+		watchAdButton.addListener(new InputListener(){
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
+				Gdx.input.vibrate(5);
+				return true;
+			}
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button){
+				adsController.showRewardAd();
+			}
+		});
+
+		Button restartButton = buttonCreator.NewButton(restart1, restart2);
+		restartButton.addListener(new InputListener(){
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
+				Gdx.input.vibrate(5);
+				return true;
+			}
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button){
+				// Set PlayState to load
+				miaow2.play();
+				stateToLoad = PLAYSTATE;
+			}
+		});
+
+		// Create play button style and add listener
+		Button returnButton = buttonCreator.NewButton(back1, back2);
+		returnButton.addListener(new InputListener(){
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
+				if(catDead)
+				{
+					Gdx.input.vibrate(5);
+					return true;
+				}
+				return false;
+			}
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button){
+				// Set PlayState to load
+				stateToLoad = MENUSTATE;
+			}
+		});
+
+		// Create end table to hold actors for stage
+		Table endTable = new Table();
+		endTable.row();
+		endTable.add().height(restartButton.getHeight());
+		endTable.row();
+		endTable.add(watchAdButton).height(restartButton.getHeight()/2).width(restartButton.getWidth()/2);
+		endTable.row();
+		endTable.add(watchAdLabel).height(restartButton.getHeight()/2).width(restartButton.getWidth()/2);
+		endTable.row();
+		endTable.add(restartButton).height(restartButton.getHeight()/2).width(restartButton.getWidth()/2);
+		endTable.row();
+		endTable.add().height(restartButton.getHeight()/2);
+		endTable.row();
+		endTable.add(returnButton).height(returnButton.getHeight()/2).width(returnButton.getWidth()/2);
+		endTable.setFillParent(true);
+
+		;
+		// Create stage and set for input processor
+		stage = new Stage(new StretchViewport(CuteCatSplat.WIDTH/2.5f, CuteCatSplat.HEIGHT/2.5f));
+		stage.addActor(endTable);
+	}
 
     private void updateBush(){
 		// Scroll and reposition bushes

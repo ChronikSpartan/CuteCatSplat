@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
@@ -143,15 +144,27 @@ class CatSelectState extends State {
 								new Label.LabelStyle(font, Color.BLACK));
 		
 		Label tilly = new Label("Pass 10 gates\nto unlock.", 
-			new Label.LabelStyle(font, Color.TEAL));
+			new Label.LabelStyle(font, Color.BLACK));
 		Label trampy = new Label("Get 5 cat nips\nin one go\nto unlock.", 
-			new Label.LabelStyle(font, Color.TEAL));
+			new Label.LabelStyle(font, Color.BLACK));
 		Label leroy = new Label("Hidden achievement.", 
-			new Label.LabelStyle(font, Color.TEAL));
+			new Label.LabelStyle(font, Color.BLACK));
 			
 		tilly.setAlignment(Align.center);
 		trampy.setAlignment(Align.center);
 		leroy.setAlignment(Align.center);
+
+		Stack tillyStack = new Stack();
+		tillyStack.add(splatButton1);
+		tillyStack.add(tilly);
+
+		Stack trampyStack = new Stack();
+		trampyStack.add(splatButton2);
+		trampyStack.add(trampy);
+
+		Stack leroyStack = new Stack();
+		leroyStack.add(splatButton3);
+		leroyStack.add(leroy);
 	
 		// Create table to hold actors for stage
         Table menuTable = new Table();
@@ -168,7 +181,7 @@ class CatSelectState extends State {
 		if(Assets.checkTilly())
 			menuTable.add(tillyButton).height(sparkyButton.getHeight()/2.5f).width(sparkyButton.getWidth()/2.5f);
 		else
-			menuTable.add(splatButton1).height(sparkyButton.getHeight()/2.5f).width(sparkyButton.getWidth()/2.5f);
+			menuTable.add(tillyStack).height(sparkyButton.getHeight() / 2.5f).width(sparkyButton.getHeight() / 2.5f);
         menuTable.row();
         menuTable.add().height(sparkyButton.getHeight()/3);
 		menuTable.row();
@@ -177,7 +190,7 @@ class CatSelectState extends State {
 		if(Assets.checkTrampy())
 			menuTable.add(trampyButton).height(sparkyButton.getHeight()/2.5f).width(sparkyButton.getWidth()/2.5f);
 		else
-			menuTable.add(splatButton2).height(sparkyButton.getHeight()/2.5f).width(sparkyButton.getWidth()/2.5f);
+			menuTable.add(trampyStack).height(sparkyButton.getHeight()/2.5f).width(sparkyButton.getHeight()/2.5f);
         menuTable.row();
         menuTable.add().height(sparkyButton.getHeight()/3);
         menuTable.row();
@@ -186,7 +199,7 @@ class CatSelectState extends State {
         if(Assets.checkLeroy())
 			menuTable.add(leroyButton).height(sparkyButton.getHeight()/2.5f).width(sparkyButton.getWidth()/2.5f);
 		else
-			menuTable.add(splatButton3).height(sparkyButton.getHeight()/2.5f).width(sparkyButton.getWidth()/2.5f);
+			menuTable.add(leroyStack).height(sparkyButton.getHeight()/2.5f).width(sparkyButton.getHeight()/2.5f);
 		menuTable.setFillParent(true);
 
 		// Create stage and set for input processor
@@ -209,7 +222,7 @@ class CatSelectState extends State {
 			gsm.set(new MenuState(gsm, assets, adsController, playServices));
 			
 		if(stateToLoad == PLAYSTATE)
-			gsm.set(new PlayState(gsm, assets, adsController, playServices, catSelected));
+			gsm.set(new PlayState(gsm, assets, adsController, playServices, catSelected, 0));
     }
 
     @Override

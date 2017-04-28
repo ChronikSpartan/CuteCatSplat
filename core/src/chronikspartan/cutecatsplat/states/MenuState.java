@@ -30,7 +30,6 @@ import chronikspartan.cutecatsplat.services.PlayServices;
 
 class MenuState extends State {
 	private static final int CATSELECTSTATE = 4;
-	private static final int RANKINGSSTATE = 2;
 	
     private Texture background;
 	private Stage stage;
@@ -90,7 +89,6 @@ class MenuState extends State {
 			}
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button){
 				// Set RankingsStaTe to load
-				//stateToLoad = RANKINGSSTATE;
 				playServices.submitScore(Assets.getHighScore1());
 				playServices.showScore();
 				purr.play();
@@ -143,10 +141,6 @@ class MenuState extends State {
 		// Load PlayState if button selected
 		if(stateToLoad == CATSELECTSTATE)
 			gsm.set(new CatSelectState(gsm, assets, adsController, playServices));
-			
-		// Load MenuState if button selected
-		if(stateToLoad == RANKINGSSTATE)
-			gsm.set(new RankingsState(gsm, assets, adsController, playServices));
     }
 
     @Override

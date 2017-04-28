@@ -66,5 +66,20 @@ public class CuteCatSplat extends ApplicationAdapter{
         public void showInterstitialAd(Runnable then) {
 
         }
+
+        @Override
+        public void showRewardAd() {
+
+        }
+
+        @Override
+        public boolean getReward() {
+            return false;
+        }
+
+        @Override
+        public void setReward(Boolean state) {
+
+        }
     }
 }
