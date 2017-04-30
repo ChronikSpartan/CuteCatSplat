@@ -79,6 +79,7 @@ class PlayState extends State {
 	private Sound splat, screech, miaow2, fenceSmash;
 	private Music catNipTune = (Music) assets.manager.get(Assets.catNipTune);
 
+	private MyGestureDetector gestureDetector;
 	private boolean touchLeftWall = false;
 	private boolean touchRightWall = false;
 	
@@ -103,7 +104,7 @@ class PlayState extends State {
 		// Load textures
 		bush = (Texture) assets.manager.get(Assets.bush);
 		swipe = (Texture) assets.manager.get(Assets.swipe);
-		
+
 		// Load sound
 		miaow2 = (Sound) assets.manager.get(Assets.miaow2);
 		splat = (Sound) assets.manager.get(Assets.splat);
@@ -158,7 +159,7 @@ class PlayState extends State {
 		backgroundPos = new Vector2(0, cam.position.y - cam.viewportHeight / 2);
 		backgroundPos2 = new Vector2(0, cam.position.y - (cam.viewportHeight / 2) + imgTextureGrassRegion2.getRegionHeight());
 
-		MyGestureDetector gestureDetector = new MyGestureDetector(new MyGestureDetector.DirectionListener() {
+		gestureDetector = new MyGestureDetector(new MyGestureDetector.DirectionListener() {
 			@Override
 			public void onRight(float deltaX) {
 				if (!catDead && !touchRightWall)
@@ -191,8 +192,10 @@ class PlayState extends State {
 			@Override
 			public boolean keyDown(int keycode) {
 
-				if ((keycode == Keys.ESCAPE) || (keycode == Keys.BACK) )
+				if ((keycode == Keys.ESCAPE) || (keycode == Keys.BACK) ) {
+					catNipTune.stop();
 					stateToLoad = MENUSTATE;
+				}
 				return false;
 			}
 		};
@@ -302,9 +305,6 @@ class PlayState extends State {
 		
 			if(gameStarted)
 			{
-				// Reset wall touch flags
-				touchLeftWall = touchRightWall = false;
-				
         		for(Wall wall : walls){
 					// Reposition walls if they move off screen
             		if(cam.position.y - (cam.viewportHeight / 2) > wall.getPosLeftWall().y + wall.wallHeight){
@@ -313,6 +313,14 @@ class PlayState extends State {
 							catNipSetCounter = 0;
 						}
 					}
+
+					touchLeftWall = wall.collidesWithLeft(cat.getSideBounds());
+					touchRightWall = wall.collidesWithRight(cat.getSideBounds());
+
+					if(touchLeftWall || touchRightWall)
+						cat.allowMove = false;
+					else
+						cat.allowMove = true;
 
 					// End game of collision occurs
             		if(!catNipActivated && (wall.collidesWithLeft(cat.getBounds()) || wall.collidesWithRight(cat.getBounds()))){
@@ -325,16 +333,13 @@ class PlayState extends State {
 					else if (wall.collidesWithLeft(cat.getBounds()))
 					{
 						wall.explode(dt, "LEFT");
-						fenceSmash.play();
+						fenceSmash.play(0.1f);
 					}
 					else if (wall.collidesWithRight(cat.getBounds()))
 					{
 						wall.explode(dt, "RIGHT");
-						fenceSmash.play();
+						fenceSmash.play(0.1f);
 					}
-					
-					touchLeftWall = wall.collidesWithLeft(cat.getSideBounds());
-					touchRightWall = wall.collidesWithRight(cat.getSideBounds());
 
 					// Add points if fence passed
             		if(wall.pointGained(cat.getBounds()))
@@ -411,6 +416,7 @@ class PlayState extends State {
 			font.draw(sb, String.valueOf(points), (cam.viewportWidth / 2) - parameter.size/4, cat.getPosition().y + 1000);
 		
 		if(catDead){
+			catNipTune.stop();
 			sb.draw(splatScreenTexture, cat.getPosition().x - 500, cat.getPosition().y - 500);
 			sb.end();
 			stage.act();

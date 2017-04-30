@@ -30,6 +30,8 @@ public class Cat{
 	private boolean moveLeft = false;
 	private boolean moveRight = false;
 
+	public boolean allowMove = true;
+
     public Cat(int x, int y, Assets assets, int catNumber){
 
 		// Set original cat position
@@ -103,7 +105,7 @@ public class Cat{
 	
 	public void moveRight(float deltaX)
 	{
-		if(deltaX > 3)
+		if(deltaX > 3 && allowMove)
 		{
 			moveRight = true;
 			position.add(deltaX,0,0);
@@ -112,7 +114,7 @@ public class Cat{
 	
 	public void moveLeft(float deltaX)
 	{
-		if(deltaX < -3)
+		if(deltaX < -3 && allowMove)
 		{
 			moveLeft = true;
 			position.add(deltaX,0,0);
