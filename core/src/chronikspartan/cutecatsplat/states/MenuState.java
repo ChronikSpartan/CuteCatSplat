@@ -63,6 +63,8 @@ class MenuState extends State {
 		Texture play2 = (Texture) assets.manager.get(Assets.play2);
 		Texture rankings1 = (Texture) assets.manager.get(Assets.rankings1);
 		Texture rankings2 = (Texture) assets.manager.get(Assets.rankings2);
+		Texture achievements1 = (Texture) assets.manager.get(Assets.trophy1);
+		Texture achievements2 = (Texture) assets.manager.get(Assets.trophy2);
 		
 		// Create play button style and add listener
 		CreateButton buttonCreator = new CreateButton();
@@ -94,6 +96,20 @@ class MenuState extends State {
 				purr.play();
 			}
 		});
+
+		// Same for achievements button
+		Button achievementsButton = buttonCreator.NewButton(achievements1, achievements2);
+		achievementsButton.addListener(new InputListener(){
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
+				Gdx.input.vibrate(5);
+				return true;
+			}
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button){
+				// Set RankingsStaTe to load
+				playServices.showAchievement();
+				purr.play();
+			}
+		});
 			
 		InputProcessor backProcessor = new InputAdapter() {
             @Override
@@ -111,11 +127,15 @@ class MenuState extends State {
         Table menuTable = new Table();
         menuTable.add().height(playButton.getHeight()*1.5f);
         menuTable.row();
+		menuTable.add().width(playButton.getWidth()/2);
         menuTable.add(playButton).height(playButton.getHeight()/2).width(playButton.getWidth()/2);
+		menuTable.add().width(playButton.getWidth()/2);
         menuTable.row();
         menuTable.add().height(playButton.getHeight()/2);
         menuTable.row();
         menuTable.add(rankingsButton).height(playButton.getHeight()/2).width(playButton.getWidth()/2);
+		menuTable.add().width(playButton.getWidth()/2);
+		menuTable.add(achievementsButton).height(playButton.getHeight()/2).width(playButton.getWidth()/2);
         menuTable.setFillParent(true);
 
 		// Create stage and set for input processor

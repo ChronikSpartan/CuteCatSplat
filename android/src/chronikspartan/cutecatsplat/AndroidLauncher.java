@@ -43,6 +43,7 @@ public class AndroidLauncher extends AndroidApplication implements AdsController
 	private AdRequest ad;
 
 	private Boolean gameContinue = false;
+	private Boolean rewarded = false;
 
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
@@ -116,6 +117,7 @@ public class AndroidLauncher extends AndroidApplication implements AdsController
 	@Override
 	public void setReward(Boolean state){
 		gameContinue = state;
+		rewarded = state;
 	}
 
 	@Override
@@ -251,10 +253,34 @@ public class AndroidLauncher extends AndroidApplication implements AdsController
 	}
 
 	@Override
-	public void unlockAchievement()
+	public void unlockAchievementFirstGate()
 	{
 		Games.Achievements.unlock(gameHelper.getApiClient(),
 				getString(R.string.achievement_first_gate_baby));
+	}
+
+	@Override
+	public void unlockAchievementFifthGate() {
+		Games.Achievements.unlock(gameHelper.getApiClient(),
+				getString(R.string.achievement_getting_the_hang_of_it));
+	}
+
+	@Override
+	public void unlockAchievementNinthGate() {
+		Games.Achievements.unlock(gameHelper.getApiClient(),
+				getString(R.string.achievement_the_ninth_gate));
+	}
+
+	@Override
+	public void unlockAchievementFirstCatNip() {
+		Games.Achievements.unlock(gameHelper.getApiClient(),
+				getString(R.string.achievement_what_is_this));
+	}
+
+	@Override
+	public void unlockAchievementThreeCatNips() {
+		Games.Achievements.unlock(gameHelper.getApiClient(),
+				getString(R.string.achievement_420_cat));
 	}
 
 	@Override
@@ -316,12 +342,14 @@ public class AndroidLauncher extends AndroidApplication implements AdsController
 
 	@Override
 	public void onRewardedVideoAdClosed() {
+		if(rewarded)
+			gameContinue = true;
 		loadRewardAd();
 	}
 
 	@Override
 	public void onRewarded(RewardItem rewardItem) {
-		gameContinue = true;
+		rewarded = true;
 	}
 
 	@Override

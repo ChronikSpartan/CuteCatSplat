@@ -9,7 +9,11 @@ public interface PlayServices
     public void signIn();
     public void signOut();
     public void rateGame();
-    public void unlockAchievement();
+    public void unlockAchievementFirstGate();
+    public void unlockAchievementFifthGate();
+    public void unlockAchievementNinthGate();
+    public void unlockAchievementFirstCatNip();
+    public void unlockAchievementThreeCatNips();
     public void submitScore(int highScore);
     public void showAchievement();
     public void showScore();

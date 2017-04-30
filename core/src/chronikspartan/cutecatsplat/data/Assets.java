@@ -44,6 +44,8 @@ public class Assets {
 	public static AssetDescriptor swipe = new AssetDescriptor<Texture>("images/Swipe.jpg", Texture.class);
 	public static AssetDescriptor wall = new AssetDescriptor<Texture>("images/Wall.jpg", Texture.class);
 	public static AssetDescriptor bush = new AssetDescriptor<Texture>("images/Bush.png", Texture.class);
+	public static AssetDescriptor trophy1 = new AssetDescriptor<Texture>("images/Buttons_and_Screens/Trophy_1.png", Texture.class);
+	public static AssetDescriptor trophy2 = new AssetDescriptor<Texture>("images/Buttons_and_Screens/Trophy_2.png", Texture.class);
 	public static AssetDescriptor play1 = new AssetDescriptor<Texture>("images/Buttons_and_Screens/Play_1.png", Texture.class);
 	public static AssetDescriptor play2 = new AssetDescriptor<Texture>("images/Buttons_and_Screens/Play_2.png", Texture.class);
 	public static AssetDescriptor rankings1 = new AssetDescriptor<Texture>("images/Buttons_and_Screens/Rankings_1.png", Texture.class);
@@ -55,11 +57,13 @@ public class Assets {
 	public static AssetDescriptor menuScreen = new AssetDescriptor<Texture>("images/Buttons_and_Screens/Menu_Screen.png", Texture.class);
 	public static AssetDescriptor rankingsScreen = new AssetDescriptor<Texture>("images/Buttons_and_Screens/Rankings_Screen.png", Texture.class);
 	public static AssetDescriptor theme = new AssetDescriptor<Music>("audio/Theme.mp3", Music.class);
+	public static AssetDescriptor catNipTune = new AssetDescriptor<Music>("audio/Cat_Nip_Time.mp3", Music.class);
 	public static AssetDescriptor miaow = new AssetDescriptor<Sound>("audio/Miaow.mp3", Sound.class);
 	public static AssetDescriptor miaow2 = new AssetDescriptor<Sound>("audio/Miaow_2.mp3", Sound.class);
 	public static AssetDescriptor purr = new AssetDescriptor<Sound>("audio/Purr.mp3", Sound.class);
 	public static AssetDescriptor screech = new AssetDescriptor<Sound>("audio/Screech.mp3", Sound.class);
 	public static AssetDescriptor splat = new AssetDescriptor<Sound>("audio/Splat.mp3", Sound.class);
+	public static AssetDescriptor fenceSmash = new AssetDescriptor<Sound>("audio/Fence_Smash.wav", Sound.class);
 	
 	public FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("images/Font/BubblegumSans-Regular.ttf"));
 	
@@ -90,6 +94,8 @@ public class Assets {
 		manager.load(swipe);
 		manager.load(wall);
 		manager.load(bush);
+		manager.load(trophy1);
+		manager.load(trophy2);
 		manager.load(play1);
 		manager.load(play2);
 		manager.load(rankings1);
@@ -100,12 +106,14 @@ public class Assets {
 		manager.load(restart2);
 		manager.load(menuScreen);
 		manager.load(rankingsScreen);
+		manager.load(catNipTune);
 		manager.load(theme);
 		manager.load(miaow);
 		manager.load(miaow2);
 		manager.load(purr);
 		manager.load(screech);
 		manager.load(splat);
+		manager.load(fenceSmash);
 		manager.load(textureSplatScreen1);
 		manager.load(textureSplatScreen2);
 		manager.load(textureSplatScreen3);
@@ -118,10 +126,6 @@ public class Assets {
 		// Provide default high scores of 0
 		if (!prefs.contains("highScore1"))
 			prefs.putInteger("highScore1", 0);
-		if (!prefs.contains("highScore2")) 
-			prefs.putInteger("highScore2", 0);
-		if (!prefs.contains("highScore3")) 
-			prefs.putInteger("highScore3", 0);
     }
 	
 	public void clear(){

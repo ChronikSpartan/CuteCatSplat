@@ -5,6 +5,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -57,6 +58,7 @@ class PlayState extends State {
 	
 	private int stateToLoad = 0;
 	private int starsCounter = 0;
+	private int continueCounter= 0;
 	private int starSelect = 0;
 	private int catNipCounter = 0;
 	private int catNipCollected = 0;
@@ -74,7 +76,8 @@ class PlayState extends State {
 	private static BitmapFont font;
 
 	private Stage stage;
-	private Sound splat, screech, miaow2;
+	private Sound splat, screech, miaow2, fenceSmash;
+	private Music catNipTune = (Music) assets.manager.get(Assets.catNipTune);
 
 	private boolean touchLeftWall = false;
 	private boolean touchRightWall = false;
@@ -105,6 +108,7 @@ class PlayState extends State {
 		miaow2 = (Sound) assets.manager.get(Assets.miaow2);
 		splat = (Sound) assets.manager.get(Assets.splat);
 		screech = (Sound) assets.manager.get(Assets.screech);
+		fenceSmash = (Sound) assets.manager.get(Assets.fenceSmash);
 		
 		// Create font
 		parameter.size = 150;
@@ -221,9 +225,28 @@ class PlayState extends State {
     public void update(float dt) {
 		if(adsController.getReward())
 		{
-			adsController.setReward(false);
-			gsm.set(new PlayState(gsm, assets, adsController, playServices, catType, points));
+			continueCounter++;
+			if(continueCounter>10) {
+				continueCounter = 0;
+				adsController.setReward(false);
+				gsm.set(new PlayState(gsm, assets, adsController, playServices, catType, points));
+			}
 		}
+
+		if(points == 1)
+			playServices.unlockAchievementFirstGate();
+
+		if(points == 5)
+			playServices.unlockAchievementFifthGate();
+
+		if(points == 9)
+			playServices.unlockAchievementNinthGate();
+
+		if(catNipCollected == 1)
+			playServices.unlockAchievementFirstCatNip();
+
+		if(catNipCollected == 3)
+			playServices.unlockAchievementThreeCatNips();
 
 		if(starsCounter<10)
 		{
@@ -302,10 +325,12 @@ class PlayState extends State {
 					else if (wall.collidesWithLeft(cat.getBounds()))
 					{
 						wall.explode(dt, "LEFT");
+						fenceSmash.play();
 					}
 					else if (wall.collidesWithRight(cat.getBounds()))
 					{
 						wall.explode(dt, "RIGHT");
+						fenceSmash.play();
 					}
 					
 					touchLeftWall = wall.collidesWithLeft(cat.getSideBounds());
@@ -325,6 +350,7 @@ class PlayState extends State {
 					if(wall.catNipGained(cat.getBounds())){
 						catNipActivated = showStars = true;
 						catNipCollected++;
+						catNipTune.play();
 					}
         		}
 				
@@ -334,6 +360,7 @@ class PlayState extends State {
 				switch(catNipCounter){
 					case 400:
 						showStars = false;
+						catNipTune.stop();
 						break;
 					case 500:
 						catNipActivated = false;
@@ -469,14 +496,23 @@ class PlayState extends State {
 			}
 		});
 
+		Random randContinue = new Random();
+
 		// Create end table to hold actors for stage
 		Table endTable = new Table();
 		endTable.row();
 		endTable.add().height(restartButton.getHeight());
 		endTable.row();
-		endTable.add(watchAdButton).height(restartButton.getHeight()/2).width(restartButton.getWidth()/2);
-		endTable.row();
-		endTable.add(watchAdLabel).height(restartButton.getHeight()/2).width(restartButton.getWidth()/2);
+		if(randContinue.nextInt(3) == 1) {
+			endTable.add(watchAdButton).height(restartButton.getHeight() / 2).width(restartButton.getWidth() / 2);
+			endTable.row();
+			endTable.add(watchAdLabel).height(restartButton.getHeight() / 2).width(restartButton.getWidth() / 2);
+		}
+		else {
+			endTable.add().height(restartButton.getHeight() / 2);
+			endTable.row();
+			endTable.add().height(restartButton.getHeight() / 2);
+		}
 		endTable.row();
 		endTable.add(restartButton).height(restartButton.getHeight()/2).width(restartButton.getWidth()/2);
 		endTable.row();
