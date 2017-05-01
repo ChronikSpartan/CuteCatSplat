@@ -292,6 +292,7 @@ class PlayState extends State {
 		}
 		else 
 		{
+			touchLeftWall = touchRightWall = false;
 			updateBush();
 			catNipSetCounter++;
 			
@@ -314,13 +315,10 @@ class PlayState extends State {
 						}
 					}
 
-					touchLeftWall = wall.collidesWithLeft(cat.getSideBounds());
-					touchRightWall = wall.collidesWithRight(cat.getSideBounds());
-
-					if(touchLeftWall || touchRightWall)
-						cat.allowMove = false;
-					else
-						cat.allowMove = true;
+					if(wall.collidesWithLeft(cat.getSideBounds()))
+						touchLeftWall = true;
+					if(wall.collidesWithRight(cat.getSideBounds()))
+						touchRightWall = true;
 
 					// End game of collision occurs
             		if(!catNipActivated && (wall.collidesWithLeft(cat.getBounds()) || wall.collidesWithRight(cat.getBounds()))){
