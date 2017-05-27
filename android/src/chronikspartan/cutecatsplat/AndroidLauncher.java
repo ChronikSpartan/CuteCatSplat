@@ -255,32 +255,67 @@ public class AndroidLauncher extends AndroidApplication implements AdsController
 	@Override
 	public void unlockAchievementFirstGate()
 	{
-		Games.Achievements.unlock(gameHelper.getApiClient(),
-				getString(R.string.achievement_first_gate_baby));
+		if (isSignedIn() == true)
+		{
+			Games.Achievements.unlock(gameHelper.getApiClient(),
+					getString(R.string.achievement_first_gate_baby));
+		}
+		else
+		{
+			signIn();
+		}
 	}
 
 	@Override
 	public void unlockAchievementFifthGate() {
-		Games.Achievements.unlock(gameHelper.getApiClient(),
-				getString(R.string.achievement_getting_the_hang_of_it));
+		if (isSignedIn() == true)
+		{
+			Games.Achievements.unlock(gameHelper.getApiClient(),
+					getString(R.string.achievement_getting_the_hang_of_it));
+		}
+		else
+		{
+			signIn();
+		}
 	}
 
 	@Override
 	public void unlockAchievementNinthGate() {
-		Games.Achievements.unlock(gameHelper.getApiClient(),
-				getString(R.string.achievement_the_ninth_gate));
+		if (isSignedIn() == true)
+		{
+			Games.Achievements.unlock(gameHelper.getApiClient(),
+					getString(R.string.achievement_the_ninth_gate));
+		}
+		else
+		{
+			signIn();
+		}
 	}
 
 	@Override
 	public void unlockAchievementFirstCatNip() {
-		Games.Achievements.unlock(gameHelper.getApiClient(),
-				getString(R.string.achievement_what_is_this));
+		if (isSignedIn() == true)
+		{
+			Games.Achievements.unlock(gameHelper.getApiClient(),
+					getString(R.string.achievement_what_is_this));
+		}
+		else
+		{
+			signIn();
+		}
 	}
 
 	@Override
 	public void unlockAchievementThreeCatNips() {
-		Games.Achievements.unlock(gameHelper.getApiClient(),
-				getString(R.string.achievement_420_cat));
+		if (isSignedIn() == true)
+		{
+			Games.Achievements.unlock(gameHelper.getApiClient(),
+					getString(R.string.achievement_420_cat));
+		}
+		else
+		{
+			signIn();
+		}
 	}
 
 	@Override

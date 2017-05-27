@@ -278,6 +278,13 @@ class PlayState extends State {
 		}
 		// Load PlayState if button selected
 		if(stateToLoad == PLAYSTATE) {
+			adsController.showInterstitialAd(new Runnable() {
+ 					@Override
+
+					public void run() {
+					return;
+				}
+			});
 			gsm.set(new PlayState(gsm, assets, adsController, playServices, catType, 0));
 		}
 
